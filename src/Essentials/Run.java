@@ -10,7 +10,6 @@ import processing.event.MouseEvent;
 
 public class Run extends PApplet
 {
-	public float  zoom;
 	public World world;
 	int rawTime;
 	double time;
@@ -52,7 +51,6 @@ public class Run extends PApplet
 		realWidth = displayWidth - 136;
 		realHeight = displayHeight - 224;
 		size(realWidth, realHeight);
-		zoom = 1;
 		path = Path.GENERAL;
 		startNumCreatures = 100;
 	}
@@ -60,7 +58,7 @@ public class Run extends PApplet
 	{
 		frameRate(60);
 		textSize(50);
-		world = new World(startNumCreatures, realWidth, realHeight);
+		world = new World(this, startNumCreatures, realWidth, realHeight);
 		world.startTiles();
 		world.startCreatures();
 		selectedTile = null;
@@ -77,7 +75,7 @@ public class Run extends PApplet
 		spawnClicking = false;
 		timeSeconds = 0;
 		spawnMode = false;
-		scaleFactor = 1;
+		scaleFactor = 0.25;
 		translateX = 0;
 		translateY = 0;
 		b4x = 0;
@@ -96,6 +94,7 @@ public class Run extends PApplet
 			b4x = mouseX;
 			b4y = mouseY;
 		}
+		pushMatrix();
 		translate(translateX, translateY);
 		scale((float) scaleFactor);
 		colorMode(RGB);
@@ -104,11 +103,12 @@ public class Run extends PApplet
 		rect(p2pl(8), 0, p2pl(6), p2pw(10));
 		fill(255, 255, 255);
 		textSize(p2pl(30));
-		text("Code Iterations: " + rawTime, p2pl(650), p2pw(35));
-		text("Framerate: " + (int)frameRate, p2pl(50), p2pw(35));
-		text("Global Time: " + df.format(time), p2pl(300), p2pw(35));
+//		text("Code Iterations: " + rawTime, p2pl(650), p2pw(35));
+//		text("Framerate: " + (int)frameRate, p2pl(50), p2pw(35));
+//		text("Global Time: " + df.format(time), p2pl(300), p2pw(35));
 		drawTiles();
 		drawCreatures();
+		popMatrix();
 		
 		if(play)
 		{	
@@ -131,7 +131,7 @@ public class Run extends PApplet
 			case GENERAL:
 			{
 				colorMode(RGB);
-				fill(60);
+				fill(60, 200);
 				rect(p2pl(1600), 0, p2pl(1200), p2pw(2000));
 				drawButtons();
 				textSize(p2pl(40));
@@ -152,7 +152,7 @@ public class Run extends PApplet
 			case CREATURE:
 			{
 				colorMode(RGB);
-				fill(60);
+				fill(60, 200);
 				rect(p2pl(1600), 0, p2pl(1200), p2pw(2000));
 				drawButtons();
 				fill(255, 255, 255);
@@ -174,7 +174,7 @@ public class Run extends PApplet
 			case TILE:
 			{
 				colorMode(RGB);
-				fill(60);
+				fill(60, 200);
 				rect(p2pl(1600), 0, p2pl(1200), p2pw(2000));
 				colorMode(HSB);
 				fill(selectedTile.colorH, selectedTile.colorS, selectedTile.colorV);
@@ -240,7 +240,7 @@ public class Run extends PApplet
 			{
 				colorMode(HSB);
 				fill(world.tiles[y][x].colorH, world.tiles[y][x].colorS, world.tiles[y][x].colorV);
-				rect(world.tiles[y][x].x, world.tiles[y][x].y, world.tileSize-1, world.tileSize-1);
+				rect(world.tiles[y][x].x, world.tiles[y][x].y, world.tileSize, world.tileSize);
 				fill(0, 0, 0);
 			}
 		}
@@ -325,51 +325,17 @@ public class Run extends PApplet
 	{
 		int mX = mouseX;
 		int mY = mouseY;
+		boolean check = false;
 		
-		// spawn mode?
-		if(spawnMode)
+		if(mX <= p2pl(1600))
 		{
-			if(spawn.x < mX && mX <= spawn.x + spawn.width) // start button
-			{
-				if(spawn.y < mY && mY <= spawn.y + spawn.height)
-				{
-					spawnMode = !spawnMode;
-				}
-			}
-			if(world.tiles[0][0].x <= mX && mX <= world.tiles[world.tileRes-1][world.tileRes-1].x + world.tileSize &&
-				world.tiles[0][0].y <= mY && mY <= world.tiles[world.tileRes-1][world.tileRes-1].y + world.tileSize)
-			{
-				if(spawnMode) world.addCreature(mX, mY);
-			}
-			return;
-		}
-		
-		// test for creature click
-		for(int i = 0; i < world.creatures.size(); i++)
-		{
-			if (Math.hypot(mX - world.creatures.get(i).locationX, mY - world.creatures.get(i).locationY) < world.creatures.get(i).diameter/2)
-			{
-				selectedCreature = world.creatures.get(i);
-				path = Path.CREATURE;
-				return;
-			}
-		}
-		
-		// test for tile click
-		for(int x = 0; x < world.tiles.length; x++)
-		{
-			for(int y = 0; y < world.tiles.length; y++)
-			{
-				if (world.tiles[y][x].x < mX && mX <= world.tiles[y][x].x + world.tileSize)
-				{
-					if (world.tiles[y][x].y < mY && mY <= world.tiles[y][x].y + world.tileSize)
-					{
-						selectedTile = world.tiles[y][x];
-						path = Path.TILE;
-						return;
-					}
-				}
-			}
+			check = true;
+			System.out.println("inside the converter");
+			mX -= translateX;
+			mY -= translateY;
+			mX /= scaleFactor;
+			mY /= scaleFactor;
+			
 		}
 		
 		//test for button click
@@ -408,25 +374,81 @@ public class Run extends PApplet
 				return;
 			}
 		}
+		if(check)
+		{
+			// spawn mode?
+			if(spawnMode && check)
+			{
+				if(spawn.x < mX && mX <= spawn.x + spawn.width) // start button
+				{
+					if(spawn.y < mY && mY <= spawn.y + spawn.height)
+					{
+						spawnMode = !spawnMode;
+					}
+				}
+				if(world.tiles[0][0].x <= mX && mX <= world.tiles[world.tileResW-1][world.tileResL-1].x + world.tileSize &&
+					world.tiles[0][0].y <= mY && mY <= world.tiles[world.tileResW-1][world.tileResL-1].y + world.tileSize)
+				{
+					if(spawnMode) world.addCreature(mX, mY);
+				}
+				return;
+			}
+			
+			// test for creature click
+			for(int i = 0; i < world.creatures.size(); i++)
+			{
+				if (Math.hypot(mX - world.creatures.get(i).locationX, mY - world.creatures.get(i).locationY) < world.creatures.get(i).diameter/2)
+				{
+					selectedCreature = world.creatures.get(i);
+					path = Path.CREATURE;
+					return;
+				}
+			}
+			
+			// test for tile click
+			for(int x = 0; x < world.tiles.length; x++)
+			{
+				for(int y = 0; y < world.tiles.length; y++)
+				{
+					if (world.tiles[y][x].x < mX && mX <= world.tiles[y][x].x + world.tileSize)
+					{
+						if (world.tiles[y][x].y < mY && mY <= world.tiles[y][x].y + world.tileSize)
+						{
+							selectedTile = world.tiles[y][x];
+							path = Path.TILE;
+							return;
+						}
+					}
+				}
+			}
+		}
+			
+		
 		
 		
 		path = Path.GENERAL;
-		
-		
-
 	}
 	
 	@SuppressWarnings("deprecation")
 	public void mouseWheel(MouseEvent e)
 	{
-		scaleFactor -= e.getAmount() / 10.0;
-		if(scaleFactor < 0.8) scaleFactor = 0.8;
+		
+		scaleFactor -= e.getAmount() / 15.0;
+		if(scaleFactor < 0.2) scaleFactor = 0.2;
 		if(scaleFactor > 3.0) scaleFactor = 3.0;
-		if(scaleFactor != 0.8 && scaleFactor != 3.0)
+		if(scaleFactor != 0.2 && scaleFactor != 3.0)
 		{
-			translateX += e.getAmount() * mouseX / 10;
-			translateY += e.getAmount() * mouseY / 10;
+			
+			System.out.println(mouseX + " " + mouseY);
+			translateX += e.getAmount() * mouseX * 4 / 10;
+			translateY += e.getAmount() * mouseY * 4 / 10;
 		}
+//		else if(scaleFactor != 0.2 && scaleFactor != 3.0 && e.getAmount() > 0)
+//		{
+//			System.out.println("in");
+//			translateX += e.getAmount() * 520 * 4 / 10;
+//			translateY += e.getAmount() * 400 * 4 / 10;
+//		}
 		
 	}
 }
