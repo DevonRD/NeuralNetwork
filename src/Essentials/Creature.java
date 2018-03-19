@@ -38,7 +38,7 @@ public class Creature
 	
 	public void updateSize()
 	{
-		diameter = size / 15.0;
+		diameter = size / 20.0;
 	}
 	
 	public boolean checkReproduce()
