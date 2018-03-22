@@ -1,6 +1,5 @@
 package Essentials;
 
-import Network.Network;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
@@ -15,10 +14,16 @@ public class World
 	int creatureCount;
 	int startNumCreatures;
 	int realWidth, realHeight;
+	@SuppressWarnings("unused")
 	private PApplet p;
+	boolean[][] water;
+	double mutateFactor;
+	int births = 0;
+	double timeCopy = 0;
 	
-	public World(PApplet p, int startNumCreatures, int width, int height)
+	public World(PApplet p, int startNumCreatures, int width, int height, boolean[][] water, double mutateFactor)
 	{
+		this.mutateFactor = mutateFactor;
 		this.p = p;
 		realWidth = width;
 		realHeight = height;
@@ -28,8 +33,15 @@ public class World
 		tileSize = 4 * p2pw(1500) / tileResW;
 		creatures = new ArrayList<Creature>();
 		this.startNumCreatures = startNumCreatures;
+		this.water = water;
 	}
 	
+	public void iterate(double timeInterval)
+	{
+		timeCopy += timeInterval;
+		updateTiles(timeInterval);
+		updateCreatures(timeInterval);
+	}
 	public void startTiles()
 	{
 		int count = 0;
@@ -38,101 +50,152 @@ public class World
 			for(int y = 0; y < tileResW; y++)
 			{
 				count++;
-				boolean water = false;
-				if(Math.random() < 0.05) water = true;
-				tiles[y][x] = new Tile(p2pw(50) + x * tileSize, p2pw(50) + y * tileSize, tileSize, count, x, y, water);
+				tiles[y][x] = new Tile(p2pw(50) + x * tileSize, p2pw(50) + y * tileSize, tileSize, count, x, y, water[x][y]);
 			}
 		}
 	}
-	
 	public void startCreatures()
 	{
 		for(int i = 0; i < startNumCreatures; i++)
 		{
 			creatureCount++;
-			creatures.add(new Creature(p2pw(50) + (int)(Math.random() * 4 * p2pw(1500)), p2pw(50) + (int)(Math.random() * 4 * p2pw(1500)), creatureCount));
+			creatures.add(new Creature(p2pw(50) + (int)(Math.random() * 4 * p2pw(1500)), p2pw(50) + (int)(Math.random() * 4 * p2pw(1500)), creatureCount, 0, mutateFactor));
 		}
 	}
-	
 	public void addCreature()
 	{
 		creatureCount++;
-		creatures.add(new Creature(p2pw(50) + (int)(Math.random() * p2pw(1500)), p2pw(50) + (int)(Math.random() * p2pw(1500)), creatureCount));
+		creatures.add(new Creature(p2pw(50) + (int)(Math.random() * p2pw(1500)), p2pw(50) + (int)(Math.random() * p2pw(1500)), creatureCount, 0, mutateFactor));
 	}
-	
 	public void addCreature(int x, int y)
 	{
 		creatureCount++;
-		creatures.add(new Creature(x, y, creatureCount));
+		creatures.add(new Creature(x, y, creatureCount, 0, mutateFactor));
 	}
-	
-	public void updateTiles()
+	public void updateTiles(double timeInterval)
 	{
 		for(int x = 0; x < tileResL; x++)
 		{
 			for(int y = 0; y < tileResW; y++)
 			{
-				tiles[y][x].testRegen();
+				tiles[y][x].regen();
 			}
 		}
 	}
-	
-	public void updateCreatures()
+	public void updateCreatures(double timeInterval)
 	{
-		for(int i = 0; i < creatures.size(); i++) // random eating, moving, decaying, reproducing
+		int[] leftTile, midTile, rightTile, mouthTile;
+		for(int i = 0; i < creatures.size(); i++)
 		{
-			int food = 0;
-			if(Math.random() < 0.6) food = requestEat(creatures.get(i).locationX, creatures.get(i).locationY);
-			creatures.get(i).size += food;
-			creatures.get(i).totalEaten += food;
-			creatures.get(i).updateSize();
+			creatures.get(i).fitness += timeInterval;
+			double[] sensorInput = new double[creatures.get(i).numInputs];
+			Creature c = creatures.get(i);
+			c.updateSensorCoords();
+			leftTile = findTileAt(c.leftSensorX, c.leftSensorY);
+			midTile = findTileAt(c.midSensorX, c.midSensorY);
+			rightTile = findTileAt(c.rightSensorX, c.rightSensorY);
+			mouthTile = findTileAt(c.mouthSensorX, c.mouthSensorY);
+			// Left food, left creature, center food, center creature, right food, right creature,
+			// mouth food, energy change rate, 
+			sensorInput[0] = tiles[leftTile[0]][leftTile[1]].food / 100.0;
+			if(isCreatureAt(c.leftSensorX, c.leftSensorY)) sensorInput[1] = 1.0;
+			else sensorInput[1] = -1.0;
+			sensorInput[2] = tiles[midTile[0]][midTile[1]].food / 100.0;
+			if(isCreatureAt(c.midSensorX, c.midSensorY)) sensorInput[3] = 1.0;
+			else sensorInput[3] = -1.0;
+			sensorInput[4] = tiles[rightTile[0]][rightTile[1]].food / 100.0;
+			if(isCreatureAt(c.rightSensorX, c.rightSensorY)) sensorInput[5] = 1.0;
+			else sensorInput[5] = -1.0;
+			sensorInput[6] = tiles[mouthTile[0]][mouthTile[1]].food / 100.0;
+			sensorInput[7] = c.size / 300.0;
 			
-			if(Math.random() < .666)
+			creatures.get(i).iterate(sensorInput, timeInterval);
+			creatures.get(i).locationX = Math.min(creatures.get(i).locationX, tiles[tileResL-1][tileResW-1].x + tileSize);
+			creatures.get(i).locationY = Math.min(creatures.get(i).locationY, tiles[tileResL-1][tileResW-1].y + tileSize);
+			creatures.get(i).locationX = Math.max(creatures.get(i).locationX, tiles[0][0].x);
+			creatures.get(i).locationY = Math.max(creatures.get(i).locationY, tiles[0][0].y);
+			double eatRequest = creatures.get(i).requestEat(timeInterval);
+			int[] foodTile = findTileAt(c.mouthSensorX, c.mouthSensorY);
+			creatures.get(i).allowEat(requestEat(foodTile[0], foodTile[1], eatRequest));
+			if(creatures.get(i).requestBirth())
 			{
-				if(Math.random() < .5) creatures.get(i).locationX += 3;
-				else creatures.get(i).locationX -= 3;
-				if(Math.random() < .5) creatures.get(i).locationY += 3;
-				else creatures.get(i).locationY -= 3;
-			}
-			
-			if(creatures.get(i).locationX > tiles[tileResW-1][tileResL-1].x + tileSize) creatures.get(i).locationX = tiles[tileResW-1][tileResL-1].x + tileSize;
-			if(creatures.get(i).locationX < p2pw(50)) creatures.get(i).locationX = p2pw(50);
-			if(creatures.get(i).locationY > tiles[tileResW-1][tileResL-1].y + tileSize) creatures.get(i).locationY = tiles[tileResW-1][tileResL-1].y + tileSize;
-			if(creatures.get(i).locationY < p2pw(50)) creatures.get(i).locationY = p2pw(50);
-			
-			if(Math.random() < (creatures.get(i).size / 800))
-			{
-				creatures.get(i).size--;
-				creatures.get(i).totalDecayed++;
-			}
-			
-			if(creatures.get(i).checkReproduce())
-			{
-				creatureCount++;
-				creatures.add(new Creature(creatures.get(i).locationX, creatures.get(i).locationY, creatureCount, 150));
+//				System.out.println(i + " request birth");
+				if(creatures.get(i).size < 300)
+				{
+					//creatures.get(i).size = 10; // this kills them if they try to birth but don't have enough mass
+//					System.out.println("birth failed at " + timeCopy);
+				}
+				else
+				{
+//					System.out.println("birth successful at " + timeCopy);
+					births++;
+					creatureCount++;
+					ArrayList<Axon[][]> creatureBrain = creatures.get(i).giveBirth();
+					creatures.add(new Creature((int)creatures.get(i).locationX, (int)creatures.get(i).locationY, creatureCount, 150, ( creatures.get(i).generation+1 ), mutateFactor, creatureBrain));
+				}
 			}
 		}
-		
 	}
-	
-	public int requestEat(int xCor, int yCor)
+	public int[] findTileAt(double xCoor, double yCoor)
 	{
+		int xCoord = (int) xCoor;
+		int yCoord = (int) yCoor;
+		int[] spot = new int[2];
 		for(int x = 0; x < tiles.length; x++)
 		{
 			for(int y = 0; y < tiles.length; y++)
 			{
-				if (tiles[y][x].x < xCor && xCor <= tiles[y][x].x + tileSize)
+				if (tiles[y][x].x < xCoord && xCoord <= tiles[y][x].x + tileSize)
 				{
-					if (tiles[y][x].y < yCor && yCor <= tiles[y][x].y + tileSize)
+					if (tiles[y][x].y < yCoord && yCoord <= tiles[y][x].y + tileSize)
 					{
-						if(tiles[y][x].food < 1) return 0;
-						tiles[y][x].food--;
-						return 1;
+						spot[0] = y;
+						spot[1] = x;
 					}
 				}
 			}
 		}
-		return 0;
+		return spot;
+	}
+	public Tile findTileAt(double xCoor, double yCoor, boolean whatever)
+	{
+		int xCoord = (int) xCoor;
+		int yCoord = (int) yCoor;
+		for(int x = 0; x < tiles.length; x++)
+		{
+			for(int y = 0; y < tiles.length; y++)
+			{
+				if (tiles[y][x].x < xCoord && xCoord <= tiles[y][x].x + tileSize)
+				{
+					if (tiles[y][x].y < yCoord && yCoord <= tiles[y][x].y + tileSize)
+					{
+						return tiles[y][x];
+					}
+				}
+			}
+		}
+		return null;
+	}
+	public boolean isCreatureAt(double xCoor, double yCoor)
+	{
+		boolean isCreature = false;
+		int xCoord = (int) xCoor;
+		int yCoord = (int) yCoor;
+		for(int i = 0; i < creatures.size(); i++)
+		{
+			if (Math.hypot(xCoord - creatures.get(i).locationX, yCoord - creatures.get(i).locationY) < creatures.get(i).diameter/2)
+			{
+				isCreature = true;
+			}
+		}
+		return isCreature;
+	}
+	
+	public double requestEat(int yIndex, int xIndex, double amount)
+	{
+		if(tiles[yIndex][xIndex].food < amount) return 0;
+		tiles[yIndex][xIndex].food -= amount;
+		return amount;
 	}
 	
 	public int p2pl(double frac)
