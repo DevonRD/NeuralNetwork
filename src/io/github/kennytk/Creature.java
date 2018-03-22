@@ -1,4 +1,4 @@
-package Essentials;
+package io.github.kennytk;
 
 import java.util.ArrayList;
 

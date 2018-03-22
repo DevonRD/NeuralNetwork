@@ -1,4 +1,4 @@
-package Essentials;
+package io.github.kennytk;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -59,7 +59,7 @@ public class Run extends PApplet
 	{
 		JFrame frame = new JFrame("Input Dialog");
 		selectedMap = (String) JOptionPane.showInputDialog(frame, "Select a map to use.", "Map Selector", JOptionPane.QUESTION_MESSAGE, null, mapOptions, mapOptions[0]);
-		PApplet.main("Essentials.Run");
+		PApplet.main("io.github.kennytk.Run");
 	}
 	public void settings() // w 2600 h 1600  8/13 RATIO IS BEST!!! actually it doesnt matter really
 	{
