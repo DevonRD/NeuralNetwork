@@ -2,8 +2,12 @@ package io.github.kennytk;
 
 import java.util.ArrayList;
 
+import processing.core.PApplet;
+
 public class Creature
 {
+	private PApplet p;
+	
 	double locationX;
 	double locationY;
 	double size;
@@ -38,14 +42,16 @@ public class Creature
 	double[] hidLayer1;
 	double[] hidLayer2;
 	double[] outputNeurons;
+	
 	Axon[][] inputToLayer1Axons;
 	Axon[][] layer1ToLayer2Axons;
 	Axon[][] layer2ToOutputAxons;
 	// 30 degrees both ways   pi/6
 		
-	public Creature(int startX, int startY, int ID, int generation, double mutateFactor) // no specified size
+	public Creature(PApplet p, int startX, int startY, int ID, int generation, double mutateFactor) // no specified size
 	{
-		size = 150 + (Math.random() - .5) * 50;
+		this.p = p;
+		size = 150 + p.random(-25,25);
 		locationX = startX;
 		locationY = startY;
 		diameter = size/10.0;

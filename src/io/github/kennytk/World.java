@@ -1,8 +1,8 @@
 package io.github.kennytk;
 
-import processing.core.PApplet;
-
 import java.util.ArrayList;
+
+import processing.core.PApplet;
 
 public class World
 {
@@ -14,7 +14,6 @@ public class World
 	int creatureCount;
 	int startNumCreatures;
 	int realWidth, realHeight;
-	@SuppressWarnings("unused")
 	private PApplet p;
 	boolean[][] water;
 	double mutateFactor;
@@ -59,18 +58,18 @@ public class World
 		for(int i = 0; i < startNumCreatures; i++)
 		{
 			creatureCount++;
-			creatures.add(new Creature(p2pw(50) + (int)(Math.random() * 4 * p2pw(1500)), p2pw(50) + (int)(Math.random() * 4 * p2pw(1500)), creatureCount, 0, mutateFactor));
+			creatures.add(new Creature(p, p2pw(50) + (int)(Math.random() * 4 * p2pw(1500)), p2pw(50) + (int)(Math.random() * 4 * p2pw(1500)), creatureCount, 0, mutateFactor));
 		}
 	}
 	public void addCreature()
 	{
 		creatureCount++;
-		creatures.add(new Creature(p2pw(50) + (int)(Math.random() * p2pw(1500)), p2pw(50) + (int)(Math.random() * p2pw(1500)), creatureCount, 0, mutateFactor));
+		creatures.add(new Creature(p, p2pw(50) + (int)(Math.random() * p2pw(1500)), p2pw(50) + (int)(Math.random() * p2pw(1500)), creatureCount, 0, mutateFactor));
 	}
 	public void addCreature(int x, int y)
 	{
 		creatureCount++;
-		creatures.add(new Creature(x, y, creatureCount, 0, mutateFactor));
+		creatures.add(new Creature(p, x, y, creatureCount, 0, mutateFactor));
 	}
 	public void updateTiles(double timeInterval)
 	{
@@ -210,7 +209,6 @@ public class World
 		returnPixels = frac / 1600.0 * realHeight;
 		return (int) returnPixels;
 	}
-	
 }
 
 

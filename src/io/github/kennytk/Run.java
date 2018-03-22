@@ -22,21 +22,21 @@ public class Run extends PApplet
 	double timeInterval;
 	Tile selectedTile;
 	Creature selectedCreature;
-	
-	ButtonBase start, killAll, spawn;
-	
+
+	ButtonToggle start;
+	ButtonClick killAll, spawn, kill, spawn20;
+
 	boolean spawnClicking;
-	ButtonBase spawn20;
-	ButtonBase kill;
-	boolean play; // pseudo stop boolean
-	int startNumCreatures;
-	int creatureDeaths;
 	ArrayList<Double> popHistory;
 	int maxObservedCreatures;
 	int timeSeconds;
+	
 	int realWidth, realHeight;
+	
 	boolean spawnMode;
+	
 	double scaleFactor;
+	
 	int translateX, translateY;
 	int delta;
 	int b4x, b4y;
@@ -67,10 +67,12 @@ public class Run extends PApplet
 	public void settings() // w 2600 h 1600 8/13 RATIO IS BEST!!! actually it doesnt matter really
 	{
 		realWidth = displayWidth - 136;
+		
 		realHeight = displayHeight - 224;
+		
 		size(realWidth, realHeight);
 		path = Path.GENERAL;
-		startNumCreatures = 100;
+		//startNumCreatures = 100;
 		timeInterval = 0.05;
 	}
 
@@ -78,33 +80,33 @@ public class Run extends PApplet
 	{
 		frameRate(60);
 		textSize(50);
+		
 		water = new boolean[100][100];
+		
 		try
 		{
-			System.out.println("in the trycatch for setupMap");
 			water = setupMap();
 		}
 		catch(IOException e)
 		{
-			System.out.println("error in attempt to setupMap");
 			e.printStackTrace();
 		}
-		world = new World(this, startNumCreatures, realWidth, realHeight, water, MUTATE_FACTOR);
+		world = new World(this, Statistics.startNumCreatures, realWidth, realHeight, water, MUTATE_FACTOR);
 		world.startTiles();
 		world.startCreatures();
 		selectedTile = null;
 		selectedCreature = null;
+
+		start = new ButtonToggle(this, p2pl(1620), p2pw(20), p2pl(100), p2pw(90), "PLAY", "PAUSE"); // +150 for next over
+		killAll = new ButtonClick(this, p2pl(1770), p2pw(20), p2pl(170), p2pw(90), "PLAY", "PAUSE");
+		spawn = new ButtonClick(this, p2pl(1960), p2pw(20), p2pl(160), p2pw(90), "PLAY", "PAUSE");
+		spawn20 = new ButtonClick(this, p2pl(2140), p2pw(20), p2pl(225), p2pw(90), "PLAY", "PAUSE");
+
+		start.activate();
 		
-		start = new ButtonBase(this, p2pl(1620), p2pw(20), p2pl(100), p2pw(90)); // +150 for next over
-		killAll = new ButtonBase(this, p2pl(1770), p2pw(20), p2pl(170), p2pw(90));
-		spawn = new ButtonBase(this, p2pl(1960), p2pw(20), p2pl(160), p2pw(90));
-		spawn20 = new ButtonBase(this, p2pl(2140), p2pw(20), p2pl(225), p2pw(90));
-		
-		play = true;
-		creatureDeaths = 0;
 		popHistory = new ArrayList<Double>();
-		popHistory.add((double) startNumCreatures);
-		maxObservedCreatures = startNumCreatures;
+		popHistory.add((double) Statistics.startNumCreatures);
+		maxObservedCreatures = Statistics.startNumCreatures;
 		spawnClicking = false;
 		timeSeconds = 0;
 		spawnMode = false;
@@ -127,7 +129,8 @@ public class Run extends PApplet
 			b4x = mouseX;
 			b4y = mouseY;
 		}
-		if(play)
+		
+		if(start.getState())
 		{
 			rawTime++;
 			time += timeInterval;
@@ -141,7 +144,7 @@ public class Run extends PApplet
 				popHistory.add((double) (world.creatures.size()));
 			}
 		}
-		
+
 		pushMatrix();
 		translate(translateX, translateY);
 		scale((float) scaleFactor);
@@ -168,15 +171,15 @@ public class Run extends PApplet
 				drawButtons();
 				textSize(p2pl(40));
 				fill(255, 255, 255);
-				text("Starting Creatures: " + startNumCreatures, p2pl(1620), p2pw(350));
+				text("Starting Creatures: " + Statistics.startNumCreatures, p2pl(1620), p2pw(350));
 				text("Living Creatures: " + (world.creatures.size()), p2pl(1620), p2pw(400));
 				String sign;
-				if(startNumCreatures > world.creatures.size())
+				if(Statistics.startNumCreatures > world.creatures.size())
 					sign = "-";
 				else
 					sign = "+";
-				text("Total Change: " + sign + Math.abs(world.creatures.size() - startNumCreatures), p2pl(1620), p2pw(450));
-				text("Number of Deaths: " + creatureDeaths, p2pl(1620), p2pw(550));
+				text("Total Change: " + sign + Math.abs(world.creatures.size() - Statistics.startNumCreatures), p2pl(1620), p2pw(450));
+				text("Number of Deaths: " + Statistics.creatureDeaths, p2pl(1620), p2pw(550));
 				text("Total Existed Creatures: " + world.creatureCount, p2pl(1620), p2pw(600));
 				text("World Time: " + df.format(time), p2pl(1620), p2pw(700));
 				text("FPS: " + frameRate, p2pl(1620), p2pw(750));
@@ -254,28 +257,34 @@ public class Run extends PApplet
 	{
 		colorMode(RGB);
 		fill(170, 170, 170);
-		
-		rect(start.getX(), start.getY(), start.getWidth(), start.getHeight());
+
 		rect(killAll.getX(), killAll.getY(), killAll.getWidth(), killAll.getHeight());
 		rect(spawn.getX(), spawn.getY(), spawn.getWidth(), spawn.getHeight());
 		rect(spawn20.getX(), spawn20.getY(), spawn20.getWidth(), spawn20.getHeight());
 
 		textSize(p2pl(40));
+
+		start.draw();
 		
-		if(play)
-			fill(119, 255, 51);
-		else
-			fill(255, 51, 51);
-		if(play)
-			text("On", start.getX() + p2pl(20), start.getY() + p2pw(60)); // +150 for next over
-		else
-			text("Off", start.getX() + p2pl(20), start.getY() + p2pw(60));
+//		if(play)
+//			fill(119, 255, 51);
+//		else
+//			fill(255, 51, 51);
+//
+//		if(play)
+//			text("On", start.getX() + p2pl(20), start.getY() + p2pw(60)); // +150 for next over
+//		else
+//			text("Off", start.getX() + p2pl(20), start.getY() + p2pw(60));
+
 		fill(255, 255, 255);
+
 		text("Kill All", killAll.getX() + p2pl(20), killAll.getY() + p2pw(60));
+
 		if(spawnMode)
 			fill(119, 255, 51);
 		else
 			fill(255, 51, 51);
+
 		text("Spawn", spawn.getX() + p2pl(20), spawn.getY() + p2pw(60));
 		fill(255, 255, 255);
 		text("Spawn 20", spawn20.getX() + p2pl(20), spawn20.getY() + p2pw(60));
@@ -371,7 +380,7 @@ public class Run extends PApplet
 				if(world.creatures.get(i) == selectedCreature)
 					path = Path.GENERAL;
 				world.creatures.remove(i);
-				creatureDeaths++;
+				Statistics.creatureDeaths++;
 				return;
 			}
 			if(world.creatures.get(i).size < 100)
@@ -379,7 +388,7 @@ public class Run extends PApplet
 				if(world.creatures.get(i) == selectedCreature)
 					path = Path.GENERAL;
 				world.creatures.remove(i);
-				creatureDeaths++;
+				Statistics.creatureDeaths++;
 			}
 		}
 	}
@@ -463,18 +472,24 @@ public class Run extends PApplet
 
 	public void drawPopGraph()
 	{
+		pushStyle();
 		colorMode(RGB);
 		fill(255, 255, 255);
 		textSize(p2pl(30));
 		text("Relative population over time", p2pl(1650), p2pw(1310));
 		rect(p2pl(1650), p2pw(1340), p2pl(900), p2pw(220));
-		fill(0, 0, 255);
+		
+		fill(207, 0, 15);
+		stroke(207, 0, 15);
+		
 		int width = 900 / popHistory.size();
+		
 		for(int i = 0; i < popHistory.size(); i++)
 		{
 			double ratio = (popHistory.get(i) / maxObservedCreatures * 200);
 			ellipse(p2pl(1650 + (i) * width), p2pw(1350 + (200 - (int) ratio)), p2pw(5), p2pw(5));
 		}
+		popStyle();
 	}
 
 	public void keyPressed()
@@ -488,7 +503,7 @@ public class Run extends PApplet
 		}
 		else if(key == ' ')
 		{
-			play = !play;
+			start.toggle();
 		}
 		else if(key == 's')
 		{
@@ -526,7 +541,7 @@ public class Run extends PApplet
 		// test for button click
 		if(start.isClicked(mX, mY))
 		{
-			play = !play;
+			start.toggle();
 			return;
 		}
 

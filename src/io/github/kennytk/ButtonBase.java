@@ -20,13 +20,7 @@ public class ButtonBase
 		this.height = height;
 	}
 	
-	public void draw()
-	{
-		p.colorMode(p.RGB);
-		p.fill(170, 170, 170);
-		
-		p.rect(x, y, width, height);
-	}
+	//public abstract void draw();
 
 	public int getX()
 	{
