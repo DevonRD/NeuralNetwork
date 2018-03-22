@@ -17,12 +17,6 @@ local.properties
 # Locally stored "Eclipse launch configurations"
 *.launch
 
-# PyDev specific (Python IDE for Eclipse)
-*.pydevproject
-
-# CDT-specific (C/C++ Development Tooling)
-.cproject
-
 # CDT- autotools 
 .autotools
 
