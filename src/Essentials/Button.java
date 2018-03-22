@@ -1,7 +1,5 @@
 package Essentials;
 
-import Network.Network;
-
 public class Button
 {
 	int x;

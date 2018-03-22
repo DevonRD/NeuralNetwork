@@ -1,10 +1,16 @@
 package Essentials;
 
-import Network.Network;
-
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import processing.core.PApplet;
 import processing.event.MouseEvent;
 
@@ -13,6 +19,7 @@ public class Run extends PApplet
 	public World world;
 	int rawTime;
 	double time;
+	double timeInterval;
 	Tile selectedTile;
 	Creature selectedCreature;
 	Button start;
@@ -35,30 +42,50 @@ public class Run extends PApplet
 	int b4x, b4y;
 	int deltaX, deltaY;
 	DecimalFormat df;
+	BufferedImage map;
+	boolean[][] water;
+	static String[] mapOptions = {"map1", "Large_Island", "Three_Islands", "All_Land", "All_Water"};
+	static String fileExt = ".jpg";
+	static String selectedMap;
+	final double MUTATE_FACTOR = 0.05;
 	
 	enum Path
 	{
 		GENERAL, CREATURE, DATA, TILE;
 	}
 	Path path;
-	 
+	
 	public static void main(String[] args)
 	{
+		JFrame frame = new JFrame("Input Dialog");
+		selectedMap = (String) JOptionPane.showInputDialog(frame, "Select a map to use.", "Map Selector", JOptionPane.QUESTION_MESSAGE, null, mapOptions, mapOptions[0]);
 		PApplet.main("Essentials.Run");
 	}
-	public void settings() // w 2600 h 1600  8/13 RATIO IS BEST!!!
+	public void settings() // w 2600 h 1600  8/13 RATIO IS BEST!!! actually it doesnt matter really
 	{
 		realWidth = displayWidth - 136;
 		realHeight = displayHeight - 224;
 		size(realWidth, realHeight);
 		path = Path.GENERAL;
 		startNumCreatures = 100;
+		timeInterval = 0.05;
 	}
 	public void setup()
 	{
 		frameRate(60);
 		textSize(50);
-		world = new World(this, startNumCreatures, realWidth, realHeight);
+		water = new boolean[100][100];
+		try
+		{
+			System.out.println("in the trycatch for setupMap");
+			water = setupMap();
+		}
+		catch(IOException e)
+		{
+			System.out.println("error in attempt to setupMap");
+			e.printStackTrace();
+		}
+		world = new World(this, startNumCreatures, realWidth, realHeight, water, MUTATE_FACTOR);
 		world.startTiles();
 		world.startCreatures();
 		selectedTile = null;
@@ -94,6 +121,19 @@ public class Run extends PApplet
 			b4x = mouseX;
 			b4y = mouseY;
 		}
+		if(play)
+		{	
+			rawTime++;
+			time += timeInterval;
+			world.iterate(timeInterval); // tiles then creatures
+			checkForDeaths();
+			
+			if(world.creatures.size() > maxObservedCreatures) maxObservedCreatures = world.creatures.size();
+			if(rawTime % 30 == 0)
+			{
+				popHistory.add((double) (world.creatures.size()));
+			}
+		}
 		pushMatrix();
 		translate(translateX, translateY);
 		scale((float) scaleFactor);
@@ -110,28 +150,13 @@ public class Run extends PApplet
 		drawCreatures();
 		popMatrix();
 		
-		if(play)
-		{	
-			rawTime++;		
-			time = rawTime / 1000.0;
-			world.updateTiles();
-			world.updateCreatures();
-			if(world.creatures.size() > maxObservedCreatures) maxObservedCreatures = world.creatures.size();
-			checkForDeaths();
-			
-			if(rawTime % 30 == 0)
-			{
-				popHistory.add((double) (world.creatures.size()));
-			}
-		}
-		
 		
 		switch(path) // side bar path split
 		{
 			case GENERAL:
 			{
 				colorMode(RGB);
-				fill(60, 200);
+				fill(60, 120);
 				rect(p2pl(1600), 0, p2pl(1200), p2pw(2000));
 				drawButtons();
 				textSize(p2pl(40));
@@ -144,6 +169,9 @@ public class Run extends PApplet
 				text("Total Change: " + sign + Math.abs(world.creatures.size() - startNumCreatures), p2pl(1620), p2pw(450));
 				text("Number of Deaths: " + creatureDeaths, p2pl(1620), p2pw(550));
 				text("Total Existed Creatures: " + world.creatureCount, p2pl(1620), p2pw(600));
+				text("World Time: " + df.format(time), p2pl(1620), p2pw(700));
+				text("FPS: " + frameRate, p2pl(1620), p2pw(750));
+				text("Successful Births: " + world.births, p2pl(1620), p2pw(850));
 				
 				drawPopGraph();
 				
@@ -152,7 +180,7 @@ public class Run extends PApplet
 			case CREATURE:
 			{
 				colorMode(RGB);
-				fill(60, 200);
+				fill(60, 120);
 				rect(p2pl(1600), 0, p2pl(1200), p2pw(2000));
 				drawButtons();
 				fill(255, 255, 255);
@@ -162,9 +190,17 @@ public class Run extends PApplet
 				textSize(p2pl(30));
 				text("ID: " + selectedCreature.ID, p2pl(1620), p2pw(500));
 				text("Current Size: " + (int)selectedCreature.size, p2pl(1620), p2pw(530));
-				text("Total Eaten: " + selectedCreature.totalEaten, p2pl(1620), p2pw(560));
-				text("Total Decayed: " + selectedCreature.totalDecayed, p2pl(1620), p2pw(590));
-				
+				text("Total Eaten: " + df.format(selectedCreature.totalEaten), p2pl(1620), p2pw(560));
+				text("Total Decayed: " + df.format(selectedCreature.totalDecayed), p2pl(1620), p2pw(590));
+				text("Location: (" + df.format(selectedCreature.locationX) + ", " + df.format(selectedCreature.locationY) + " )", p2pl(1620), p2pw(620));
+				text("Left Sensor: (" + df.format(selectedCreature.leftSensorX) + ", " + df.format(selectedCreature.leftSensorY) + " )", p2pl(1620), p2pw(650));
+				text("Mid Sensor: (" + df.format(selectedCreature.midSensorX) + ", " + df.format(selectedCreature.midSensorY) + " )", p2pl(1620), p2pw(680));
+				text("Right Sensor: (" + df.format(selectedCreature.rightSensorX) + ", " + df.format(selectedCreature.rightSensorY) + " )", p2pl(1620), p2pw(710));
+				text("Mouth Sensor: (" + df.format(selectedCreature.mouthSensorX) + ", " + df.format(selectedCreature.mouthSensorY) + " )", p2pl(1620), p2pw(740));
+				text("Food Under Me: " + df.format(world.findTileAt(selectedCreature.mouthSensorX, selectedCreature.mouthSensorY, true).food), p2pl(1620), p2pw(770));
+				text("Heading: " + df.format((selectedCreature.rotation * 180 / Math.PI)), p2pl(1620), p2pw(800));
+				text("Generation: " + selectedCreature.generation, p2pl(1620), p2pw(830));
+				drawCreatureBrain(selectedCreature);
 				break;
 			}
 			case DATA:
@@ -174,7 +210,7 @@ public class Run extends PApplet
 			case TILE:
 			{
 				colorMode(RGB);
-				fill(60, 200);
+				fill(60, 120);
 				rect(p2pl(1600), 0, p2pl(1200), p2pw(2000));
 				colorMode(HSB);
 				fill(selectedTile.colorH, selectedTile.colorS, selectedTile.colorV);
@@ -186,10 +222,13 @@ public class Run extends PApplet
 				text("Selected Tile Data", p2pl(1620), p2pw(190));
 				textSize(p2pl(30));
 				text(" # " + selectedTile.tileNumber, p2pl(1620), p2pw(250));
-				text(" Food: " + selectedTile.food, p2pl(1620), p2pw(400));
+				text(" Food: " + df.format(selectedTile.food), p2pl(1620), p2pw(400));
 				text("Row and Column: (" + (selectedTile.xIndex+1) + ", " + (selectedTile.yIndex+1) + ")", p2pl(1830), p2pw(250));
 				text("Regeneration Value: " + Math.round( (selectedTile.regenValue * 1000) ) / 1000.0, p2pl(1830), p2pw(290));
 				text("HSV: " + selectedTile.colorH + ", " + selectedTile.colorS + ", " + selectedTile.colorV, p2pl(1830), p2pw(330));
+				text("x Range: " + selectedTile.x + " to " + (selectedTile.x + world.tileSize), p2pl(1830), p2pw(370));
+				text("y Range: " + selectedTile.y + " to " + (selectedTile.y + world.tileSize), p2pl(1830), p2pw(410));
+
 				
 				break;
 			}
@@ -249,11 +288,43 @@ public class Run extends PApplet
 	public void drawCreatures()
 	{
 		colorMode(RGB);
-		fill(255, 255, 255);
+		fill(255);
 		for(int i = 0; i < world.creatures.size(); i++)
 		{
-			ellipse(world.creatures.get(i).locationX, world.creatures.get(i).locationY, (int)world.creatures.get(i).diameter, (int)world.creatures.get(i).diameter);
+			stroke(0);
+			line((int)world.creatures.get(i).locationX, (int)world.creatures.get(i).locationY, (int)world.creatures.get(i).leftSensorX, (int)world.creatures.get(i).leftSensorY);
+			line((int)world.creatures.get(i).locationX, (int)world.creatures.get(i).locationY, (int)world.creatures.get(i).midSensorX, (int)world.creatures.get(i).midSensorY);
+			stroke(255);
+			line((int)world.creatures.get(i).locationX, (int)world.creatures.get(i).locationY, (int)world.creatures.get(i).rightSensorX, (int)world.creatures.get(i).rightSensorY);
+			stroke(0);
+			if(selectedCreature != null && world.creatures.get(i).ID == selectedCreature.ID) fill(240, 0, 255);
+			ellipse((int)world.creatures.get(i).locationX, (int)world.creatures.get(i).locationY, (int)world.creatures.get(i).diameter, (int)world.creatures.get(i).diameter);
+			fill(255);
+			ellipse((int)world.creatures.get(i).leftSensorX, (int)world.creatures.get(i).leftSensorY, 7, 7);
+			ellipse((int)world.creatures.get(i).rightSensorX, (int)world.creatures.get(i).rightSensorY, 7, 7);
+			ellipse((int)world.creatures.get(i).mouthSensorX, (int)world.creatures.get(i).mouthSensorY, 7, 7);
 		}
+	}
+	public void drawSingleCreature(Creature c) // not done yet
+	{
+		colorMode(RGB);
+		fill(255);
+		for(int i = 0; i < world.creatures.size(); i++)
+		{
+			stroke(0);
+			line((int)c.locationX, (int)c.locationY, (int)c.leftSensorX, (int)c.leftSensorY);
+			line((int)c.locationX, (int)c.locationY, (int)c.midSensorX, (int)c.midSensorY);
+			stroke(255);
+			line((int)c.locationX, (int)c.locationY, (int)c.rightSensorX, (int)c.rightSensorY);
+			stroke(0);
+			fill(240, 0, 255);
+			ellipse((int)c.locationX, (int)c.locationY, (int)c.diameter, (int)c.diameter);
+			fill(255);
+			ellipse((int)c.leftSensorX, (int)c.leftSensorY, 7, 7);
+			ellipse((int)c.rightSensorX, (int)c.rightSensorY, 7, 7);
+			ellipse((int)c.mouthSensorX, (int)c.mouthSensorY, 7, 7);
+		}
+		fill(255);
 	}
 	
 	public void tileSelected(int yIndex, int xIndex)
@@ -265,6 +336,13 @@ public class Run extends PApplet
 	{
 		for(int i = 0; i < world.creatures.size(); i++)
 		{
+			if(world.creatures.get(i).size < 30)
+			{
+				if(world.creatures.get(i) == selectedCreature) path = Path.GENERAL;
+				world.creatures.remove(i);
+				creatureDeaths++;
+				return;
+			}
 			if(world.creatures.get(i).size < 100)
 			{
 				if(world.creatures.get(i) == selectedCreature) path = Path.GENERAL;
@@ -280,6 +358,71 @@ public class Run extends PApplet
 		{
 			world.creatures.remove(0);
 		}
+	}
+	
+	public void drawCreatureBrain(Creature c) // top left = 1620, 800
+	{
+		int verticalSpacing = p2pw(70);
+		textSize(p2pw(50));
+		text("Input", p2pl(1620), p2pw(900));
+		text("Layer 1", p2pl(1900), p2pw(900));
+		text("Layer 2", p2pl(2120), p2pw(900));
+		text("Output", p2pl(2420), p2pw(900));
+		colorMode(RGB);
+		for(int i = 0; i < c.inputNeurons.length; i++)
+		{
+			fill(255);
+			textSize(p2pw(30));
+			//rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
+			text(df.format(c.inputNeurons[i]) + "", p2pl(1620), p2pw(950) + verticalSpacing * i);
+		}
+		for(int i = 0; i < c.hidLayer1.length; i++)
+		{
+			fill(255);
+			textSize(p2pw(30));
+			//rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
+			text(df.format(c.hidLayer1[i]) + "", p2pl(1900), p2pw(950) + p2pw(40) * i);
+		}
+		for(int i = 0; i < c.hidLayer2.length; i++)
+		{
+			fill(255);
+			textSize(p2pw(30));
+			//rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
+			text(df.format(c.hidLayer2[i]) + "", p2pl(2120), p2pw(950) + p2pw(40) * i);
+		}
+		for(int i = 0; i < c.outputNeurons.length; i++)
+		{
+			fill(255);
+			textSize(p2pw(30));
+			//rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
+			text(df.format(c.outputNeurons[i]) + "", p2pl(2420), p2pw(950) + verticalSpacing * i);
+		}
+		
+		for(int i = 0; i < c.inputNeurons.length; i++)
+		{
+			int color = 0;
+			for(int one = 0; one < c.hidLayer1.length; one++)
+			{
+				color = (int) (sigmoid(c.inputToLayer1Axons[i][one].weight + 1.0) * 255);
+				if(color < 0) color = 0;
+				if(color > 255) color = 255;
+				stroke(color);
+				line(p2pl(1700), p2pw(945) + verticalSpacing * i, p2pl(1890), p2pw(940) + p2pw(40) * one);
+			}
+		}
+		for(int i = 0; i < c.hidLayer2.length; i++)
+		{
+			int color = 0;
+			for(int o = 0; o < c.outputNeurons.length; o++)
+			{
+				color = (int) (sigmoid(c.layer2ToOutputAxons[i][o].weight + 1.0) * 255);
+				if(color < 0) color = 0;
+				if(color > 255) color = 255;
+				stroke(color);
+				line(p2pl(2200), p2pw(945) + p2pw(40) * i, p2pl(2410), p2pw(940) + verticalSpacing * o);
+			}
+		}
+		stroke(0);
 	}
 	
 	public void drawPopGraph()
@@ -304,12 +447,20 @@ public class Run extends PApplet
 		{
 			translateX = 0;
 			translateY = 0;
-			scaleFactor = 1;
+			scaleFactor = 0.25;
 			return;
 		}
 		else if(key == ' ')
 		{
 			play = !play;
+		}
+		else if(key == 's')
+		{
+			spawnMode = !spawnMode;
+		}
+		else if(key == 'k')
+		{
+			killAll();
 		}
 	}
 	
@@ -330,7 +481,6 @@ public class Run extends PApplet
 		if(mX <= p2pl(1600))
 		{
 			check = true;
-			System.out.println("inside the converter");
 			mX -= translateX;
 			mY -= translateY;
 			mX /= scaleFactor;
@@ -439,7 +589,6 @@ public class Run extends PApplet
 		if(scaleFactor != 0.2 && scaleFactor != 3.0)
 		{
 			
-			System.out.println(mouseX + " " + mouseY);
 			translateX += e.getAmount() * mouseX * 4 / 10;
 			translateY += e.getAmount() * mouseY * 4 / 10;
 		}
@@ -450,6 +599,30 @@ public class Run extends PApplet
 //			translateY += e.getAmount() * 400 * 4 / 10;
 //		}
 		
+	}
+	
+	public boolean[][] setupMap() throws IOException
+	{
+		boolean[][] results = new boolean[100][100];
+		map = ImageIO.read(Run.class.getResource(selectedMap + fileExt));
+		System.out.println("right before map setup in setupMap");
+		for(int row = 0; row < 100; row++)
+		{
+			for(int col = 0; col < 100; col++)
+			{
+				Color c = new Color(map.getRGB(col, row));
+				if(c.getGreen() > 50) results[col][row] = false;
+				else if(c.getBlue() > 50) results[col][row] = true;
+				else results[col][row] = false;
+			}
+		}
+		System.out.println("done setting up map");
+		return results;
+		
+	}
+	public double sigmoid(double x)
+	{
+		return (2.0 / (1 + Math.pow(Math.E, -(x / 1.5)))) - 1.0;
 	}
 }
 

@@ -1,7 +1,5 @@
 package Essentials;
 
-import Network.Network;
-
 public class Tile
 {
 	int x;
@@ -10,7 +8,7 @@ public class Tile
 	int yIndex;
 	int tileSize;
 	int maxFood;
-	int food;
+	double food;
 	int colorH;
 	int colorS;
 	int colorV;
@@ -30,21 +28,21 @@ public class Tile
 		else maxFood = 100;
 		if(!water) food = 50 + (int) (Math.random() * 50);
 		if(water) colorH = 155;
-		else colorH = food;
+		else colorH = (int) food;
 		colorS = 100;
 		colorV = 100;
 		if(water) regenValue = 0;
-		else regenValue = Math.random() * 0.05;
-		if (regenValue < 0.01 && !water) regenValue = 0.01;
+		else regenValue = Math.random() * 0.01;
+		if (regenValue < 0.001 && !water) regenValue = 0.001;
 		tileNumber = number;
 		
 	}
 	
-	public void testRegen()
+	public void regen()
 	{
 		if(water) return;
-		if(Math.random() < regenValue) food++;
-		if(food > 100) food = 100;
-		colorH = food;
+		food += regenValue;
+		if(food > maxFood) food = maxFood;
+		colorH = (int) food;
 	}
 }
