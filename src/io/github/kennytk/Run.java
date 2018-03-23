@@ -87,7 +87,7 @@ public class Run extends PApplet
 		{
 			e.printStackTrace();
 		}
-		world = new World(this, Statistics.startNumCreatures, Globals.realWidth, Globals.realHeight, water, MUTATE_FACTOR);
+		world = new World(this, Statistics.startNumCreatures, water, MUTATE_FACTOR);
 		world.startTiles();
 		world.startCreatures();
 		selectedTile = null;
@@ -133,11 +133,11 @@ public class Run extends PApplet
 			world.iterate(timeInterval); // tiles then creatures
 			checkForDeaths();
 
-			if(world.creatures.size() > Statistics.maxObservedCreatures)
-				Statistics.maxObservedCreatures = world.creatures.size();
+			if(world.getCreatureCount() > Statistics.maxObservedCreatures)
+				Statistics.maxObservedCreatures = world.getCreatureCount();
 			if(rawTime % 30 == 0)
 			{
-				Statistics.popHistory.add((double) (world.creatures.size()));
+				Statistics.popHistory.add((double) (world.getCreatureCount()));
 			}
 		}
 
@@ -209,28 +209,6 @@ public class Run extends PApplet
 				pushMenu();
 
 				drawButtons();
-
-				fill(255, 255, 255);
-				stroke(255, 255, 255);
-				textSize(Maths.scaleX(20));
-
-				text("Starting Creatures: " + Statistics.startNumCreatures, Maths.scaleX(45), Maths.scaleY(180)); // increments of 30 are good for menu text
-
-				text("Living Creatures: " + (world.creatures.size()), Maths.scaleX(45), Maths.scaleY(210));
-
-				String sign;
-
-				if(Statistics.startNumCreatures > world.creatures.size())
-					sign = "-";
-				else
-					sign = "+";
-
-				text("Total Change: " + sign + Math.abs(world.creatures.size() - Statistics.startNumCreatures), Maths.scaleX(45), Maths.scaleY(240));
-				text("Number of Deaths: " + Statistics.creatureDeaths, Maths.scaleX(45), Maths.scaleY(270));
-				text("Total Existed Creatures: " + world.creatureCount, Maths.scaleX(45), Maths.scaleY(300));
-				text("World Time: " + df.format(time), Maths.scaleX(45), Maths.scaleY(330));
-				text("FPS: " + frameRate, Maths.scaleX(45), Maths.scaleY(360));
-				text("Successful Births: " + world.births, Maths.scaleX(45), Maths.scaleY(390));
 
 				populationGraph.draw();
 				
@@ -417,7 +395,7 @@ public class Run extends PApplet
 	{
 		colorMode(RGB);
 		fill(255);
-		for(int i = 0; i < world.creatures.size(); i++)
+		for(int i = 0; i < world.getCreatureCount(); i++)
 		{
 			stroke(0);
 			line((int) c.locationX, (int) c.locationY, (int) c.leftSensorX, (int) c.leftSensorY);
@@ -442,7 +420,7 @@ public class Run extends PApplet
 
 	public void checkForDeaths()
 	{
-		for(int i = 0; i < world.creatures.size(); i++)
+		for(int i = 0; i < world.getCreatureCount(); i++)
 		{
 			if(world.creatures.get(i).size < 30)
 			{

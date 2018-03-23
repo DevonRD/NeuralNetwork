@@ -6,30 +6,30 @@ import processing.core.PApplet;
 
 public class World
 {
-	int tileResL;
-	int tileResW;
-	Tile[][] tiles;
-	int tileSize;
-	ArrayList<Creature> creatures;
-	int creatureCount;
-	int startNumCreatures;
-	int realWidth, realHeight;
 	private PApplet p;
-	boolean[][] water;
-	double mutateFactor;
-	int births = 0;
-	double timeCopy = 0;
 	
-	public World(PApplet p, int startNumCreatures, int width, int height, boolean[][] water, double mutateFactor)
+	private int tileResL;
+	private int tileResW;
+	private Tile[][] tiles;
+	private int tileSize;
+	
+	private ArrayList<Creature> creatures;
+	
+	private int creatureCount;
+	private int startNumCreatures;
+	private boolean[][] water;
+	private double mutateFactor;
+	
+	public World(PApplet p, int startNumCreatures, boolean[][] water, double mutateFactor)
 	{
-		this.mutateFactor = mutateFactor;
 		this.p = p;
-		realWidth = width;
-		realHeight = height;
+		
+		this.mutateFactor = mutateFactor;
+
 		tileResL = 100;
 		tileResW = 100;
 		tiles = new Tile[tileResW][tileResL];
-		tileSize = 4 * p2pw(1500) / tileResW;
+		tileSize = 4 * Maths.scaleX(1080) / tileResW;
 		creatures = new ArrayList<Creature>();
 		this.startNumCreatures = startNumCreatures;
 		this.water = water;
@@ -37,7 +37,6 @@ public class World
 	
 	public void iterate(double timeInterval)
 	{
-		timeCopy += timeInterval;
 		updateTiles(timeInterval);
 		updateCreatures(timeInterval);
 	}
@@ -49,7 +48,7 @@ public class World
 			for(int y = 0; y < tileResW; y++)
 			{
 				count++;
-				tiles[y][x] = new Tile(p2pw(50) + x * tileSize, p2pw(50) + y * tileSize, tileSize, count, x, y, water[x][y]);
+				tiles[y][x] = new Tile(Maths.scaleX(50) + x * tileSize, Maths.scaleX(50) + y * tileSize, tileSize, count, x, y, water[x][y]);
 			}
 		}
 	}
@@ -58,13 +57,13 @@ public class World
 		for(int i = 0; i < startNumCreatures; i++)
 		{
 			creatureCount++;
-			creatures.add(new Creature(p, p2pw(50) + (int)(Math.random() * 4 * p2pw(1500)), p2pw(50) + (int)(Math.random() * 4 * p2pw(1500)), creatureCount, 0, mutateFactor));
+			creatures.add(new Creature(p, Maths.scaleX(50) + (int)(Math.random() * 4 * Maths.scaleX(1500)), Maths.scaleX(50) + (int)(Math.random() * 4 * Maths.scaleX(1500)), creatureCount, 0, mutateFactor));
 		}
 	}
 	public void addCreature()
 	{
 		creatureCount++;
-		creatures.add(new Creature(p, p2pw(50) + (int)(Math.random() * p2pw(1500)), p2pw(50) + (int)(Math.random() * p2pw(1500)), creatureCount, 0, mutateFactor));
+		creatures.add(new Creature(p, Maths.scaleX(50) + (int)(Math.random() * Maths.scaleX(1500)), Maths.scaleX(50) + (int)(Math.random() * Maths.scaleX(1500)), creatureCount, 0, mutateFactor));
 	}
 	public void addCreature(int x, int y)
 	{
@@ -127,7 +126,7 @@ public class World
 				else
 				{
 //					System.out.println("birth successful at " + timeCopy);
-					births++;
+					//births++;
 					creatureCount++;
 					ArrayList<Axon[][]> creatureBrain = creatures.get(i).giveBirth();
 					creatures.add(new Creature((int)creatures.get(i).locationX, (int)creatures.get(i).locationY, creatureCount, 150, ( creatures.get(i).generation+1 ), mutateFactor, creatureBrain));
@@ -197,17 +196,10 @@ public class World
 		return amount;
 	}
 	
-	public int p2pl(double frac)
+	public int getCreatureCount()
 	{
-		double returnPixels = 0;
-		returnPixels = frac / 2600.0 * realWidth;
-		return (int) returnPixels;
-	}
-	public int p2pw(double frac)
-	{
-		double returnPixels = 0;
-		returnPixels = frac / 1600.0 * realHeight;
-		return (int) returnPixels;
+		return creatures.size();
+		
 	}
 }
 
