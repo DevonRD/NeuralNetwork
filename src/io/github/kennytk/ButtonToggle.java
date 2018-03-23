@@ -56,4 +56,32 @@ public class ButtonToggle extends ButtonBase implements IDrawable
 		else
 			activate();
 	}
+	
+	/*
+	 * 
+	 * 
+		// if(play)
+		// fill(119, 255, 51);
+		// else
+		// fill(255, 51, 51);
+		//
+		// if(play)
+		// text("On", start.getX() + p2pl(20), start.getY() + p2pw(60)); // +150 for next over
+		// else
+		// text("Off", start.getX() + p2pl(20), start.getY() + p2pw(60));
+
+		// fill(255, 255, 255);
+
+		// text("Kill All", killAll.getX() + p2pl(20), killAll.getY() + p2pw(60));
+
+		// if(spawnMode)
+		// fill(119, 255, 51);
+		// else
+		// fill(255, 51, 51);
+
+		// text("Spawn", spawn.getX() + p2pl(20), spawn.getY() + p2pw(60));
+		// fill(255, 255, 255);
+		// text("Spawn 20", spawn20.getX() + p2pl(20), spawn20.getY() + p2pw(60));
+	 * 
+	 */
 }
