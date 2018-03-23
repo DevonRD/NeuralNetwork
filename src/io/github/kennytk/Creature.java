@@ -8,108 +8,114 @@ public class Creature
 {
 	private PApplet p;
 
-	double locationX;
-	double locationY;
-	double size;
-	double diameter;
-	int ID;
-	double totalEaten;
-	double totalDecayed;
-	int fitness;
-	double birthDate;
-	double age;
-	double forwardVel;
-	double rotation;
-	double rotationVel;
-	int sensorLength;
-	int killerLength;
-	double[] defaultSensorValues;
-	final int numInputs = 8;
-	final double ANGLE_CONSTANT = Math.PI / 6.0;
-	double eatRate, decayRate, energyChange;
-	boolean attack;
-	int generation;
-	double mutateFactor;
-	int births = 0;
-	ArrayList<Axon[][]> brain = new ArrayList<Axon[][]>();
+	private double locationX;
+	private double locationY;
+	
+	private double size;
+	private double diameter;
+	
+	private int ID;
+	
+	private double totalEaten;
+	private double totalDecayed;
+	private int fitness;
+	
+	private double birthDate;
+	private double age;
+	
+	private double forwardVel;
+	private double rotation;
+	private double rotationVel;
+	
+	private int sensorLength;
+	private int killerLength;
+	
+	private double[] defaultSensorValues;
+	private final int numInputs = 8;
+	private final double ANGLE_CONSTANT = Math.PI / 6.0;
+	
+	private double eatRate, decayRate, energyChange;
+	private boolean attack;
+	
+	private int generation;
+	private double mutationFactor;
+	
+	private int births = 0;
+	private ArrayList<Axon[][]> brain = new ArrayList<Axon[][]>();
 
-	double leftSensorX, leftSensorY;
-	double midSensorX, midSensorY;
-	double rightSensorX, rightSensorY;
-	double mouthSensorX, mouthSensorY;
+	private double leftSensorX, leftSensorY;
+	private double midSensorX, midSensorY;
+	private double rightSensorX, rightSensorY;
+	private double mouthSensorX, mouthSensorY;
 
-	double[] inputNeurons;
-	double[] hidLayer1;
-	double[] hidLayer2;
-	double[] outputNeurons;
+	private double[] inputNeurons;
+	private double[] hidLayer1;
+	private double[] hidLayer2;
+	private double[] outputNeurons;
 
-	Axon[][] inputToLayer1Axons;
-	Axon[][] layer1ToLayer2Axons;
-	Axon[][] layer2ToOutputAxons;
+	private Axon[][] inputToLayer1Axons;
+	private Axon[][] layer1ToLayer2Axons;
+	private Axon[][] layer2ToOutputAxons;
 	// 30 degrees both ways pi/6
 
-	public Creature(PApplet p, int startX, int startY, int ID, int generation, double mutateFactor) // no specified size
+	public Creature(PApplet p, int x, int y, int ID, int generation, double mutationFactor) // no specified size
 	{
 		this.p = p;
+		
 		size = 150 + p.random(-25, 25);
-		locationX = startX;
-		locationY = startY;
+		
 		diameter = size / 10.0;
-		this.ID = ID;
-		totalEaten = 0;
-		totalDecayed = 0;
-		fitness = 0;
-		rotation = 0;
+		
 		sensorLength = (int) (60 + diameter);
 		killerLength = (int) (30 + diameter);
-		this.generation = generation;
-		this.mutateFactor = mutateFactor;
-		this.brain = null;
-		updateSensorCoords();
-		brainInit();
+		
+		commonConstructor(p, x, y, ID, generation, mutationFactor);
 	}
 
-	public Creature(int startX, int startY, int ID, int size, int generation, double mutateFactor) // specified size
+	public Creature(PApplet p, int x, int y, int ID, int size, int generation, double mutationFactor) // specified size
 	{
 		this.size = size;
-		locationX = startX;
-		locationY = startY;
+
 		diameter = size / 10.0;
-		this.ID = ID;
-		totalEaten = 0;
-		totalDecayed = 0;
-		fitness = 0;
-		rotation = 0;
+
 		sensorLength = (int) (60 + diameter);
 		killerLength = (int) (30 + diameter);
-		this.generation = generation;
-		this.mutateFactor = mutateFactor;
-		this.brain = null;
-		updateSensorCoords();
-		brainInit();
+		
+		commonConstructor(p, x, y, ID, generation, mutationFactor);
 	}
 
-	public Creature(int startX, int startY, int ID, int size, int generation, double mutateFactor, ArrayList<Axon[][]> brain) // specified size
+	public Creature(PApplet p, int x, int y, int ID, int size, int generation, double mutationFactor, ArrayList<Axon[][]> brain) // specified size
 	{
 		this.size = size;
-		locationX = startX;
-		locationY = startY;
 		diameter = size / 10.0;
-		this.ID = ID;
-		totalEaten = 0;
-		totalDecayed = 0;
-		fitness = 0;
-		rotation = 0;
+		
 		sensorLength = (int) (60 + diameter);
 		killerLength = (int) (30 + diameter);
-		this.generation = generation;
+		
 		this.brain = brain;
-		this.mutateFactor = mutateFactor;
+		
+		commonConstructor(p, x, y, ID, generation, mutationFactor);
+	}
+	
+	private void commonConstructor(PApplet p, int x, int y, int ID, int generation, double mutationFactor)
+	{
+		this.p = p;
+		
+		locationX = x;
+		locationY = y;
+		
+		this.ID = ID;
+		this.generation = generation;
+		this.mutationFactor = mutationFactor;
+		
+		totalEaten = 0;
+		totalDecayed = 0;
+		fitness = 0;
+		rotation = 0;
+		
 		updateSensorCoords();
 		brainInit();
 	}
-	
-	
 
 	public void updateSensorCoords()
 	{

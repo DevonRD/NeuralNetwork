@@ -16,11 +16,14 @@ import processing.event.MouseEvent;
 public class Run extends PApplet
 {
 	public World world;
+	public TileManager tileManager;
+	public CreatureManager creatureManager;
 	private PopulationGraph populationGraph;
 
 	int rawTime;
 	double time;
 	double timeInterval;
+	
 	Tile selectedTile;
 	Creature selectedCreature;
 
@@ -98,6 +101,10 @@ public class Run extends PApplet
 			e.printStackTrace();
 		}
 
+		tileManager = new TileManager(this, 100, 100);
+		
+		creatureManager = new CreatureManager(this);
+		
 		world = new World(this, Statistics.startNumCreatures, water, MUTATE_FACTOR);
 
 		world.startTiles();
@@ -144,11 +151,14 @@ public class Run extends PApplet
 		if(start.getState())
 		{
 			rawTime++;
+
 			time += timeInterval;
-			world.iterate(timeInterval); // tiles then creatures
+
+			iterate(timeInterval); // calculate maths for tiles then creatures
+
 			checkForDeaths();
 
-			if(world.getCreatureCount() > Statistics.maxObservedCreatures)
+			if(creatureManager.getCreatureCount() > Statistics.maxObservedCreatures)
 				Statistics.maxObservedCreatures = world.getCreatureCount();
 			if(rawTime % 30 == 0)
 			{
@@ -157,6 +167,8 @@ public class Run extends PApplet
 		}
 
 		pushMatrix();
+
+		// I think this is the zooming
 
 		translate(translateX, translateY);
 		scale((float) scaleFactor);
@@ -169,7 +181,8 @@ public class Run extends PApplet
 		// text("Code Iterations: " + rawTime, p2pl(650), p2pw(35));
 		// text("Framerate: " + (int)frameRate, p2pl(50), p2pw(35));
 		// text("Global Time: " + df.format(time), p2pl(300), p2pw(35));
-		drawTiles();
+
+		tileManager.draw();
 		drawCreatures();
 
 		popMatrix();
@@ -316,6 +329,12 @@ public class Run extends PApplet
 		// text("Spawn", spawn.getX() + p2pl(20), spawn.getY() + p2pw(60));
 		// fill(255, 255, 255);
 		// text("Spawn 20", spawn20.getX() + p2pl(20), spawn20.getY() + p2pw(60));
+	}
+
+	public void iterate(double timeInterval)
+	{
+		tileManager.updateTiles(timeInterval);
+		updateCreatures(timeInterval);
 	}
 
 	public void drawCreatures()
