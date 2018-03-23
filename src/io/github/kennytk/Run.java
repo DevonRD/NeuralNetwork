@@ -17,7 +17,7 @@ public class Run extends PApplet
 {
 	public World world;
 	private PopulationGraph populationGraph;
-	
+
 	int rawTime;
 	double time;
 	double timeInterval;
@@ -35,18 +35,28 @@ public class Run extends PApplet
 	double scaleFactor;
 
 	int translateX, translateY;
+
 	int delta;
+
 	int b4x, b4y;
+
 	int deltaX, deltaY;
+
 	DecimalFormat df;
+
 	BufferedImage map;
+
 	boolean[][] water;
+
 	static String[] mapOptions = { "map1", "Large_Island", "Three_Islands", "All_Land", "All_Water" };
+
 	static String fileExt = ".jpg";
+
 	static String selectedMap;
+
 	final double MUTATE_FACTOR = 0.05;
 
-	enum Path
+	private enum Path
 	{
 		GENERAL, CREATURE, DATA, TILE;
 	}
@@ -87,10 +97,15 @@ public class Run extends PApplet
 		{
 			e.printStackTrace();
 		}
+
 		world = new World(this, Statistics.startNumCreatures, water, MUTATE_FACTOR);
+
 		world.startTiles();
+
 		world.startCreatures();
+
 		selectedTile = null;
+
 		selectedCreature = null;
 
 		start = new ButtonToggle(this, Maths.scaleX(45), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "PLAY", "PAUSE"); // +150 for next over
@@ -114,7 +129,7 @@ public class Run extends PApplet
 		time = 0;
 		df = new DecimalFormat("##.##");
 		df.setRoundingMode(RoundingMode.DOWN);
-		
+
 		populationGraph = new PopulationGraph(this);
 	}
 
@@ -211,106 +226,58 @@ public class Run extends PApplet
 				drawButtons();
 
 				populationGraph.draw();
-				
+
 				popMenu();
 
 				break;
 			}
-			
+
 			case CREATURE:
 			{
-				pushStyle();
-				
-				colorMode(RGB);
-				
-				fill(60, 120);
-				
-				rect(Maths.scaleX(1600), 0, Maths.scaleX(1200), Maths.scaleY(2000));
+				pushMenu();
 
-				fill(255, 255, 255);
+				popMenu();
 
-				ellipse(Maths.scaleX(1700), Maths.scaleY(320), Maths.scaleY(150), Maths.scaleY(150)); // draw the creature
-				textSize(Maths.scaleX(70));
-
-				text("Selected Creature Data", Maths.scaleX(1620), Maths.scaleY(190));
-				textSize(Maths.scaleX(30));
-				text("ID: " + selectedCreature.ID, Maths.scaleX(1620), Maths.scaleY(500));
-				text("Current Size: " + (int) selectedCreature.size, Maths.scaleX(1620), Maths.scaleY(530));
-				text("Total Eaten: " + df.format(selectedCreature.totalEaten), Maths.scaleX(1620), Maths.scaleY(560));
-				text("Total Decayed: " + df.format(selectedCreature.totalDecayed), Maths.scaleX(1620), Maths.scaleY(590));
-				text("Location: (" + df.format(selectedCreature.locationX) + ", " + df.format(selectedCreature.locationY) + " )",
-						Maths.scaleX(1620), Maths.scaleY(620));
-				text("Left Sensor: (" + df.format(selectedCreature.leftSensorX) + ", " + df.format(selectedCreature.leftSensorY) + " )",
-						Maths.scaleX(1620), Maths.scaleY(650));
-				text("Mid Sensor: (" + df.format(selectedCreature.midSensorX) + ", " + df.format(selectedCreature.midSensorY) + " )",
-						Maths.scaleX(1620), Maths.scaleY(680));
-				text("Right Sensor: (" + df.format(selectedCreature.rightSensorX) + ", " + df.format(selectedCreature.rightSensorY) + " )",
-						Maths.scaleX(1620), Maths.scaleY(710));
-				text("Mouth Sensor: (" + df.format(selectedCreature.mouthSensorX) + ", " + df.format(selectedCreature.mouthSensorY) + " )",
-						Maths.scaleX(1620), Maths.scaleY(740));
-				text("Food Under Me: "
-						+ df.format(world.findTileAt(selectedCreature.mouthSensorX, selectedCreature.mouthSensorY, true).food),
-						Maths.scaleX(1620), Maths.scaleY(770));
-				text("Heading: " + df.format((selectedCreature.rotation * 180 / Math.PI)), Maths.scaleX(1620), Maths.scaleY(800));
-				text("Generation: " + selectedCreature.generation, Maths.scaleX(1620), Maths.scaleY(830));
-				drawCreatureBrain(selectedCreature);
-				
-				popStyle();
-				
 				break;
 			}
 			case DATA:
 			{
+				pushMenu();
+
+				popMenu();
+
 				break;
 			}
 			case TILE:
 			{
-				pushStyle();
-				
-				colorMode(HSB);
-				fill(selectedTile.colorH, selectedTile.colorS, selectedTile.colorV);
-				rect(Maths.scaleX(1620), Maths.scaleY(220), Maths.scaleX(200), Maths.scaleY(200)); // draw the tile
-				colorMode(RGB);
-				drawButtons();
-				fill(255, 255, 255);
-				textSize(Maths.scaleX(70));
-				text("Selected Tile Data", Maths.scaleX(1620), Maths.scaleY(190));
-				textSize(Maths.scaleX(30));
-				text(" # " + selectedTile.tileNumber, Maths.scaleX(1620), Maths.scaleY(250));
-				text(" Food: " + df.format(selectedTile.food), Maths.scaleX(1620), Maths.scaleY(400));
-				text("Row and Column: (" + (selectedTile.xIndex + 1) + ", " + (selectedTile.yIndex + 1) + ")", Maths.scaleX(1830), Maths.scaleY(250));
-				text("Regeneration Value: " + Math.round((selectedTile.regenValue * 1000)) / 1000.0, Maths.scaleX(1830), Maths.scaleY(290));
-				text("HSV: " + selectedTile.colorH + ", " + selectedTile.colorS + ", " + selectedTile.colorV, Maths.scaleX(1830), Maths.scaleY(330));
-				text("x Range: " + selectedTile.x + " to " + (selectedTile.x + world.tileSize), Maths.scaleX(1830), Maths.scaleY(370));
-				text("y Range: " + selectedTile.y + " to " + (selectedTile.y + world.tileSize), Maths.scaleX(1830), Maths.scaleY(410));
+				pushMenu();
 
-				popStyle();
-				
+				popMenu();
 				break;
 			}
 		}
 	}
-	
+
 	public void pushMenu()
 	{
 		pushStyle();
-		
+
 		colorMode(RGB);
 		fill(60, 120);
 		stroke(0);
 		strokeWeight(3);
-		
+
 		// x1, y1, x2, y2
 		rect(Maths.scaleX(Globals.menuBasePointX), 0, Maths.scaleX(1080), Maths.scaleY(1920));
-		
+
 		popStyle();
-		
+
 		pushMatrix();
 		pushStyle();
-		
+
 		translate(Maths.scaleX(1200), 0);
 	}
-	
+
 	public void popMenu()
 	{
 		popMatrix();
@@ -349,20 +316,6 @@ public class Run extends PApplet
 		// text("Spawn", spawn.getX() + p2pl(20), spawn.getY() + p2pw(60));
 		// fill(255, 255, 255);
 		// text("Spawn 20", spawn20.getX() + p2pl(20), spawn20.getY() + p2pw(60));
-	}
-
-	public void drawTiles()
-	{
-		for(int x = 0; x < world.tiles.length; x++)
-		{
-			for(int y = 0; y < world.tiles.length; y++)
-			{
-				colorMode(HSB);
-				fill(world.tiles[y][x].colorH, world.tiles[y][x].colorS, world.tiles[y][x].colorV);
-				rect(world.tiles[y][x].x, world.tiles[y][x].y, world.tileSize, world.tileSize);
-				fill(0, 0, 0);
-			}
-		}
 	}
 
 	public void drawCreatures()
@@ -497,7 +450,8 @@ public class Run extends PApplet
 				if(color > 255)
 					color = 255;
 				stroke(color);
-				line(Maths.scaleX(1700), Maths.scaleY(945) + verticalSpacing * i, Maths.scaleX(1890), Maths.scaleY(940) + Maths.scaleY(40) * one);
+				line(Maths.scaleX(1700), Maths.scaleY(945) + verticalSpacing * i, Maths.scaleX(1890),
+						Maths.scaleY(940) + Maths.scaleY(40) * one);
 			}
 		}
 		for(int i = 0; i < c.hidLayer2.length; i++)
@@ -511,7 +465,8 @@ public class Run extends PApplet
 				if(color > 255)
 					color = 255;
 				stroke(color);
-				line(Maths.scaleX(2200), Maths.scaleY(945) + Maths.scaleY(40) * i, Maths.scaleX(2410), Maths.scaleY(940) + verticalSpacing * o);
+				line(Maths.scaleX(2200), Maths.scaleY(945) + Maths.scaleY(40) * i, Maths.scaleX(2410),
+						Maths.scaleY(940) + verticalSpacing * o);
 			}
 		}
 		stroke(0);

@@ -7,6 +7,11 @@ public class Maths
 		return (2.0 / (1 + Math.pow(Math.E, -(x / 1.5)))) - 1.0;
 	}
 
+	public static double netSigmoid(double x)
+	{
+		return (2.0 / (1 + Math.pow(Math.E, -(x / 2.0)))) - 1.0;
+	}
+
 	public static int scaleX(double frac)
 	{
 		double returnPixels = 0;

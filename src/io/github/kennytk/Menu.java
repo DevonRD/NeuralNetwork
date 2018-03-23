@@ -10,7 +10,6 @@ public class Menu implements IDrawable
 	{
 		this.p = p;
 	}
-	
 
 	@Override
 	public void draw()
@@ -30,7 +29,8 @@ public class Menu implements IDrawable
 		else
 			sign = "+";
 
-		p.text("Total Change: " + sign + Math.abs(world.creatures.size() - Statistics.startNumCreatures), Maths.scaleX(45), Maths.scaleY(240));
+		p.text("Total Change: " + sign + Math.abs(world.creatures.size() - Statistics.startNumCreatures), Maths.scaleX(45),
+				Maths.scaleY(240));
 		p.text("Number of Deaths: " + Statistics.creatureDeaths, Maths.scaleX(45), Maths.scaleY(270));
 		p.text("Total Existed Creatures: " + world.creatureCount, Maths.scaleX(45), Maths.scaleY(300));
 		p.text("World Time: " + df.format(time), Maths.scaleX(45), Maths.scaleY(330));
