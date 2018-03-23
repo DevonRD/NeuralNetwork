@@ -5,7 +5,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -17,6 +16,8 @@ import processing.event.MouseEvent;
 public class Run extends PApplet
 {
 	public World world;
+	private PopulationGraph populationGraph;
+	
 	int rawTime;
 	double time;
 	double timeInterval;
@@ -27,16 +28,12 @@ public class Run extends PApplet
 	ButtonClick killAll, spawn, kill, spawn20;
 
 	boolean spawnClicking;
-	ArrayList<Double> popHistory;
-	int maxObservedCreatures;
 	int timeSeconds;
-	
-	int realWidth, realHeight;
-	
+
 	boolean spawnMode;
-	
+
 	double scaleFactor;
-	
+
 	int translateX, translateY;
 	int delta;
 	int b4x, b4y;
@@ -64,25 +61,24 @@ public class Run extends PApplet
 		PApplet.main("io.github.kennytk.Run");
 	}
 
-	public void settings() // w 2600 h 1600 8/13 RATIO IS BEST!!! actually it doesnt matter really
+	public void settings() // w 1920 h 1080
 	{
-		realWidth = displayWidth - 136;
-		
-		realHeight = displayHeight - 224;
-		
-		size(realWidth, realHeight);
+		Globals.realWidth = displayWidth - 136;
+
+		Globals.realHeight = displayHeight - 224;
+
+		size(Globals.realWidth, Globals.realHeight);
 		path = Path.GENERAL;
-		//startNumCreatures = 100;
-		timeInterval = 0.05;
+		// startNumCreatures = 100;
+		timeInterval = 0.10;
 	}
 
 	public void setup()
 	{
 		frameRate(60);
-		textSize(50);
-		
+
 		water = new boolean[100][100];
-		
+
 		try
 		{
 			water = setupMap();
@@ -91,22 +87,20 @@ public class Run extends PApplet
 		{
 			e.printStackTrace();
 		}
-		world = new World(this, Statistics.startNumCreatures, realWidth, realHeight, water, MUTATE_FACTOR);
+		world = new World(this, Statistics.startNumCreatures, Globals.realWidth, Globals.realHeight, water, MUTATE_FACTOR);
 		world.startTiles();
 		world.startCreatures();
 		selectedTile = null;
 		selectedCreature = null;
 
-		start = new ButtonToggle(this, p2pl(1620), p2pw(20), p2pl(100), p2pw(90), "PLAY", "PAUSE"); // +150 for next over
-		killAll = new ButtonClick(this, p2pl(1770), p2pw(20), p2pl(170), p2pw(90), "PLAY", "PAUSE");
-		spawn = new ButtonClick(this, p2pl(1960), p2pw(20), p2pl(160), p2pw(90), "PLAY", "PAUSE");
-		spawn20 = new ButtonClick(this, p2pl(2140), p2pw(20), p2pl(225), p2pw(90), "PLAY", "PAUSE");
+		start = new ButtonToggle(this, Maths.scaleX(45), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "PLAY", "PAUSE"); // +150 for next over
+		kill = new ButtonClick(this, Maths.scaleX(175), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "KILL");
+		killAll = new ButtonClick(this, Maths.scaleX(305), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "KILL ALL");
+		spawn = new ButtonClick(this, Maths.scaleX(435), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "SPAWN");
+		spawn20 = new ButtonClick(this, Maths.scaleX(565), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "SPAWN 20");
 
 		start.activate();
-		
-		popHistory = new ArrayList<Double>();
-		popHistory.add((double) Statistics.startNumCreatures);
-		maxObservedCreatures = Statistics.startNumCreatures;
+
 		spawnClicking = false;
 		timeSeconds = 0;
 		spawnMode = false;
@@ -120,6 +114,8 @@ public class Run extends PApplet
 		time = 0;
 		df = new DecimalFormat("##.##");
 		df.setRoundingMode(RoundingMode.DOWN);
+		
+		populationGraph = new PopulationGraph(this);
 	}
 
 	public void draw()
@@ -129,7 +125,7 @@ public class Run extends PApplet
 			b4x = mouseX;
 			b4y = mouseY;
 		}
-		
+
 		if(start.getState())
 		{
 			rawTime++;
@@ -137,89 +133,152 @@ public class Run extends PApplet
 			world.iterate(timeInterval); // tiles then creatures
 			checkForDeaths();
 
-			if(world.creatures.size() > maxObservedCreatures)
-				maxObservedCreatures = world.creatures.size();
+			if(world.creatures.size() > Statistics.maxObservedCreatures)
+				Statistics.maxObservedCreatures = world.creatures.size();
 			if(rawTime % 30 == 0)
 			{
-				popHistory.add((double) (world.creatures.size()));
+				Statistics.popHistory.add((double) (world.creatures.size()));
 			}
 		}
 
 		pushMatrix();
+
 		translate(translateX, translateY);
 		scale((float) scaleFactor);
 		colorMode(RGB);
 		background(100);
 		fill(60);
-		rect(p2pl(8), 0, p2pl(6), p2pw(10));
+		rect(Maths.scaleX(8), 0, Maths.scaleX(6), Maths.scaleY(10));
 		fill(255, 255, 255);
-		textSize(p2pl(30));
+		textSize(Maths.scaleX(30));
 		// text("Code Iterations: " + rawTime, p2pl(650), p2pw(35));
 		// text("Framerate: " + (int)frameRate, p2pl(50), p2pw(35));
 		// text("Global Time: " + df.format(time), p2pl(300), p2pw(35));
 		drawTiles();
 		drawCreatures();
+
 		popMatrix();
+
+		/*
+		 * good increments
+		 * 
+		 * //////// screen X: 1920
+		 * 
+		 * 120 = 1920 * 1/16
+		 * 240 = 1920 * 1/8
+		 * 480 = 1920 * 1/4
+		 * 960 = 1920 * 1/2
+		 * 
+		 * 1200 = 1920 * 5/8
+		 * 
+		 * //////// screen Y: 1080
+		 * 
+		 * 135 = 1080 * 1/8
+		 * 270 = 1080 * 1/4
+		 * 540 = 1080 * 1/2
+		 * 
+		 * 45 = 1080 * 1/24
+		 * 90 = 1080 * 1/12
+		 * 180 = 1080 * 1/6
+		 * 360 = 1080 * 1/3
+		 * 
+		 * 810 = 1080 * 3/4
+		 * 
+		 * //////// menu X: 720
+		 * 
+		 * 45 = 720 * 1/16
+		 * 90 = 720 * 1/8
+		 * 180 = 720 * 1/4
+		 * 360 = 720 * 1/2
+		 * 
+		 * 30 = 720 * 1/24
+		 * 60 = 720 * 1/12
+		 * 120 = 720 * 1/6
+		 * 240 = 720 * 1/3
+		 * 
+		 * 540 = 720 * 3/4
+		 * 
+		 * //////// menu Y: 1080 (same as screen)
+		 * 
+		 */
 
 		switch(path) // side bar path split
 		{
 			case GENERAL:
 			{
-				colorMode(RGB);
-				fill(60, 120);
-				rect(p2pl(1600), 0, p2pl(1200), p2pw(2000));
+				pushMenu();
+
 				drawButtons();
-				textSize(p2pl(40));
+
 				fill(255, 255, 255);
-				text("Starting Creatures: " + Statistics.startNumCreatures, p2pl(1620), p2pw(350));
-				text("Living Creatures: " + (world.creatures.size()), p2pl(1620), p2pw(400));
+				stroke(255, 255, 255);
+				textSize(Maths.scaleX(20));
+
+				text("Starting Creatures: " + Statistics.startNumCreatures, Maths.scaleX(45), Maths.scaleY(180)); // increments of 30 are good for menu text
+
+				text("Living Creatures: " + (world.creatures.size()), Maths.scaleX(45), Maths.scaleY(210));
+
 				String sign;
+
 				if(Statistics.startNumCreatures > world.creatures.size())
 					sign = "-";
 				else
 					sign = "+";
-				text("Total Change: " + sign + Math.abs(world.creatures.size() - Statistics.startNumCreatures), p2pl(1620), p2pw(450));
-				text("Number of Deaths: " + Statistics.creatureDeaths, p2pl(1620), p2pw(550));
-				text("Total Existed Creatures: " + world.creatureCount, p2pl(1620), p2pw(600));
-				text("World Time: " + df.format(time), p2pl(1620), p2pw(700));
-				text("FPS: " + frameRate, p2pl(1620), p2pw(750));
-				text("Successful Births: " + world.births, p2pl(1620), p2pw(850));
 
-				drawPopGraph();
+				text("Total Change: " + sign + Math.abs(world.creatures.size() - Statistics.startNumCreatures), Maths.scaleX(45), Maths.scaleY(240));
+				text("Number of Deaths: " + Statistics.creatureDeaths, Maths.scaleX(45), Maths.scaleY(270));
+				text("Total Existed Creatures: " + world.creatureCount, Maths.scaleX(45), Maths.scaleY(300));
+				text("World Time: " + df.format(time), Maths.scaleX(45), Maths.scaleY(330));
+				text("FPS: " + frameRate, Maths.scaleX(45), Maths.scaleY(360));
+				text("Successful Births: " + world.births, Maths.scaleX(45), Maths.scaleY(390));
+
+				populationGraph.draw();
+				
+				popMenu();
 
 				break;
 			}
+			
 			case CREATURE:
 			{
+				pushStyle();
+				
 				colorMode(RGB);
+				
 				fill(60, 120);
-				rect(p2pl(1600), 0, p2pl(1200), p2pw(2000));
-				drawButtons();
+				
+				rect(Maths.scaleX(1600), 0, Maths.scaleX(1200), Maths.scaleY(2000));
+
 				fill(255, 255, 255);
-				ellipse(p2pl(1700), p2pw(320), p2pw(150), p2pw(150)); // draw the creature
-				textSize(p2pl(70));
-				text("Selected Creature Data", p2pl(1620), p2pw(190));
-				textSize(p2pl(30));
-				text("ID: " + selectedCreature.ID, p2pl(1620), p2pw(500));
-				text("Current Size: " + (int) selectedCreature.size, p2pl(1620), p2pw(530));
-				text("Total Eaten: " + df.format(selectedCreature.totalEaten), p2pl(1620), p2pw(560));
-				text("Total Decayed: " + df.format(selectedCreature.totalDecayed), p2pl(1620), p2pw(590));
+
+				ellipse(Maths.scaleX(1700), Maths.scaleY(320), Maths.scaleY(150), Maths.scaleY(150)); // draw the creature
+				textSize(Maths.scaleX(70));
+
+				text("Selected Creature Data", Maths.scaleX(1620), Maths.scaleY(190));
+				textSize(Maths.scaleX(30));
+				text("ID: " + selectedCreature.ID, Maths.scaleX(1620), Maths.scaleY(500));
+				text("Current Size: " + (int) selectedCreature.size, Maths.scaleX(1620), Maths.scaleY(530));
+				text("Total Eaten: " + df.format(selectedCreature.totalEaten), Maths.scaleX(1620), Maths.scaleY(560));
+				text("Total Decayed: " + df.format(selectedCreature.totalDecayed), Maths.scaleX(1620), Maths.scaleY(590));
 				text("Location: (" + df.format(selectedCreature.locationX) + ", " + df.format(selectedCreature.locationY) + " )",
-						p2pl(1620), p2pw(620));
+						Maths.scaleX(1620), Maths.scaleY(620));
 				text("Left Sensor: (" + df.format(selectedCreature.leftSensorX) + ", " + df.format(selectedCreature.leftSensorY) + " )",
-						p2pl(1620), p2pw(650));
+						Maths.scaleX(1620), Maths.scaleY(650));
 				text("Mid Sensor: (" + df.format(selectedCreature.midSensorX) + ", " + df.format(selectedCreature.midSensorY) + " )",
-						p2pl(1620), p2pw(680));
+						Maths.scaleX(1620), Maths.scaleY(680));
 				text("Right Sensor: (" + df.format(selectedCreature.rightSensorX) + ", " + df.format(selectedCreature.rightSensorY) + " )",
-						p2pl(1620), p2pw(710));
+						Maths.scaleX(1620), Maths.scaleY(710));
 				text("Mouth Sensor: (" + df.format(selectedCreature.mouthSensorX) + ", " + df.format(selectedCreature.mouthSensorY) + " )",
-						p2pl(1620), p2pw(740));
+						Maths.scaleX(1620), Maths.scaleY(740));
 				text("Food Under Me: "
-						+ df.format(world.findTileAt(selectedCreature.mouthSensorX, selectedCreature.mouthSensorY, true).food), p2pl(1620),
-						p2pw(770));
-				text("Heading: " + df.format((selectedCreature.rotation * 180 / Math.PI)), p2pl(1620), p2pw(800));
-				text("Generation: " + selectedCreature.generation, p2pl(1620), p2pw(830));
+						+ df.format(world.findTileAt(selectedCreature.mouthSensorX, selectedCreature.mouthSensorY, true).food),
+						Maths.scaleX(1620), Maths.scaleY(770));
+				text("Heading: " + df.format((selectedCreature.rotation * 180 / Math.PI)), Maths.scaleX(1620), Maths.scaleY(800));
+				text("Generation: " + selectedCreature.generation, Maths.scaleX(1620), Maths.scaleY(830));
 				drawCreatureBrain(selectedCreature);
+				
+				popStyle();
+				
 				break;
 			}
 			case DATA:
@@ -228,80 +287,90 @@ public class Run extends PApplet
 			}
 			case TILE:
 			{
-				colorMode(RGB);
-				fill(60, 120);
-				rect(p2pl(1600), 0, p2pl(1200), p2pw(2000));
+				pushStyle();
+				
 				colorMode(HSB);
 				fill(selectedTile.colorH, selectedTile.colorS, selectedTile.colorV);
-				rect(p2pl(1620), p2pw(220), p2pl(200), p2pw(200)); // draw the tile
+				rect(Maths.scaleX(1620), Maths.scaleY(220), Maths.scaleX(200), Maths.scaleY(200)); // draw the tile
 				colorMode(RGB);
 				drawButtons();
 				fill(255, 255, 255);
-				textSize(p2pl(70));
-				text("Selected Tile Data", p2pl(1620), p2pw(190));
-				textSize(p2pl(30));
-				text(" # " + selectedTile.tileNumber, p2pl(1620), p2pw(250));
-				text(" Food: " + df.format(selectedTile.food), p2pl(1620), p2pw(400));
-				text("Row and Column: (" + (selectedTile.xIndex + 1) + ", " + (selectedTile.yIndex + 1) + ")", p2pl(1830), p2pw(250));
-				text("Regeneration Value: " + Math.round((selectedTile.regenValue * 1000)) / 1000.0, p2pl(1830), p2pw(290));
-				text("HSV: " + selectedTile.colorH + ", " + selectedTile.colorS + ", " + selectedTile.colorV, p2pl(1830), p2pw(330));
-				text("x Range: " + selectedTile.x + " to " + (selectedTile.x + world.tileSize), p2pl(1830), p2pw(370));
-				text("y Range: " + selectedTile.y + " to " + (selectedTile.y + world.tileSize), p2pl(1830), p2pw(410));
+				textSize(Maths.scaleX(70));
+				text("Selected Tile Data", Maths.scaleX(1620), Maths.scaleY(190));
+				textSize(Maths.scaleX(30));
+				text(" # " + selectedTile.tileNumber, Maths.scaleX(1620), Maths.scaleY(250));
+				text(" Food: " + df.format(selectedTile.food), Maths.scaleX(1620), Maths.scaleY(400));
+				text("Row and Column: (" + (selectedTile.xIndex + 1) + ", " + (selectedTile.yIndex + 1) + ")", Maths.scaleX(1830), Maths.scaleY(250));
+				text("Regeneration Value: " + Math.round((selectedTile.regenValue * 1000)) / 1000.0, Maths.scaleX(1830), Maths.scaleY(290));
+				text("HSV: " + selectedTile.colorH + ", " + selectedTile.colorS + ", " + selectedTile.colorV, Maths.scaleX(1830), Maths.scaleY(330));
+				text("x Range: " + selectedTile.x + " to " + (selectedTile.x + world.tileSize), Maths.scaleX(1830), Maths.scaleY(370));
+				text("y Range: " + selectedTile.y + " to " + (selectedTile.y + world.tileSize), Maths.scaleX(1830), Maths.scaleY(410));
 
+				popStyle();
+				
 				break;
 			}
 		}
 	}
+	
+	public void pushMenu()
+	{
+		pushStyle();
+		
+		colorMode(RGB);
+		fill(60, 120);
+		stroke(0);
+		strokeWeight(3);
+		
+		// x1, y1, x2, y2
+		rect(Maths.scaleX(Globals.menuBasePointX), 0, Maths.scaleX(1080), Maths.scaleY(1920));
+		
+		popStyle();
+		
+		pushMatrix();
+		pushStyle();
+		
+		translate(Maths.scaleX(1200), 0);
+	}
+	
+	public void popMenu()
+	{
+		popMatrix();
+		popStyle();
+	}
 
 	public void drawButtons()
 	{
-		colorMode(RGB);
-		fill(170, 170, 170);
-
-		rect(killAll.getX(), killAll.getY(), killAll.getWidth(), killAll.getHeight());
-		rect(spawn.getX(), spawn.getY(), spawn.getWidth(), spawn.getHeight());
-		rect(spawn20.getX(), spawn20.getY(), spawn20.getWidth(), spawn20.getHeight());
-
-		textSize(p2pl(40));
+		// textSize(p2pl(40));
 
 		start.draw();
-		
-//		if(play)
-//			fill(119, 255, 51);
-//		else
-//			fill(255, 51, 51);
-//
-//		if(play)
-//			text("On", start.getX() + p2pl(20), start.getY() + p2pw(60)); // +150 for next over
-//		else
-//			text("Off", start.getX() + p2pl(20), start.getY() + p2pw(60));
+		killAll.draw();
+		kill.draw();
+		spawn.draw();
+		spawn20.draw();
 
-		fill(255, 255, 255);
+		// if(play)
+		// fill(119, 255, 51);
+		// else
+		// fill(255, 51, 51);
+		//
+		// if(play)
+		// text("On", start.getX() + p2pl(20), start.getY() + p2pw(60)); // +150 for next over
+		// else
+		// text("Off", start.getX() + p2pl(20), start.getY() + p2pw(60));
 
-		text("Kill All", killAll.getX() + p2pl(20), killAll.getY() + p2pw(60));
+		// fill(255, 255, 255);
 
-		if(spawnMode)
-			fill(119, 255, 51);
-		else
-			fill(255, 51, 51);
+		// text("Kill All", killAll.getX() + p2pl(20), killAll.getY() + p2pw(60));
 
-		text("Spawn", spawn.getX() + p2pl(20), spawn.getY() + p2pw(60));
-		fill(255, 255, 255);
-		text("Spawn 20", spawn20.getX() + p2pl(20), spawn20.getY() + p2pw(60));
-	}
+		// if(spawnMode)
+		// fill(119, 255, 51);
+		// else
+		// fill(255, 51, 51);
 
-	public int p2pl(double frac)
-	{
-		double returnPixels = 0;
-		returnPixels = frac / 2600.0 * realWidth;
-		return (int) returnPixels;
-	}
-
-	public int p2pw(double frac)
-	{
-		double returnPixels = 0;
-		returnPixels = frac / 1600.0 * realHeight;
-		return (int) returnPixels;
+		// text("Spawn", spawn.getX() + p2pl(20), spawn.getY() + p2pw(60));
+		// fill(255, 255, 255);
+		// text("Spawn 20", spawn20.getX() + p2pl(20), spawn20.getY() + p2pw(60));
 	}
 
 	public void drawTiles()
@@ -403,40 +472,40 @@ public class Run extends PApplet
 
 	public void drawCreatureBrain(Creature c) // top left = 1620, 800
 	{
-		int verticalSpacing = p2pw(70);
-		textSize(p2pw(50));
-		text("Input", p2pl(1620), p2pw(900));
-		text("Layer 1", p2pl(1900), p2pw(900));
-		text("Layer 2", p2pl(2120), p2pw(900));
-		text("Output", p2pl(2420), p2pw(900));
+		int verticalSpacing = Maths.scaleY(70);
+		textSize(Maths.scaleY(50));
+		text("Input", Maths.scaleX(1620), Maths.scaleY(900));
+		text("Layer 1", Maths.scaleX(1900), Maths.scaleY(900));
+		text("Layer 2", Maths.scaleX(2120), Maths.scaleY(900));
+		text("Output", Maths.scaleX(2420), Maths.scaleY(900));
 		colorMode(RGB);
 		for(int i = 0; i < c.inputNeurons.length; i++)
 		{
 			fill(255);
-			textSize(p2pw(30));
+			textSize(Maths.scaleY(30));
 			// rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
-			text(df.format(c.inputNeurons[i]) + "", p2pl(1620), p2pw(950) + verticalSpacing * i);
+			text(df.format(c.inputNeurons[i]) + "", Maths.scaleX(1620), Maths.scaleY(950) + verticalSpacing * i);
 		}
 		for(int i = 0; i < c.hidLayer1.length; i++)
 		{
 			fill(255);
-			textSize(p2pw(30));
+			textSize(Maths.scaleY(30));
 			// rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
-			text(df.format(c.hidLayer1[i]) + "", p2pl(1900), p2pw(950) + p2pw(40) * i);
+			text(df.format(c.hidLayer1[i]) + "", Maths.scaleX(1900), Maths.scaleY(950) + Maths.scaleY(40) * i);
 		}
 		for(int i = 0; i < c.hidLayer2.length; i++)
 		{
 			fill(255);
-			textSize(p2pw(30));
+			textSize(Maths.scaleY(30));
 			// rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
-			text(df.format(c.hidLayer2[i]) + "", p2pl(2120), p2pw(950) + p2pw(40) * i);
+			text(df.format(c.hidLayer2[i]) + "", Maths.scaleX(2120), Maths.scaleY(950) + Maths.scaleY(40) * i);
 		}
 		for(int i = 0; i < c.outputNeurons.length; i++)
 		{
 			fill(255);
-			textSize(p2pw(30));
+			textSize(Maths.scaleY(30));
 			// rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
-			text(df.format(c.outputNeurons[i]) + "", p2pl(2420), p2pw(950) + verticalSpacing * i);
+			text(df.format(c.outputNeurons[i]) + "", Maths.scaleX(2420), Maths.scaleY(950) + verticalSpacing * i);
 		}
 
 		for(int i = 0; i < c.inputNeurons.length; i++)
@@ -444,13 +513,13 @@ public class Run extends PApplet
 			int color = 0;
 			for(int one = 0; one < c.hidLayer1.length; one++)
 			{
-				color = (int) (sigmoid(c.inputToLayer1Axons[i][one].weight + 1.0) * 255);
+				color = (int) (Maths.sigmoid(c.inputToLayer1Axons[i][one].weight + 1.0) * 255);
 				if(color < 0)
 					color = 0;
 				if(color > 255)
 					color = 255;
 				stroke(color);
-				line(p2pl(1700), p2pw(945) + verticalSpacing * i, p2pl(1890), p2pw(940) + p2pw(40) * one);
+				line(Maths.scaleX(1700), Maths.scaleY(945) + verticalSpacing * i, Maths.scaleX(1890), Maths.scaleY(940) + Maths.scaleY(40) * one);
 			}
 		}
 		for(int i = 0; i < c.hidLayer2.length; i++)
@@ -458,38 +527,16 @@ public class Run extends PApplet
 			int color = 0;
 			for(int o = 0; o < c.outputNeurons.length; o++)
 			{
-				color = (int) (sigmoid(c.layer2ToOutputAxons[i][o].weight + 1.0) * 255);
+				color = (int) (Maths.sigmoid(c.layer2ToOutputAxons[i][o].weight + 1.0) * 255);
 				if(color < 0)
 					color = 0;
 				if(color > 255)
 					color = 255;
 				stroke(color);
-				line(p2pl(2200), p2pw(945) + p2pw(40) * i, p2pl(2410), p2pw(940) + verticalSpacing * o);
+				line(Maths.scaleX(2200), Maths.scaleY(945) + Maths.scaleY(40) * i, Maths.scaleX(2410), Maths.scaleY(940) + verticalSpacing * o);
 			}
 		}
 		stroke(0);
-	}
-
-	public void drawPopGraph()
-	{
-		pushStyle();
-		colorMode(RGB);
-		fill(255, 255, 255);
-		textSize(p2pl(30));
-		text("Relative population over time", p2pl(1650), p2pw(1310));
-		rect(p2pl(1650), p2pw(1340), p2pl(900), p2pw(220));
-		
-		fill(207, 0, 15);
-		stroke(207, 0, 15);
-		
-		int width = 900 / popHistory.size();
-		
-		for(int i = 0; i < popHistory.size(); i++)
-		{
-			double ratio = (popHistory.get(i) / maxObservedCreatures * 200);
-			ellipse(p2pl(1650 + (i) * width), p2pw(1350 + (200 - (int) ratio)), p2pw(5), p2pw(5));
-		}
-		popStyle();
 	}
 
 	public void keyPressed()
@@ -529,7 +576,7 @@ public class Run extends PApplet
 		int mY = mouseY;
 		boolean check = false;
 
-		if(mX <= p2pl(1600))
+		if(mX <= Maths.scaleX(1200))
 		{
 			check = true;
 			mX -= translateX;
@@ -649,7 +696,6 @@ public class Run extends PApplet
 	{
 		boolean[][] results = new boolean[100][100];
 		map = ImageIO.read(Run.class.getResource(selectedMap + fileExt));
-		System.out.println("right before map setup in setupMap");
 		for(int row = 0; row < 100; row++)
 		{
 			for(int col = 0; col < 100; col++)
@@ -663,13 +709,6 @@ public class Run extends PApplet
 					results[col][row] = false;
 			}
 		}
-		System.out.println("done setting up map");
 		return results;
-
-	}
-
-	public double sigmoid(double x)
-	{
-		return (2.0 / (1 + Math.pow(Math.E, -(x / 1.5)))) - 1.0;
 	}
 }

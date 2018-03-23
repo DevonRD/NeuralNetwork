@@ -2,6 +2,8 @@ package io.github.kennytk;
 
 public class Tile
 {
+	//TODO: add dormant boolean
+	
 	int x;
 	int y;
 	int xIndex;

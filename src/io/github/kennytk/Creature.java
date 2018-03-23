@@ -300,7 +300,7 @@ public class Creature
 		locationX += (deltaPos * Math.cos(tempAngle));
 		locationY += (deltaPos * Math.sin(tempAngle));
 		
-		decayRate = (size / 300.0) + (fitness / 100.0) + (eatRate / 5.0);
+		decayRate = (size / 100.0) + (fitness / 100.0) + (eatRate / 5.0);
 		size -= (decayRate * timeInterval);
 		energyChange = eatRate - decayRate;
 		totalDecayed += decayRate * timeInterval;

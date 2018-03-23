@@ -11,6 +11,8 @@ public class ButtonBase
 	private int width;
 	private int height;
 	
+	private boolean isActive;
+	
 	public ButtonBase(PApplet p, int x, int y, int width, int height)
 	{
 		this.p = p;
@@ -19,8 +21,6 @@ public class ButtonBase
 		this.width = width;
 		this.height = height;
 	}
-	
-	//public abstract void draw();
 
 	public int getX()
 	{
@@ -62,10 +62,26 @@ public class ButtonBase
 		this.height = height;
 	}
 	
+	public void activate()
+	{
+		isActive = true;
+	}
+	
+	public void deactivate()
+	{
+		isActive = false;
+	}
+
+	public boolean getState()
+	{
+		return isActive;
+	}
+	
 	public boolean isClicked(int mX, int mY)
 	{
+		//remember we translate
 		
-		if(x < mX && mX <= x + width) // start button
+		if(Maths.scaleX(Globals.menuBasePointX) + x < mX && mX <= Maths.scaleX(Globals.menuBasePointX) + x + width) // start button
 		{
 			if(y < mY && mY <= y + height)
 			{
