@@ -3,6 +3,7 @@ package io.github.kennytk;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import io.github.kennytk.Globals.MenuMode;
 import processing.core.PApplet;
@@ -13,7 +14,6 @@ public class CreatureManager implements IDrawable
 	private PApplet p;
 
 	private static ArrayList<Creature> creatures = new ArrayList<Creature>();
-	private Iterator<Creature> creatureIterator = creatures.iterator();
 
 	private Creature selectedCreature = null;
 
@@ -105,6 +105,21 @@ public class CreatureManager implements IDrawable
 		}
 	}
 
+	public boolean click(double mX, double mY)
+	{
+		for(Creature creature : creatures)
+		{
+			if(Math.hypot(mX - creature.getX(), mY - creature.getY()) < creature.getDiameter() / 2)
+			{
+				selectedCreature = creature;
+				Globals.menuMode = MenuMode.CREATURE;
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 	public static void addCreature(Creature creature)
 	{
 		Statistics.creatureCount++;
@@ -139,40 +154,37 @@ public class CreatureManager implements IDrawable
 		return isCreature;
 	}
 
+	private ArrayList<Creature> toKill = new ArrayList<>();
+
 	public void killAll()
 	{
-		for(Creature creature : creatures)
-		{
-			creatures.remove(creature);
-		}
+		Menu.setMenuMode(MenuMode.MAIN);
+
+		toKill.addAll(creatures);
+		Statistics.creatureDeaths += creatures.size();
+
+		creatures.removeAll(toKill);
+		toKill.clear();
 	}
 
 	public void checkForDeaths()
 	{
 		for(Creature creature : creatures)
 		{
-			if()
-			{
-
-			}
-		}
-
-		while(creatureIterator.hasNext())
-		{
-			Creature creature = creatureIterator.next();
 
 			if(creature.getSize() < 100)
 			{
-
 				if(creature == selectedCreature)
 				{
 					Menu.setMenuMode(MenuMode.MAIN);
 				}
-				creatureIterator.remove();
+
+				toKill.add(creature);
 				Statistics.creatureDeaths++;
 			}
 		}
-
+		creatures.removeAll(toKill);
+		toKill.clear();
 	}
 
 	// TODO: fix this its mega bad and breaks
@@ -182,6 +194,8 @@ public class CreatureManager implements IDrawable
 		return Statistics.creatureCount;
 	}
 
+	// method is currently broken do not use
+	@SuppressWarnings("unused")
 	private Point2D getTilePoint(double xP, double yP)
 	{
 		xP = (int) xP;

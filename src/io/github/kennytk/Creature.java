@@ -180,7 +180,9 @@ public class Creature implements IDrawable
 			sensorInput[3] = 1.0;
 		else
 			sensorInput[3] = -1.0;
+		
 		sensorInput[4] = TileManager.getTileFromPixels(rightTile.getX(), rightTile.getY()).getFood() / 100.0;
+		
 		if(CreatureManager.isCreatureAt(rightSensorX, rightSensorY))
 			sensorInput[5] = 1.0;
 		else

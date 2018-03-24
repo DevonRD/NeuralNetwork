@@ -41,7 +41,7 @@ public class PopulationGraph implements IDrawable
 
 			p.ellipseMode(PConstants.CENTER);
 
-			p.ellipse(Maths.scaleX(50 + (i) * width), Maths.scaleY(815 + (210 - (int) ratio)), Maths.scaleY(5), Maths.scaleY(5));
+			p.ellipse(Maths.scaleX(50 + (i) * width), Maths.scaleY(815 + (202 - (int) ratio)), Maths.scaleY(5), Maths.scaleY(5));
 
 			p.ellipseMode(PConstants.CORNER);
 		}

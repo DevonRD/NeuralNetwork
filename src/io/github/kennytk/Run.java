@@ -25,16 +25,13 @@ public class Run extends PApplet
 	double time;
 	double timeInterval;
 
-	Tile selectedTile;
 	Creature selectedCreature;
 
 	ButtonToggle start;
-	ButtonClick killAll, spawn, kill, spawn20;
+	ButtonClick killAll, spawn, kill, spawnTwenty;
 
 	boolean spawnClicking;
 	int timeSeconds;
-
-	double scaleFactor;
 
 	int translateX, translateY;
 
@@ -50,8 +47,6 @@ public class Run extends PApplet
 
 	private static String selectedMap;
 
-	MenuMode menuMode;
-
 	public static void main(String[] args)
 	{
 
@@ -62,8 +57,8 @@ public class Run extends PApplet
 		// move this line and variables (or start screen equiv. to Map)
 		selectedMap = (String) JOptionPane.showInputDialog(frame, "Select a map to use.", "Map Selector", JOptionPane.QUESTION_MESSAGE,
 				null, mapOptions, mapOptions[0]);
-		
-		//get fileExt from file name when selection map to support .png and .jpg
+
+		// get fileExt from file name when selection map to support .png and .jpg
 
 		PApplet.main("io.github.kennytk.Run");
 	}
@@ -75,9 +70,9 @@ public class Run extends PApplet
 		Globals.realHeight = displayHeight - 224;
 
 		size(Globals.realWidth, Globals.realHeight);
-		
-		menuMode = MenuMode.MAIN;
-		
+
+		Globals.menuMode = MenuMode.MAIN;
+
 		// startNumCreatures = 100;
 		timeInterval = 0.10;
 	}
@@ -89,11 +84,11 @@ public class Run extends PApplet
 		map = new Map(selectedMap, fileExt);
 
 		tileManager = new TileManager(this, 100, 100);
-		
+
 		tileManager.setup();
 
 		creatureManager = new CreatureManager(this);
-		
+
 		creatureManager.setup();
 
 		// world = new World(this, Statistics.startNumCreatures, mapData, MUTATE_FACTOR);
@@ -109,13 +104,12 @@ public class Run extends PApplet
 		kill = new ButtonClick(this, Maths.scaleX(175), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "KILL");
 		killAll = new ButtonClick(this, Maths.scaleX(305), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "KILL ALL");
 		spawn = new ButtonClick(this, Maths.scaleX(435), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "SPAWN");
-		spawn20 = new ButtonClick(this, Maths.scaleX(565), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "SPAWN 20");
+		spawnTwenty = new ButtonClick(this, Maths.scaleX(565), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "SPAWN 20");
 
 		start.activate();
 
 		spawnClicking = false;
 		timeSeconds = 0;
-		scaleFactor = 0.25;
 		translateX = 0;
 		translateY = 0;
 		b4x = 0;
@@ -147,8 +141,7 @@ public class Run extends PApplet
 
 			if(creatureManager.getCreatureCount() > Statistics.maxObservedCreatures)
 				Statistics.maxObservedCreatures = Statistics.creatureCount;
-			
-			
+
 			if(rawTime % 20 == 0) // default 30
 			{
 				Statistics.popHistory.add((double) (Statistics.creatureCount));
@@ -159,10 +152,12 @@ public class Run extends PApplet
 
 		// I think this is the zooming
 
-		translate(translateX, translateY);
-		scale((float) scaleFactor);
+		background(200);
 
-		System.out.println("TILE MANAGER SHOUKLD DRAW -------------------------------------------");
+		translate(translateX, translateY);
+		
+		scale((float) Globals.scaleFactor);
+
 		tileManager.draw();
 		creatureManager.draw();
 
@@ -211,7 +206,7 @@ public class Run extends PApplet
 		 * 
 		 */
 
-		switch(menuMode) // side bar path split
+		switch(Globals.menuMode) // side bar path split
 		{
 			case MAIN:
 			{
@@ -288,7 +283,7 @@ public class Run extends PApplet
 		killAll.draw();
 		kill.draw();
 		spawn.draw();
-		spawn20.draw();
+		spawnTwenty.draw();
 	}
 
 	public void iterate(double timeInterval)
@@ -305,7 +300,7 @@ public class Run extends PApplet
 		{
 			translateX = 0;
 			translateY = 0;
-			scaleFactor = 0.25;
+			Globals.scaleFactor = 0.25;
 			return;
 		}
 		else if(key == ' ')
@@ -326,8 +321,9 @@ public class Run extends PApplet
 	{
 		deltaX = mouseX - b4x;
 		deltaY = mouseY - b4y;
-		translateX += deltaX / 1.4;
-		translateY += deltaY / 1.4;
+		
+		translateX += deltaX / Globals.dragRatio;
+		translateY += deltaY / Globals.dragRatio;
 	}
 
 	public void mouseClicked()
@@ -339,10 +335,12 @@ public class Run extends PApplet
 		if(mX <= Maths.scaleX(1200))
 		{
 			check = true;
+			
 			mX -= translateX;
 			mY -= translateY;
-			mX /= scaleFactor;
-			mY /= scaleFactor;
+			
+			//mX /= scaleFactor;
+			//mY /= scaleFactor;
 		}
 
 		// test for button click
@@ -365,7 +363,7 @@ public class Run extends PApplet
 
 		}
 
-		if(spawn20.isClicked(mX, mY))
+		if(spawnTwenty.isClicked(mX, mY))
 		{
 			for(int i = 0; i < 20; i++)
 			{
@@ -374,72 +372,51 @@ public class Run extends PApplet
 			return;
 		}
 
-		//fix and remove world
-		
-//		if(check)
-//		{
-//			// spawn mode?
-//			if(spawnMode && check)
-//			{
-//				if(spawn.getX() < mX && mX <= spawn.getX() + spawn.getWidth()) // start button
-//				{
-//					if(spawn.getY() < mY && mY <= spawn.getY() + spawn.getHeight())
-//					{
-//						// toggle spawn mode
-//					}
-//				}
-//				if(world.tiles[0][0].x <= mX && mX <= world.tiles[world.tileResW - 1][world.tileResL - 1].x + world.tileSize
-//						&& world.tiles[0][0].y <= mY && mY <= world.tiles[world.tileResW - 1][world.tileResL - 1].y + world.tileSize)
-//				{
-//					if(spawnMode)
-//						world.addCreature(mX, mY);
-//				}
-//				return;
-//			}
-//
-//			// test for creature click
-//			for(int i = 0; i < Statistics.creatureCount; i++)
-//			{
-//				if(Math.hypot(mX - world.creatures.get(i).locationX,
-//						mY - world.creatures.get(i).locationY) < world.creatures.get(i).diameter / 2)
-//				{
-//					selectedCreature = world.creatures.get(i);
-//					menuMode = MenuMode.CREATURE;
-//					return;
-//				}
-//			}
-//
-//			// test for tile click
-//			for(int x = 0; x < tileManager.getHorizontalNum(); x++)
-//			{
-//				for(int y = 0; y < tileManager.getVerticalNum(); y++)
-//				{
-//					if(world.tiles[y][x].x < mX && mX <= world.tiles[y][x].x + world.tileSize)
-//					{
-//						if(world.tiles[y][x].y < mY && mY <= world.tiles[y][x].y + world.tileSize)
-//						{
-//							selectedTile = world.tiles[y][x];
-//							menuMode = MenuMode.TILE;
-//							return;
-//						}
-//					}
-//				}
-//			}
-//		}
+		if(check)
+		{
+			// this is to spawn creatures via the spawnmode button, TODO: bake into button functionality
 
-		menuMode = MenuMode.MAIN;
+			// if(spawnMode && check)
+			// {
+			// if(spawn.getX() < mX && mX <= spawn.getX() + spawn.getWidth()) // start button
+			// {
+			// if(spawn.getY() < mY && mY <= spawn.getY() + spawn.getHeight())
+			// {
+			// // toggle spawn mode
+			// }
+			// }
+			// if(world.tiles[0][0].x <= mX && mX <= world.tiles[world.tileResW - 1][world.tileResL - 1].x + world.tileSize
+			// && world.tiles[0][0].y <= mY && mY <= world.tiles[world.tileResW - 1][world.tileResL - 1].y + world.tileSize)
+			// {
+			// if(spawnMode)
+			// world.addCreature(mX, mY);
+			// }
+			// return;
+			// }
+
+			if(creatureManager.click(mX, mY))
+				return;
+
+			// click tyle
+			// this will not work
+			if(tileManager.click(mX, mY))
+				return;
+
+		}
+
+		Globals.menuMode = MenuMode.MAIN;
 	}
 
 	@SuppressWarnings("deprecation")
 	public void mouseWheel(MouseEvent e)
 	{
 
-		scaleFactor -= e.getAmount() / 15.0;
-		if(scaleFactor < 0.2)
-			scaleFactor = 0.2;
-		if(scaleFactor > 3.0)
-			scaleFactor = 3.0;
-		if(scaleFactor != 0.2 && scaleFactor != 3.0)
+		Globals.scaleFactor -= e.getAmount() / 15.0;
+		if(Globals.scaleFactor < 0.2)
+			Globals.scaleFactor = 0.2;
+		if(Globals.scaleFactor > 3.0)
+			Globals.scaleFactor = 3.0;
+		if(Globals.scaleFactor != 0.2 && Globals.scaleFactor != 3.0)
 		{
 
 			translateX += e.getAmount() * mouseX * 4 / 10;

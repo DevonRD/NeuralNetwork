@@ -1,5 +1,6 @@
 package io.github.kennytk;
 
+import io.github.kennytk.Globals.MenuMode;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -42,6 +43,16 @@ public class TileManager implements IDrawable
 		}
 
 		System.out.println("tileManager setup complete " + Statistics.tileNum);
+	}
+
+	//TODO: fix the nullPointer in selectTile which crashes it all
+	public boolean click(int mX, int mY)
+	{
+		Globals.menuMode = MenuMode.TILE;
+		selectTile(mX, mY);
+		
+		//make a test case for whether to decide if a tile was found or not
+		return true;
 	}
 
 	public int tileIndexToPixelsX(int x)
@@ -119,9 +130,10 @@ public class TileManager implements IDrawable
 		}
 	}
 
-	public void selectTile(int xIndex, int yIndex)
+	public void selectTile(int xP, int yP)
 	{
-		selectedTile = tiles[xIndex][yIndex];
+		selectedTile = getTileFromPixels(xP, yP);
+		// tiles[xIndex][yIndex];
 	}
 
 	public static Tile getTileFromIndex(double xI, double yI)
@@ -148,7 +160,7 @@ public class TileManager implements IDrawable
 
 		System.out.println("ERROR - getTileFromPixels failed - xP: " + xP + " yP: " + yP);
 
-		return null;
+		return new Tile(new PApplet(), -100, -100, tileSize, -10, -10, -10); // return a dummy tile
 	}
 
 	public static double requestEat(int xI, int yI, double amount)
