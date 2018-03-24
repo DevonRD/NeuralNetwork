@@ -89,8 +89,12 @@ public class Run extends PApplet
 		map = new Map(selectedMap, fileExt);
 
 		tileManager = new TileManager(this, 100, 100);
+		
+		tileManager.setup();
 
 		creatureManager = new CreatureManager(this);
+		
+		creatureManager.setup();
 
 		// world = new World(this, Statistics.startNumCreatures, mapData, MUTATE_FACTOR);
 
@@ -143,6 +147,8 @@ public class Run extends PApplet
 
 			if(creatureManager.getCreatureCount() > Statistics.maxObservedCreatures)
 				Statistics.maxObservedCreatures = Statistics.creatureCount;
+			
+			
 			if(rawTime % 20 == 0) // default 30
 			{
 				Statistics.popHistory.add((double) (Statistics.creatureCount));
@@ -156,6 +162,7 @@ public class Run extends PApplet
 		translate(translateX, translateY);
 		scale((float) scaleFactor);
 
+		System.out.println("TILE MANAGER SHOUKLD DRAW -------------------------------------------");
 		tileManager.draw();
 		creatureManager.draw();
 
@@ -286,8 +293,10 @@ public class Run extends PApplet
 
 	public void iterate(double timeInterval)
 	{
+		System.out.println("run iterate start");
 		tileManager.update(timeInterval);
 		creatureManager.update(timeInterval);
+		System.out.println("run iterate end");
 	}
 
 	public void keyPressed()

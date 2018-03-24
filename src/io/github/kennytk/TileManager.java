@@ -1,7 +1,5 @@
 package io.github.kennytk;
 
-import java.awt.geom.Point2D;
-
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -23,11 +21,13 @@ public class TileManager implements IDrawable
 
 		TileManager.horizontalNum = horizontalNum;
 		TileManager.verticalNum = verticalNum;
-		
+
 		this.totalNum = horizontalNum * verticalNum;
 
 		tiles = new Tile[horizontalNum][verticalNum];
+
 		tileSize = 4 * Maths.scaleX(1080) / horizontalNum; // TODO: change
+		System.out.println(tileSize);
 	}
 
 	public void setup()
@@ -37,9 +37,21 @@ public class TileManager implements IDrawable
 			for(int y = 0; y < verticalNum; y++)
 			{
 				Statistics.tileNum++;
-				tiles[x][y] = new Tile(p, Maths.scaleX(50) + x * tileSize, Maths.scaleX(50) + y * tileSize, tileSize, Statistics.tileNum, x, y);
+				tiles[x][y] = new Tile(p, tileIndexToPixelsX(x), tileIndexToPixelsY(y), tileSize, Statistics.tileNum, x, y);
 			}
 		}
+
+		System.out.println("tileManager setup complete " + Statistics.tileNum);
+	}
+
+	public int tileIndexToPixelsX(int x)
+	{
+		return x * tileSize;
+	}
+
+	public int tileIndexToPixelsY(int y)
+	{
+		return y * tileSize;
 	}
 
 	public void draw()
@@ -49,8 +61,8 @@ public class TileManager implements IDrawable
 			for(int y = 0; y < verticalNum; y++)
 			{
 				p.colorMode(PConstants.HSB);
-				p.fill(tiles[y][x].getH(), tiles[y][x].getS(), tiles[y][x].getV());
-				p.rect(tiles[y][x].getX(), tiles[y][x].getY(), tileSize, tileSize);
+				p.fill(tiles[x][y].getH(), tiles[x][y].getS(), tiles[x][y].getV());
+				p.rect(tiles[x][y].getX(), tiles[x][y].getY(), tileSize, tileSize);
 				p.fill(0, 0, 0);
 			}
 		}
@@ -84,12 +96,14 @@ public class TileManager implements IDrawable
 				Maths.scaleY(250));
 
 		p.text("Regeneration Value: " + Math.round((selectedTile.getRegenValue() * 1000)) / 1000.0, Maths.scaleX(1830), Maths.scaleY(290));
-		
+
 		p.text("HSV: " + selectedTile.getH() + ", " + selectedTile.getS() + ", " + selectedTile.getV(), Maths.scaleX(1830),
 				Maths.scaleY(330));
-		
-		p.text("x Range: " + selectedTile.getX() + " to " + (selectedTile.getX()+ selectedTile.getTileSize()), Maths.scaleX(1830), Maths.scaleY(370));
-		p.text("y Range: " + selectedTile.getY() + " to " + (selectedTile.getY() + selectedTile.getTileSize()), Maths.scaleX(1830), Maths.scaleY(410));
+
+		p.text("x Range: " + selectedTile.getX() + " to " + (selectedTile.getX() + selectedTile.getTileSize()), Maths.scaleX(1830),
+				Maths.scaleY(370));
+		p.text("y Range: " + selectedTile.getY() + " to " + (selectedTile.getY() + selectedTile.getTileSize()), Maths.scaleX(1830),
+				Maths.scaleY(410));
 
 		p.popStyle();
 	}
@@ -100,79 +114,70 @@ public class TileManager implements IDrawable
 		{
 			for(int y = 0; y < verticalNum; y++)
 			{
-				tiles[y][x].regen();
+				tiles[x][y].regen();
 			}
 		}
 	}
 
-	public void selectTile(int yIndex, int xIndex)
+	public void selectTile(int xIndex, int yIndex)
 	{
-		selectedTile = tiles[yIndex][xIndex];
+		selectedTile = tiles[xIndex][yIndex];
 	}
 
-	public static Tile getTile(double xP, double yP)
+	public static Tile getTileFromIndex(double xI, double yI)
+	{
+		return tiles[(int) xI][(int) yI];
+	}
+
+	// takes in a xP and yP in pixels and checks it against tile locations to return a tile
+	public static Tile getTileFromPixels(double xP, double yP)
 	{
 		for(int x = 0; x < horizontalNum; x++)
 		{
 			for(int y = 0; y < verticalNum; y++)
 			{
-				if(tiles[y][x].getX() < xP && yP <= tiles[y][x].getY() + tileSize)
+				if(tiles[x][y].getX() <= xP && xP <= tiles[x][y].getX() + tileSize)
 				{
-					if(tiles[y][x].getY() < xP && yP <= tiles[y][x].getY() + tileSize)
+					if(tiles[x][y].getY() <= yP && yP <= tiles[x][y].getY() + tileSize)
 					{
-						return tiles[y][x];
+						return tiles[x][y];
 					}
 				}
 			}
 		}
+
+		System.out.println("ERROR - getTileFromPixels failed - xP: " + xP + " yP: " + yP);
+
 		return null;
 	}
 
-	public static Point2D getTilePoint(double xP, double yP)
+	public static double requestEat(int xI, int yI, double amount)
 	{
-		xP = (int) xP;
-		yP = (int) xP;
-		
-		Point2D point = null;
-		
-		for(int x = 0; x < tiles.length; x++)
-		{
-			for(int y = 0; y < tiles.length; y++)
-			{
-				//xP, yP and x,y might need to be switched inside if statements
-				if(tiles[x][y].getX() < xP && xP <= tiles[x][y].getX() + tileSize)
-				{
-					if(tiles[x][y].getY() < yP && yP <= tiles[x][y].getY() + tileSize)
-					{
-						point.setLocation(x,y);
-					}
-				}
-			}
-		}
-		return point;
-	}
-	
-	public double requestEat(int x, int y, double amount)
-	{
-		if(tiles[x][y].getFood() < amount)
+		System.out.println("request eat: " + xI + " y " + yI);
+		if(tiles[xI][yI].getFood() < amount)
 			return 0;
-		
-		tiles[x][y].setFood(tiles[x][y].getFood() - amount);
+
+		tiles[xI][yI].setFood(tiles[xI][yI].getFood() - amount);
 		return amount;
 	}
-	
-	public int getHorizontalNum()
+
+	public static int getHorizontalNum()
 	{
 		return horizontalNum;
 	}
-	
-	public int getVerticalNum()
+
+	public static int getVerticalNum()
 	{
 		return verticalNum;
 	}
-	
-	public int getTotalNum()
+
+	public static int getTotalNum()
 	{
 		return totalNum;
+	}
+
+	public static int getTileSize()
+	{
+		return tileSize;
 	}
 }

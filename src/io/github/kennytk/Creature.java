@@ -41,7 +41,8 @@ public class Creature implements IDrawable
 	private double mutationFactor;
 
 	private int births = 0;
-	private ArrayList<Axon[][]> brain = new ArrayList<Axon[][]>();
+
+	private ArrayList<Axon[][]> brain;
 
 	private double leftSensorX, leftSensorY;
 	private double midSensorX, midSensorY;
@@ -154,50 +155,51 @@ public class Creature implements IDrawable
 
 		updateSensorCoords();
 
-		leftTile = TileManager.getTilePoint(leftSensorX, leftSensorY);
-		midTile = TileManager.getTilePoint(midSensorX, midSensorY);
+		leftTile = getTilePoint(leftSensorX, leftSensorY);
 
-		rightTile = TileManager.getTilePoint(rightSensorX, rightSensorY);
-		mouthTile = TileManager.getTilePoint(mouthSensorX, mouthSensorY);
+		midTile = getTilePoint(midSensorX, midSensorY);
+
+		rightTile = getTilePoint(rightSensorX, rightSensorY);
+		mouthTile = getTilePoint(mouthSensorX, mouthSensorY);
 
 		// Left food, left creature, center food, center creature, right food, right creature,
 		// mouth food, energy change rate,
 
 		// all of these casted doubles should just be ints by default
 		// (inspect the methods internal cast)
-		sensorInput[0] = TileManager.getTile(leftTile.getX(), leftTile.getY()).getFood() / 100.0;
+
+		sensorInput[0] = TileManager.getTileFromPixels(leftTile.getX(), leftTile.getY()).getFood() / 100.0;
 
 		if(CreatureManager.isCreatureAt(leftSensorX, leftSensorY))
 			sensorInput[1] = 1.0;
 		else
 			sensorInput[1] = -1.0;
-		sensorInput[2] = TileManager.getTile(midTile.getX(), midTile.getY()).getFood() / 100.0;
+		sensorInput[2] = TileManager.getTileFromPixels(midTile.getX(), midTile.getY()).getFood() / 100.0;
 
 		if(CreatureManager.isCreatureAt(midSensorX, midSensorY))
 			sensorInput[3] = 1.0;
 		else
 			sensorInput[3] = -1.0;
-		sensorInput[4] = TileManager.getTile(rightTile.getX(), rightTile.getY()).getFood() / 100.0;
+		sensorInput[4] = TileManager.getTileFromPixels(rightTile.getX(), rightTile.getY()).getFood() / 100.0;
 		if(CreatureManager.isCreatureAt(rightSensorX, rightSensorY))
 			sensorInput[5] = 1.0;
 		else
 			sensorInput[5] = -1.0;
 
-		sensorInput[6] = TileManager.getTile(mouthTile.getX(), mouthTile.getY()).getFood() / 100.0;
+		sensorInput[6] = TileManager.getTileFromPixels(mouthTile.getX(), mouthTile.getY()).getFood() / 100.0;
 		sensorInput[7] = size / 300.0;
 
 		iterate(sensorInput, timeInterval);
-		
-		x = Math.min(x, tiles[tileResL - 1][tileResW - 1].x + tileSize);
-		y = Math.min(y, tiles[tileResL - 1][tileResW - 1].y + tileSize);
-		
-		x = Math.max(x, tiles[0][0].x);
-		y = Math.max(y, tiles[0][0].y);
+
 		double eatRequest = requestEat(timeInterval);
-		
-		int[] foodTile = getTile(mouthSensorX, mouthSensorY);
-		
-		allowEat(requestEat(foodTile[0], foodTile[1], eatRequest));
+
+		Tile foodTile = TileManager.getTileFromPixels(mouthSensorX, mouthSensorY);
+
+		System.out.println(" mouth X: " + mouthSensorX);
+		System.out.println(" mouth Y: " + mouthSensorY);
+
+		allowEat(TileManager.requestEat(foodTile.getXIndex(), foodTile.getYIndex(), eatRequest));
+
 		if(requestBirth())
 		{
 			// System.out.println(i + " request birth");
@@ -210,9 +212,9 @@ public class Creature implements IDrawable
 			{
 				// System.out.println("birth successful at " + timeCopy);
 				// births++;
-				Statistics.creatureCount++;
 				ArrayList<Axon[][]> creatureBrain = giveBirth();
-				creatures.add(new Creature(p, x, y, Statistics.creatureCount, (generation + 1)));
+				CreatureManager.addCreature(
+						new Creature(p, x, y, Statistics.creatureCount, 300, (generation + 1), Globals.mutationFactor, creatureBrain));
 			}
 		}
 	}
@@ -332,6 +334,14 @@ public class Creature implements IDrawable
 		updateBrain(sensorValues);
 		applyOutputs(timeInterval);
 		diameter = size / 10.0;
+
+		x = Math.min(x, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getX()
+				+ TileManager.getTileSize());
+		y = Math.min(y, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getY()
+				+ TileManager.getTileSize());
+
+		x = Math.max(x, TileManager.getTileFromPixels(0, 0).getX());
+		y = Math.max(y, TileManager.getTileFromPixels(0, 0).getY());
 	}
 
 	public void drawCreatureBrain() // top left = 1620, 800 //change values ugh
@@ -437,7 +447,8 @@ public class Creature implements IDrawable
 	public void applyOutputs(double timeInterval)
 	{
 		// Forward velocity, rotational velocity, eat, attack, give birth, attack length,
-		forwardVel = outputNeurons[0];
+		//forwardVel = 0 disables movement
+		forwardVel = 0;//outputNeurons[0];
 		rotationVel = outputNeurons[1];
 		eatRate = 6 * outputNeurons[2];
 		if(outputNeurons[3] > 0)
@@ -692,5 +703,34 @@ public class Creature implements IDrawable
 	public Axon[][] getLayer2ToOutputAxons()
 	{
 		return layer2ToOutputAxons;
+	}
+
+	// takes in an xP and yP in pixels and checks it against tile locations to return a tile index pair
+	private Point2D getTilePoint(double xP, double yP)
+	{
+		xP = (int) xP;
+		yP = (int) xP;
+
+		Point2D point;
+
+		for(int x = 0; x < TileManager.getHorizontalNum(); x++)
+		{
+			for(int y = 0; y < TileManager.getVerticalNum(); y++)
+			{
+				if(TileManager.getTileFromIndex(x, y).getX() < xP
+						&& xP <= TileManager.getTileFromIndex(x, y).getX() + TileManager.getTileSize())
+				{
+					if(TileManager.getTileFromIndex(x, y).getY() < yP
+							&& yP <= TileManager.getTileFromIndex(x, y).getY() + TileManager.getTileSize())
+					{
+						point = new Point2D.Double(x, y);
+						return point;
+					}
+				}
+			}
+		}
+
+		System.out.println("ERROR - COULD NOT FIND TILE POINT");
+		return null;
 	}
 }
