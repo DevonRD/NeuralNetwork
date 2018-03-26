@@ -16,6 +16,7 @@ public class Globals
 	}
 
 	public static MenuMode menuMode;
+	public static double menuTextSize = 30;
 
 	public static enum MenuMode
 	{

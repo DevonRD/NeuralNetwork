@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import io.github.kennytk.IDrawable;
 import io.github.kennytk.Menu;
 import io.github.kennytk.numbers.Globals;
+import io.github.kennytk.numbers.Globals.MenuMode;
 import io.github.kennytk.numbers.Maths;
 import io.github.kennytk.numbers.Statistics;
-import io.github.kennytk.numbers.Globals.MenuMode;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -48,55 +48,47 @@ public class CreatureManager implements IDrawable
 
 	public void menu()
 	{
-		p.pushStyle();
-
 		p.colorMode(PConstants.RGB);
-
-		p.fill(60, 120);
-
-		p.rect(Maths.scaleX(1600), 0, Maths.scaleX(1200), Maths.scaleY(2000));
 
 		p.fill(255, 255, 255);
 
-		p.ellipse(Maths.scaleX(1700), Maths.scaleY(320), Maths.scaleY(150), Maths.scaleY(150)); // draw the creature
+		p.ellipse(Maths.scaleX(45), Maths.scaleY(320), Maths.scaleY(150), Maths.scaleY(150)); // draw the creature
 		p.textSize(Maths.scaleX(70));
 
-		p.text("Selected Creature Data", Maths.scaleX(1620), Maths.scaleY(190));
+		p.text("Selected Creature Data", Maths.scaleX(45), Maths.scaleY(190));
 
-		p.textSize(Maths.scaleX(30));
-		p.text("ID: " + selectedCreature.getID(), Maths.scaleX(1620), Maths.scaleY(500));
+		p.textSize(Maths.scaleX(Globals.menuTextSize));
+		p.text("ID: " + selectedCreature.getID(), Maths.scaleX(45), Maths.scaleY(500));
 
-		p.text("Current Size: " + (int) selectedCreature.getSize(), Maths.scaleX(1620), Maths.scaleY(530));
+		p.text("Current Size: " + (int) selectedCreature.getSize(), Maths.scaleX(45), Maths.scaleY(530));
 
-		p.text("Total Eaten: " + Maths.decimalFormat(selectedCreature.getTotalEaten()), Maths.scaleX(1620), Maths.scaleY(560));
+		p.text("Total Eaten: " + Maths.decimalFormat(selectedCreature.getTotalEaten()), Maths.scaleX(45), Maths.scaleY(560));
 
-		p.text("Total Decayed: " + Maths.decimalFormat(selectedCreature.getTotalDecayed()), Maths.scaleX(1620), Maths.scaleY(590));
+		p.text("Total Decayed: " + Maths.decimalFormat(selectedCreature.getTotalDecayed()), Maths.scaleX(45), Maths.scaleY(590));
 
 		p.text("Location: (" + Maths.decimalFormat(selectedCreature.getX()) + ", " + Maths.decimalFormat(selectedCreature.getY()) + " )",
-				Maths.scaleX(1620), Maths.scaleY(620));
+				Maths.scaleX(45), Maths.scaleY(620));
 
 		p.text("Left Sensor: (" + Maths.decimalFormat(selectedCreature.getLeftSensorX()) + ", "
-				+ Maths.decimalFormat(selectedCreature.getLeftSensorY()) + " )", Maths.scaleX(1620), Maths.scaleY(650));
+				+ Maths.decimalFormat(selectedCreature.getLeftSensorY()) + " )", Maths.scaleX(45), Maths.scaleY(650));
 
 		p.text("Mid Sensor: (" + Maths.decimalFormat(selectedCreature.getMidSensorX()) + ", "
-				+ Maths.decimalFormat(selectedCreature.getMidSensorY()) + " )", Maths.scaleX(1620), Maths.scaleY(680));
+				+ Maths.decimalFormat(selectedCreature.getMidSensorY()) + " )", Maths.scaleX(45), Maths.scaleY(680));
 
 		p.text("Right Sensor: (" + Maths.decimalFormat(selectedCreature.getRightSensorX()) + ", "
-				+ Maths.decimalFormat(selectedCreature.getRightSensorY()) + " )", Maths.scaleX(1620), Maths.scaleY(710));
+				+ Maths.decimalFormat(selectedCreature.getRightSensorY()) + " )", Maths.scaleX(45), Maths.scaleY(710));
 
 		p.text("Mouth Sensor: (" + Maths.decimalFormat(selectedCreature.getMouthSensorX()) + ", "
-				+ Maths.decimalFormat(selectedCreature.getMouthSensorY()) + " )", Maths.scaleX(1620), Maths.scaleY(740));
+				+ Maths.decimalFormat(selectedCreature.getMouthSensorY()) + " )", Maths.scaleX(45), Maths.scaleY(740));
 
 		// needs different way to access TileManager to get findTileAt method
 		// p.text("Food Under Me: " + Maths.decimalFormat(world.findTileAt(selectedCreature.getMouthSensorX(), selectedCreature.getMouthSensorY(), true).food),
 		// Maths.scaleX(1620), Maths.scaleY(770));
 
-		p.text("Heading: " + Maths.decimalFormat((selectedCreature.getRotation() * 180 / Math.PI)), Maths.scaleX(1620), Maths.scaleY(800));
-		p.text("Generation: " + selectedCreature.getGeneration(), Maths.scaleX(1620), Maths.scaleY(830));
+		p.text("Heading: " + Maths.decimalFormat((selectedCreature.getRotation() * 180 / Math.PI)), Maths.scaleX(45), Maths.scaleY(800));
+		p.text("Generation: " + selectedCreature.getGeneration(), Maths.scaleX(45), Maths.scaleY(830));
 
 		selectedCreature.drawCreatureBrain();
-
-		p.popStyle();
 	}
 
 	public void update(double timeInterval)
@@ -111,7 +103,7 @@ public class CreatureManager implements IDrawable
 	{
 		for(Creature creature : creatures)
 		{
-			if(Math.hypot(mX - creature.getX(), mY - creature.getY()) < creature.getDiameter() / 2)
+			if(Math.hypot(mX - creature.getX(), mY - creature.getY()) < creature.getDiameter() * 5) // / 2 
 			{
 				selectedCreature = creature;
 				Globals.menuMode = MenuMode.CREATURE;

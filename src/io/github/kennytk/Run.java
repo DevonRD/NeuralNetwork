@@ -215,6 +215,8 @@ public class Run extends PApplet
 			case CREATURE:
 			{
 				pushMenu();
+				
+				creatureManager.menu();
 
 				popMenu();
 
@@ -318,17 +320,21 @@ public class Run extends PApplet
 	{
 		int mX = mouseX;
 		int mY = mouseY;
-		boolean check = false;
+		boolean isOutsideMenu = false;
 
 		if(mX <= Maths.scaleX(1200))
 		{
-			check = true;
+			isOutsideMenu = true;
 
 			mX -= translateX;
 			mY -= translateY;
 
 			// mX /= scaleFactor;
 			// mY /= scaleFactor;
+		}
+		else
+		{
+			isOutsideMenu = false;
 		}
 
 		// test for button click
@@ -360,7 +366,7 @@ public class Run extends PApplet
 			return;
 		}
 
-		if(check)
+		if(isOutsideMenu)
 		{
 			// this is to spawn creatures via the spawnmode button, TODO: bake into button functionality
 
@@ -385,7 +391,7 @@ public class Run extends PApplet
 			if(creatureManager.click(mX, mY))
 				return;
 
-			// click tyle
+			// click tile
 			// this will not work
 			if(tileManager.click(mX, mY))
 				return;
