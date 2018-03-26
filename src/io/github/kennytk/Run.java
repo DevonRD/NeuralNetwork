@@ -51,7 +51,7 @@ public class Run extends PApplet
 
 	int deltaX, deltaY;
 
-	private static String[] mapOptions = { "map1", "Large_Island", "Three_Islands", "All_Land", "All_Water" };
+	private static String[] mapOptions = { "map1", "map2", "Large_Island", "Three_Islands", "All_Land", "All_Water" };
 
 	private static String fileExt = ".jpg";
 
@@ -93,7 +93,7 @@ public class Run extends PApplet
 
 		map = new Map(selectedMap, fileExt);
 
-		tileManager = new TileManager(this, 100, 100);
+		tileManager = new TileManager(this, map.getWidth(), map.getHeight());
 
 		tileManager.setup();
 
@@ -310,7 +310,7 @@ public class Run extends PApplet
 		{
 			translateX = 0;
 			translateY = 0;
-			Globals.scaleFactor = 0.25;
+			Globals.scaleFactor = .25f;
 			return;
 		}
 		else if(key == ' ')

@@ -1,6 +1,5 @@
 package io.github.kennytk.creature;
 
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import io.github.kennytk.IDrawable;
@@ -9,7 +8,6 @@ import io.github.kennytk.numbers.Maths;
 import io.github.kennytk.numbers.Statistics;
 import io.github.kennytk.tile.Tile;
 import io.github.kennytk.tile.TileManager;
-import io.github.kennytk.tile.TileNotFoundException;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -153,7 +151,7 @@ public class Creature implements IDrawable
 
 	public void update(double timeInterval)
 	{
-		Point2D leftTile, midTile, rightTile, mouthTile;
+		Tile leftTile, midTile, rightTile, mouthTile;
 
 		fitness += timeInterval;
 
@@ -161,12 +159,12 @@ public class Creature implements IDrawable
 
 		updateSensorCoords();
 
-		leftTile = getTilePoint(leftSensorX, leftSensorY);
+		leftTile = TileManager.getTileFromPixels(leftSensorX, leftSensorY);
 
-		midTile = getTilePoint(midSensorX, midSensorY);
+		midTile = TileManager.getTileFromPixels(midSensorX, midSensorY);
 
-		rightTile = getTilePoint(rightSensorX, rightSensorY);
-		mouthTile = getTilePoint(mouthSensorX, mouthSensorY);
+		rightTile = TileManager.getTileFromPixels(rightSensorX, rightSensorY);
+		mouthTile = TileManager.getTileFromPixels(mouthSensorX, mouthSensorY);
 
 		// Left food, left creature, center food, center creature, right food, right creature,
 		// mouth food, energy change rate,
@@ -175,13 +173,7 @@ public class Creature implements IDrawable
 		// (inspect the methods internal cast)
 
 		////
-		try
-		{
-			sensorInput[0] = TileManager.getTileFromPixels(leftTile.getX(), leftTile.getY()).getFood() / 100.0;
-		}
-		catch(TileNotFoundException e)
-		{
-		}
+		sensorInput[0] = TileManager.getTileFromPixels(leftTile.getX(), leftTile.getY()).getFood() / 100.0;
 
 		if(CreatureManager.isCreatureAt(leftSensorX, leftSensorY))
 			sensorInput[1] = 1.0;
@@ -189,13 +181,8 @@ public class Creature implements IDrawable
 			sensorInput[1] = -1.0;
 
 		////
-		try
-		{
-			sensorInput[2] = TileManager.getTileFromPixels(midTile.getX(), midTile.getY()).getFood() / 100.0;
-		}
-		catch(TileNotFoundException e)
-		{
-		}
+
+		sensorInput[2] = TileManager.getTileFromPixels(midTile.getX(), midTile.getY()).getFood() / 100.0;
 
 		if(CreatureManager.isCreatureAt(midSensorX, midSensorY))
 			sensorInput[3] = 1.0;
@@ -203,13 +190,8 @@ public class Creature implements IDrawable
 			sensorInput[3] = -1.0;
 
 		////
-		try
-		{
-			sensorInput[4] = TileManager.getTileFromPixels(rightTile.getX(), rightTile.getY()).getFood() / 100.0;
-		}
-		catch(TileNotFoundException e)
-		{
-		}
+
+		sensorInput[4] = TileManager.getTileFromPixels(rightTile.getX(), rightTile.getY()).getFood() / 100.0;
 
 		if(CreatureManager.isCreatureAt(rightSensorX, rightSensorY))
 			sensorInput[5] = 1.0;
@@ -217,13 +199,8 @@ public class Creature implements IDrawable
 			sensorInput[5] = -1.0;
 
 		////
-		try
-		{
-			sensorInput[6] = TileManager.getTileFromPixels(mouthTile.getX(), mouthTile.getY()).getFood() / 100.0;
-		}
-		catch(TileNotFoundException e)
-		{
-		}
+
+		sensorInput[6] = TileManager.getTileFromPixels(mouthTile.getX(), mouthTile.getY()).getFood() / 100.0;
 
 		////
 		sensorInput[7] = size / 300.0;
@@ -232,26 +209,13 @@ public class Creature implements IDrawable
 
 		double eatRequest = requestEat(timeInterval);
 
-		Tile foodTile = null;
+		Tile foodTile = TileManager.getTileFromPixels(mouthSensorX, mouthSensorY);
 
-		try
-		{
-			// System.out.println(" mouth X: " + mouthSensorX);
-			// System.out.println(" mouth Y: " + mouthSensorY);
-			foodTile = TileManager.getTileFromPixels(mouthSensorX, mouthSensorY);
-		}
-		catch(TileNotFoundException e)
-		{
-		}
-		
-		try
-		{
-			allowEat(TileManager.requestEat(foodTile.getXIndex(), foodTile.getYIndex(), eatRequest));
-		}
-		catch(NullPointerException e)
-		{
-		}
-		
+		// System.out.println(" mouth X: " + mouthSensorX);
+		// System.out.println(" mouth Y: " + mouthSensorY);
+
+		allowEat(TileManager.requestEat(foodTile.getXIndex(), foodTile.getYIndex(), eatRequest));
+
 		if(requestBirth())
 		{
 			// System.out.println(i + " request birth");
@@ -387,20 +351,14 @@ public class Creature implements IDrawable
 		applyOutputs(timeInterval);
 		diameter = size / 10.0;
 
-		try
-		{
-			x = Math.min(x, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getX()
-					+ TileManager.getTileSize());
-			y = Math.min(y, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getY()
-					+ TileManager.getTileSize());
+		x = Math.min(x, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getX()
+				+ TileManager.getTileSize());
+		y = Math.min(y, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getY()
+				+ TileManager.getTileSize());
 
-			x = Math.max(x, TileManager.getTileFromPixels(0, 0).getX());
-			y = Math.max(y, TileManager.getTileFromPixels(0, 0).getY());
-		}
-		catch(TileNotFoundException e)
-		{
-			System.out.println("Failed to constrain creature");
-		}
+		x = Math.max(x, TileManager.getTileFromPixels(0, 0).getX());
+		y = Math.max(y, TileManager.getTileFromPixels(0, 0).getY());
+
 	}
 
 	public void drawCreatureBrain() // top left = 1620, 800 //change values ugh
@@ -506,7 +464,7 @@ public class Creature implements IDrawable
 	public void applyOutputs(double timeInterval)
 	{
 		// Forward velocity, rotational velocity, eat, attack, give birth, attack length,
-	
+
 		// forwardVel = 0 disables movement
 		forwardVel = outputNeurons[0];
 		// rotationVel = 0 disables rotation
@@ -764,34 +722,5 @@ public class Creature implements IDrawable
 	public Axon[][] getLayer2ToOutputAxons()
 	{
 		return layer2ToOutputAxons;
-	}
-
-	// takes in an xP and yP in pixels and checks it against tile locations to return a tile index pair
-	private Point2D getTilePoint(double xP, double yP)
-	{
-		xP = (int) xP;
-		yP = (int) xP;
-
-		Point2D point;
-
-		for(int x = 0; x < TileManager.getHorizontalNum(); x++)
-		{
-			for(int y = 0; y < TileManager.getVerticalNum(); y++)
-			{
-				if(TileManager.getTileFromIndex(x, y).getX() < xP
-						&& xP <= TileManager.getTileFromIndex(x, y).getX() + TileManager.getTileSize())
-				{
-					if(TileManager.getTileFromIndex(x, y).getY() < yP
-							&& yP <= TileManager.getTileFromIndex(x, y).getY() + TileManager.getTileSize())
-					{
-						point = new Point2D.Double(x, y);
-						return point;
-					}
-				}
-			}
-		}
-
-		System.out.println("ERROR - COULD NOT FIND TILE POINT");
-		return null;
 	}
 }

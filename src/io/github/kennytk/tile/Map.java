@@ -13,6 +13,8 @@ public class Map
 {
 	private static BufferedImage image;
 	private static TileType[][] mapData;
+	private static int width;
+	private static int height;
 	
 	public Map(String selectedMap, String fileExt)
 	{
@@ -25,7 +27,10 @@ public class Map
 			e.printStackTrace();
 		}
 
-		mapData = new TileType[image.getWidth()][image.getHeight()];
+		width = image.getWidth();
+		height = image.getHeight();
+		
+		mapData = new TileType[width][height];
 
 		for(int row = 0; row < image.getWidth(); row++)
 		{
@@ -57,5 +62,15 @@ public class Map
 	public static TileType[][] getMapData()
 	{
 		return mapData;
+	}
+	
+	public int getWidth()
+	{
+		return width;
+	}
+	
+	public int getHeight()
+	{
+		return height;
 	}
 }

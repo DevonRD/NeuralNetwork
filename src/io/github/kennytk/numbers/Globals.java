@@ -8,7 +8,7 @@ public class Globals
 	public static double mutationFactor = .05;
 
 	public static double dragRatio = 1;
-	public static double scaleFactor = 0.25;
+	public static float scaleFactor = .25f;
 
 	public static enum TileType
 	{

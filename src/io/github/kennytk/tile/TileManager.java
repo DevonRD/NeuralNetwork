@@ -10,7 +10,7 @@ import processing.core.PConstants;
 
 public class TileManager implements IDrawable
 {
-	private PApplet p;
+	private static PApplet p;
 
 	private static int horizontalNum;
 	private static int verticalNum;
@@ -22,12 +22,12 @@ public class TileManager implements IDrawable
 
 	public TileManager(PApplet p, int horizontalNum, int verticalNum)
 	{
-		this.p = p;
+		TileManager.p = p;
 
 		TileManager.horizontalNum = horizontalNum;
 		TileManager.verticalNum = verticalNum;
 
-		this.totalNum = horizontalNum * verticalNum;
+		TileManager.totalNum = horizontalNum * verticalNum;
 
 		tiles = new Tile[horizontalNum][verticalNum];
 
@@ -49,13 +49,13 @@ public class TileManager implements IDrawable
 		System.out.println("tileManager setup complete " + Statistics.tileNum);
 	}
 
-	//TODO: fix the nullPointer in selectTile which crashes it all
+	// TODO: fix the nullPointer in selectTile which crashes it all
 	public boolean click(int mX, int mY)
 	{
 		Globals.menuMode = MenuMode.TILE;
 		selectTile(mX, mY);
-		
-		//make a test case for whether to decide if a tile was found or not
+
+		// make a test case for whether to decide if a tile was found or not
 		return true;
 	}
 
@@ -71,16 +71,22 @@ public class TileManager implements IDrawable
 
 	public void draw()
 	{
+		p.pushStyle();
+		p.colorMode(PConstants.HSB);
+		p.strokeWeight(3);
+		
 		for(int x = 0; x < horizontalNum; x++)
 		{
 			for(int y = 0; y < verticalNum; y++)
 			{
-				p.colorMode(PConstants.HSB);
+				p.stroke(tiles[x][y].getH(), tiles[x][y].getS(), tiles[x][y].getV());
 				p.fill(tiles[x][y].getH(), tiles[x][y].getS(), tiles[x][y].getV());
 				p.rect(tiles[x][y].getX(), tiles[x][y].getY(), tileSize, tileSize);
-				p.fill(0, 0, 0);
 			}
 		}
+		
+		p.fill(0, 0, 0);
+		p.popStyle();
 	}
 
 	public void menu()
@@ -136,13 +142,7 @@ public class TileManager implements IDrawable
 
 	public void selectTile(int xP, int yP)
 	{
-		try
-		{
-			selectedTile = getTileFromPixels(xP, yP);
-		}
-		catch(TileNotFoundException e)
-		{
-		}
+		selectedTile = getTileFromPixels(xP, yP);
 	}
 
 	public static Tile getTileFromIndex(double xI, double yI)
@@ -151,7 +151,7 @@ public class TileManager implements IDrawable
 	}
 
 	// takes in a xP and yP in pixels and checks it against tile locations to return a tile
-	public static Tile getTileFromPixels(double xP, double yP) throws TileNotFoundException
+	public static Tile getTileFromPixels(double xP, double yP)
 	{
 		for(int x = 0; x < horizontalNum; x++)
 		{
@@ -167,19 +167,29 @@ public class TileManager implements IDrawable
 			}
 		}
 
-		System.out.println("ERROR - getTileFromPixels failed - xP: " + xP + " yP: " + yP);
+		//System.out.println("ERROR - getTileFromPixels failed - xP: " + xP + " yP: " + yP);
 
-		return null;
+		// Index -1 as to not conflict with board
+		Tile nullTile = new Tile(p, tileSize);
+
+		return nullTile;
 	}
 
 	public static double requestEat(int xI, int yI, double amount)
 	{
-		System.out.println("request eat: " + xI + " y " + yI);
-		if(tiles[xI][yI].getFood() < amount)
+		if(xI == -1 || yI == -1)
+		{
 			return 0;
+		}
+		else
+		{
+			//System.out.println("request eat: " + xI + " y " + yI);
+			if(tiles[xI][yI].getFood() < amount)
+				return 0;
 
-		tiles[xI][yI].setFood(tiles[xI][yI].getFood() - amount);
-		return amount;
+			tiles[xI][yI].setFood(tiles[xI][yI].getFood() - amount);
+			return amount;
+		}
 	}
 
 	public static int getHorizontalNum()

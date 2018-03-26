@@ -195,35 +195,4 @@ public class CreatureManager implements IDrawable
 		Statistics.creatureCount = creatures.size();
 		return Statistics.creatureCount;
 	}
-
-	// method is currently broken do not use
-	// @SuppressWarnings("unused")
-	// private Point2D getTilePoint(double xP, double yP)
-	// {
-	// xP = (int) xP;
-	// yP = (int) xP;
-	//
-	// Point2D point = null;
-	//
-	// for(int x = 0; x < TileManager.getHorizontalNum(); x++)
-	// {
-	// for(int y = 0; y < TileManager.getVerticalNum(); y++)
-	// {
-	// // xP, yP and x,y might need to be switched inside if statements
-	// if(TileManager.getTileFromPixels(x, y).getX() < xP
-	// && xP <= TileManager.getTileFromPixels(x, y).getX() + TileManager.getTileSize())
-	// {
-	// if(TileManager.getTileFromPixels(x, y).getY() < yP
-	// && yP <= TileManager.getTileFromPixels(x, y).getY() + TileManager.getTileSize())
-	// {
-	// point.setLocation(x, y);
-	// return point;
-	// }
-	// }
-	// }
-	// }
-	//
-	// System.out.println("ERROR - COULD NOT FIND TILE POINT");
-	// return null;
-	// }
 }

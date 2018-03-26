@@ -54,19 +54,20 @@ public class Tile implements IDrawable
 			maxFood = 100;
 
 		if(type == TileType.GRASS)
-			food = 50 + (int) (Math.random() * 50);
+			food = 50 + p.random(0,50);
 
 		if(type == TileType.WATER)
 		{
-			colorH = 155;
+			colorH = (int) (226.0 / 360.0 * 255.0);
+			colorS = (int) (78.0 / 100.0 * 255.0);
+			colorV = (int) (57.0 / 100.0 * 255.0);
 		}
 		else
 		{
-			colorH = (int) food;
+			colorH = (int) (food / 1.5 + 30);
+			colorS = 120;
+			colorV = 120;
 		}
-
-		colorS = 100;
-		colorV = 100;
 
 		if(type == TileType.WATER)
 			regenValue = 0;
@@ -77,6 +78,35 @@ public class Tile implements IDrawable
 			regenValue = 0.001;
 
 		this.id = id;
+	}
+
+	/*
+	 * null tile to be used exclusively inside the getTileFromPixels
+	 * method so that eating doesn't throw a null pointer exception
+	 * when creatures eat outside of the board
+	 */
+	public Tile(PApplet p, int tileSize)
+	{
+		this.p = p;
+
+		type = TileType.WATER;
+
+		this.x = -1;
+		this.y = -1;
+
+		this.xIndex = -1;
+		this.yIndex = -1;
+
+		this.tileSize = tileSize;
+
+		food = 0;
+		maxFood = 0;
+		colorH = 155;
+		colorS = 100;
+		colorV = 100;
+		regenValue = 0;
+
+		this.id = -1;
 	}
 
 	public void draw()
@@ -105,17 +135,17 @@ public class Tile implements IDrawable
 	{
 		return y;
 	}
-	
+
 	public int getXIndex()
 	{
 		return xIndex;
 	}
-	
+
 	public int getYIndex()
 	{
 		return yIndex;
 	}
-	
+
 	public double getRegenValue()
 	{
 		return regenValue;
@@ -140,7 +170,7 @@ public class Tile implements IDrawable
 	{
 		return id;
 	}
-	
+
 	public int getTileSize()
 	{
 		return tileSize;
