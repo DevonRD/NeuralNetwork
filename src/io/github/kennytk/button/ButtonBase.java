@@ -1,5 +1,7 @@
-package io.github.kennytk;
+package io.github.kennytk.button;
 
+import io.github.kennytk.numbers.Globals;
+import io.github.kennytk.numbers.Maths;
 import processing.core.PApplet;
 
 public class ButtonBase

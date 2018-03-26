@@ -1,8 +1,15 @@
-package io.github.kennytk;
+package io.github.kennytk.creature;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+import io.github.kennytk.IDrawable;
+import io.github.kennytk.numbers.Globals;
+import io.github.kennytk.numbers.Maths;
+import io.github.kennytk.numbers.Statistics;
+import io.github.kennytk.tile.Tile;
+import io.github.kennytk.tile.TileManager;
+import io.github.kennytk.tile.TileNotFoundException;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -148,8 +155,7 @@ public class Creature implements IDrawable
 	{
 		Point2D leftTile, midTile, rightTile, mouthTile;
 
-		// fix
-		setFitness(getFitness() + timeInterval);
+		fitness += timeInterval;
 
 		double[] sensorInput = new double[numInputs];
 
@@ -168,40 +174,84 @@ public class Creature implements IDrawable
 		// all of these casted doubles should just be ints by default
 		// (inspect the methods internal cast)
 
-		sensorInput[0] = TileManager.getTileFromPixels(leftTile.getX(), leftTile.getY()).getFood() / 100.0;
+		////
+		try
+		{
+			sensorInput[0] = TileManager.getTileFromPixels(leftTile.getX(), leftTile.getY()).getFood() / 100.0;
+		}
+		catch(TileNotFoundException e)
+		{
+		}
 
 		if(CreatureManager.isCreatureAt(leftSensorX, leftSensorY))
 			sensorInput[1] = 1.0;
 		else
 			sensorInput[1] = -1.0;
-		sensorInput[2] = TileManager.getTileFromPixels(midTile.getX(), midTile.getY()).getFood() / 100.0;
+
+		////
+		try
+		{
+			sensorInput[2] = TileManager.getTileFromPixels(midTile.getX(), midTile.getY()).getFood() / 100.0;
+		}
+		catch(TileNotFoundException e)
+		{
+		}
 
 		if(CreatureManager.isCreatureAt(midSensorX, midSensorY))
 			sensorInput[3] = 1.0;
 		else
 			sensorInput[3] = -1.0;
-		
-		sensorInput[4] = TileManager.getTileFromPixels(rightTile.getX(), rightTile.getY()).getFood() / 100.0;
-		
+
+		////
+		try
+		{
+			sensorInput[4] = TileManager.getTileFromPixels(rightTile.getX(), rightTile.getY()).getFood() / 100.0;
+		}
+		catch(TileNotFoundException e)
+		{
+		}
+
 		if(CreatureManager.isCreatureAt(rightSensorX, rightSensorY))
 			sensorInput[5] = 1.0;
 		else
 			sensorInput[5] = -1.0;
 
-		sensorInput[6] = TileManager.getTileFromPixels(mouthTile.getX(), mouthTile.getY()).getFood() / 100.0;
+		////
+		try
+		{
+			sensorInput[6] = TileManager.getTileFromPixels(mouthTile.getX(), mouthTile.getY()).getFood() / 100.0;
+		}
+		catch(TileNotFoundException e)
+		{
+		}
+
+		////
 		sensorInput[7] = size / 300.0;
 
 		iterate(sensorInput, timeInterval);
 
 		double eatRequest = requestEat(timeInterval);
 
-		Tile foodTile = TileManager.getTileFromPixels(mouthSensorX, mouthSensorY);
+		Tile foodTile = null;
 
-		System.out.println(" mouth X: " + mouthSensorX);
-		System.out.println(" mouth Y: " + mouthSensorY);
-
-		allowEat(TileManager.requestEat(foodTile.getXIndex(), foodTile.getYIndex(), eatRequest));
-
+		try
+		{
+			// System.out.println(" mouth X: " + mouthSensorX);
+			// System.out.println(" mouth Y: " + mouthSensorY);
+			foodTile = TileManager.getTileFromPixels(mouthSensorX, mouthSensorY);
+		}
+		catch(TileNotFoundException e)
+		{
+		}
+		
+		try
+		{
+			allowEat(TileManager.requestEat(foodTile.getXIndex(), foodTile.getYIndex(), eatRequest));
+		}
+		catch(NullPointerException e)
+		{
+		}
+		
 		if(requestBirth())
 		{
 			// System.out.println(i + " request birth");
@@ -337,13 +387,20 @@ public class Creature implements IDrawable
 		applyOutputs(timeInterval);
 		diameter = size / 10.0;
 
-		x = Math.min(x, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getX()
-				+ TileManager.getTileSize());
-		y = Math.min(y, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getY()
-				+ TileManager.getTileSize());
+		try
+		{
+			x = Math.min(x, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getX()
+					+ TileManager.getTileSize());
+			y = Math.min(y, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getY()
+					+ TileManager.getTileSize());
 
-		x = Math.max(x, TileManager.getTileFromPixels(0, 0).getX());
-		y = Math.max(y, TileManager.getTileFromPixels(0, 0).getY());
+			x = Math.max(x, TileManager.getTileFromPixels(0, 0).getX());
+			y = Math.max(y, TileManager.getTileFromPixels(0, 0).getY());
+		}
+		catch(TileNotFoundException e)
+		{
+			System.out.println("Failed to constrain creature");
+		}
 	}
 
 	public void drawCreatureBrain() // top left = 1620, 800 //change values ugh
@@ -449,8 +506,10 @@ public class Creature implements IDrawable
 	public void applyOutputs(double timeInterval)
 	{
 		// Forward velocity, rotational velocity, eat, attack, give birth, attack length,
-		//forwardVel = 0 disables movement
-		forwardVel = 0;//outputNeurons[0];
+	
+		// forwardVel = 0 disables movement
+		forwardVel = outputNeurons[0];
+		// rotationVel = 0 disables rotation
 		rotationVel = outputNeurons[1];
 		eatRate = 6 * outputNeurons[2];
 		if(outputNeurons[3] > 0)

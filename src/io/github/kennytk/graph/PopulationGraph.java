@@ -1,5 +1,8 @@
-package io.github.kennytk;
+package io.github.kennytk.graph;
 
+import io.github.kennytk.IDrawable;
+import io.github.kennytk.numbers.Maths;
+import io.github.kennytk.numbers.Statistics;
 import processing.core.PApplet;
 import processing.core.PConstants;
 

@@ -1,4 +1,4 @@
-package io.github.kennytk;
+package io.github.kennytk.numbers;
 
 import java.util.ArrayList;
 

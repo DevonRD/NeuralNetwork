@@ -1,6 +1,10 @@
-package io.github.kennytk;
+package io.github.kennytk.tile;
 
-import io.github.kennytk.Globals.MenuMode;
+import io.github.kennytk.IDrawable;
+import io.github.kennytk.numbers.Globals;
+import io.github.kennytk.numbers.Maths;
+import io.github.kennytk.numbers.Statistics;
+import io.github.kennytk.numbers.Globals.MenuMode;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -132,8 +136,13 @@ public class TileManager implements IDrawable
 
 	public void selectTile(int xP, int yP)
 	{
-		selectedTile = getTileFromPixels(xP, yP);
-		// tiles[xIndex][yIndex];
+		try
+		{
+			selectedTile = getTileFromPixels(xP, yP);
+		}
+		catch(TileNotFoundException e)
+		{
+		}
 	}
 
 	public static Tile getTileFromIndex(double xI, double yI)
@@ -142,7 +151,7 @@ public class TileManager implements IDrawable
 	}
 
 	// takes in a xP and yP in pixels and checks it against tile locations to return a tile
-	public static Tile getTileFromPixels(double xP, double yP)
+	public static Tile getTileFromPixels(double xP, double yP) throws TileNotFoundException
 	{
 		for(int x = 0; x < horizontalNum; x++)
 		{
@@ -160,7 +169,7 @@ public class TileManager implements IDrawable
 
 		System.out.println("ERROR - getTileFromPixels failed - xP: " + xP + " yP: " + yP);
 
-		return new Tile(new PApplet(), -100, -100, tileSize, -10, -10, -10); // return a dummy tile
+		return null;
 	}
 
 	public static double requestEat(int xI, int yI, double amount)

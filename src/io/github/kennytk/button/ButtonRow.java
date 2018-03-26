@@ -1,6 +1,8 @@
-package io.github.kennytk;
+package io.github.kennytk.button;
 
 import java.util.ArrayList;
+
+import io.github.kennytk.IDrawable;
 
 public class ButtonRow implements IDrawable
 {

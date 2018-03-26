@@ -1,4 +1,4 @@
-package io.github.kennytk;
+package io.github.kennytk.graph;
 
 public class FamilyTree
 {

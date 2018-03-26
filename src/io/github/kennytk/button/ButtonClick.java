@@ -1,5 +1,6 @@
-package io.github.kennytk;
+package io.github.kennytk.button;
 
+import io.github.kennytk.IDrawable;
 import processing.core.PApplet;
 import processing.core.PConstants;
 

@@ -1,6 +1,7 @@
-package io.github.kennytk;
+package io.github.kennytk.tile;
 
-import io.github.kennytk.Globals.TileType;
+import io.github.kennytk.IDrawable;
+import io.github.kennytk.numbers.Globals.TileType;
 import processing.core.PApplet;
 
 public class Tile implements IDrawable

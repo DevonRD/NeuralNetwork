@@ -3,7 +3,17 @@ package io.github.kennytk;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import io.github.kennytk.Globals.MenuMode;
+import io.github.kennytk.button.ButtonClick;
+import io.github.kennytk.button.ButtonToggle;
+import io.github.kennytk.creature.Creature;
+import io.github.kennytk.creature.CreatureManager;
+import io.github.kennytk.graph.PopulationGraph;
+import io.github.kennytk.numbers.Globals;
+import io.github.kennytk.numbers.Maths;
+import io.github.kennytk.numbers.Statistics;
+import io.github.kennytk.numbers.Globals.MenuMode;
+import io.github.kennytk.tile.Map;
+import io.github.kennytk.tile.TileManager;
 import processing.core.PApplet;
 import processing.event.MouseEvent;
 
@@ -288,10 +298,10 @@ public class Run extends PApplet
 
 	public void iterate(double timeInterval)
 	{
-		System.out.println("run iterate start");
+		//System.out.println("run iterate start");
 		tileManager.update(timeInterval);
 		creatureManager.update(timeInterval);
-		System.out.println("run iterate end");
+		//System.out.println("run iterate end");
 	}
 
 	public void keyPressed()
@@ -410,7 +420,6 @@ public class Run extends PApplet
 	@SuppressWarnings("deprecation")
 	public void mouseWheel(MouseEvent e)
 	{
-
 		Globals.scaleFactor -= e.getAmount() / 15.0;
 		if(Globals.scaleFactor < 0.2)
 			Globals.scaleFactor = 0.2;

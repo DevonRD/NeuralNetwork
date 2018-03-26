@@ -1,11 +1,13 @@
-package io.github.kennytk;
+package io.github.kennytk.creature;
 
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-import io.github.kennytk.Globals.MenuMode;
+import io.github.kennytk.IDrawable;
+import io.github.kennytk.Menu;
+import io.github.kennytk.numbers.Globals;
+import io.github.kennytk.numbers.Maths;
+import io.github.kennytk.numbers.Statistics;
+import io.github.kennytk.numbers.Globals.MenuMode;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -116,7 +118,7 @@ public class CreatureManager implements IDrawable
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -195,33 +197,33 @@ public class CreatureManager implements IDrawable
 	}
 
 	// method is currently broken do not use
-	@SuppressWarnings("unused")
-	private Point2D getTilePoint(double xP, double yP)
-	{
-		xP = (int) xP;
-		yP = (int) xP;
-
-		Point2D point = null;
-
-		for(int x = 0; x < TileManager.getHorizontalNum(); x++)
-		{
-			for(int y = 0; y < TileManager.getVerticalNum(); y++)
-			{
-				// xP, yP and x,y might need to be switched inside if statements
-				if(TileManager.getTileFromPixels(x, y).getX() < xP
-						&& xP <= TileManager.getTileFromPixels(x, y).getX() + TileManager.getTileSize())
-				{
-					if(TileManager.getTileFromPixels(x, y).getY() < yP
-							&& yP <= TileManager.getTileFromPixels(x, y).getY() + TileManager.getTileSize())
-					{
-						point.setLocation(x, y);
-						return point;
-					}
-				}
-			}
-		}
-
-		System.out.println("ERROR - COULD NOT FIND TILE POINT");
-		return null;
-	}
+	// @SuppressWarnings("unused")
+	// private Point2D getTilePoint(double xP, double yP)
+	// {
+	// xP = (int) xP;
+	// yP = (int) xP;
+	//
+	// Point2D point = null;
+	//
+	// for(int x = 0; x < TileManager.getHorizontalNum(); x++)
+	// {
+	// for(int y = 0; y < TileManager.getVerticalNum(); y++)
+	// {
+	// // xP, yP and x,y might need to be switched inside if statements
+	// if(TileManager.getTileFromPixels(x, y).getX() < xP
+	// && xP <= TileManager.getTileFromPixels(x, y).getX() + TileManager.getTileSize())
+	// {
+	// if(TileManager.getTileFromPixels(x, y).getY() < yP
+	// && yP <= TileManager.getTileFromPixels(x, y).getY() + TileManager.getTileSize())
+	// {
+	// point.setLocation(x, y);
+	// return point;
+	// }
+	// }
+	// }
+	// }
+	//
+	// System.out.println("ERROR - COULD NOT FIND TILE POINT");
+	// return null;
+	// }
 }

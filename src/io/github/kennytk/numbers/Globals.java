@@ -1,4 +1,4 @@
-package io.github.kennytk;
+package io.github.kennytk.numbers;
 
 public class Globals
 {
@@ -10,14 +10,14 @@ public class Globals
 	public static double dragRatio = 1;
 	public static double scaleFactor = 0.25;
 
-	static enum TileType
+	public static enum TileType
 	{
 		GRASS, WATER, PLANT
 	}
 
 	public static MenuMode menuMode;
 
-	static enum MenuMode
+	public static enum MenuMode
 	{
 		MAIN, CREATURE, DATA, TILE;
 	}

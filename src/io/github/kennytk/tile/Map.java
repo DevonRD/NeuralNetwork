@@ -1,4 +1,4 @@
-package io.github.kennytk;
+package io.github.kennytk.tile;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -6,7 +6,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import io.github.kennytk.Globals.TileType;
+import io.github.kennytk.Run;
+import io.github.kennytk.numbers.Globals.TileType;
 
 public class Map
 {

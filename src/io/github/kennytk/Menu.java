@@ -1,6 +1,8 @@
 package io.github.kennytk;
 
-import io.github.kennytk.Globals.MenuMode;
+import io.github.kennytk.numbers.Maths;
+import io.github.kennytk.numbers.Statistics;
+import io.github.kennytk.numbers.Globals.MenuMode;
 import processing.core.PApplet;
 
 public class Menu implements IDrawable
