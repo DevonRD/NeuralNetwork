@@ -165,7 +165,7 @@ public class Run extends PApplet
 		background(200);
 
 		translate(translateX, translateY);
-		
+
 		scale((float) Globals.scaleFactor);
 
 		tileManager.draw();
@@ -298,10 +298,10 @@ public class Run extends PApplet
 
 	public void iterate(double timeInterval)
 	{
-		//System.out.println("run iterate start");
+		// System.out.println("run iterate start");
 		tileManager.update(timeInterval);
 		creatureManager.update(timeInterval);
-		//System.out.println("run iterate end");
+		// System.out.println("run iterate end");
 	}
 
 	public void keyPressed()
@@ -327,13 +327,10 @@ public class Run extends PApplet
 		}
 	}
 
-	public void mouseDragged()
+	public void mouseDragged(MouseEvent e)
 	{
-		deltaX = mouseX - b4x;
-		deltaY = mouseY - b4y;
-		
-		translateX += deltaX / Globals.dragRatio;
-		translateY += deltaY / Globals.dragRatio;
+		translateX += mouseX - pmouseX;
+		translateY += mouseY - pmouseY;
 	}
 
 	public void mouseClicked()
@@ -345,12 +342,12 @@ public class Run extends PApplet
 		if(mX <= Maths.scaleX(1200))
 		{
 			check = true;
-			
+
 			mX -= translateX;
 			mY -= translateY;
-			
-			//mX /= scaleFactor;
-			//mY /= scaleFactor;
+
+			// mX /= scaleFactor;
+			// mY /= scaleFactor;
 		}
 
 		// test for button click
@@ -417,26 +414,27 @@ public class Run extends PApplet
 		Globals.menuMode = MenuMode.MAIN;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void mouseWheel(MouseEvent e)
 	{
-		Globals.scaleFactor -= e.getAmount() / 15.0;
-		if(Globals.scaleFactor < 0.2)
-			Globals.scaleFactor = 0.2;
-		if(Globals.scaleFactor > 3.0)
-			Globals.scaleFactor = 3.0;
-		if(Globals.scaleFactor != 0.2 && Globals.scaleFactor != 3.0)
+
+		float delta = (float) (-e.getCount() > 0 ? 1.05 : -e.getCount() < 0 ? 1.0 / 1.05 : 1.0);
+
+		Globals.scaleFactor *= delta;
+
+		if(!(Globals.scaleFactor > 3.0) && !(Globals.scaleFactor < .2))
 		{
+			translateX -= mouseX;
+			translateY -= mouseY;
+			translateX *= delta;
+			translateY *= delta;
+			translateX += mouseX;
+			translateY += mouseY;
 
-			translateX += e.getAmount() * mouseX * 4 / 10;
-			translateY += e.getAmount() * mouseY * 4 / 10;
 		}
-		// else if(scaleFactor != 0.2 && scaleFactor != 3.0 && e.getAmount() > 0)
-		// {
-		// System.out.println("in");
-		// translateX += e.getAmount() * 520 * 4 / 10;
-		// translateY += e.getAmount() * 400 * 4 / 10;
-		// }
+		if(Globals.scaleFactor > 3.0)
+			Globals.scaleFactor = 3.0f;
 
+		if(Globals.scaleFactor < .2)
+			Globals.scaleFactor = .2f;
 	}
 }
