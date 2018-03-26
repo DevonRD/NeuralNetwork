@@ -351,13 +351,13 @@ public class Creature implements IDrawable
 		applyOutputs(timeInterval);
 		diameter = size / 10.0;
 
-		x = Math.min(x, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getX()
-				+ TileManager.getTileSize());
-		y = Math.min(y, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getY()
-				+ TileManager.getTileSize());
+		//x = Math.min(x, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getX()
+		//		+ TileManager.getTileSize());
+		//y = Math.min(y, TileManager.getTileFromPixels(TileManager.getHorizontalNum() - 1, TileManager.getVerticalNum() - 1).getY()
+		//		+ TileManager.getTileSize());
 
-		x = Math.max(x, TileManager.getTileFromPixels(0, 0).getX());
-		y = Math.max(y, TileManager.getTileFromPixels(0, 0).getY());
+		//x = Math.max(x, TileManager.getTileFromPixels(0, 0).getX());
+		//y = Math.max(y, TileManager.getTileFromPixels(0, 0).getY());
 
 	}
 

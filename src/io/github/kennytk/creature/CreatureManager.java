@@ -131,8 +131,7 @@ public class CreatureManager implements IDrawable
 	public void addCreature()
 	{
 		Statistics.creatureCount++;
-		creatures.add(new Creature(p, Maths.scaleX(50) + (int) (Math.random() * Maths.scaleX(1500)),
-				Maths.scaleX(50) + (int) (Math.random() * Maths.scaleX(1500)), Statistics.creatureCount, 0));
+		creatures.add(new Creature(p, p.random(0, Globals.innerWidth), p.random(0, Globals.innerHeight), Statistics.creatureCount, 0));
 	}
 
 	public void addCreature(int x, int y)
