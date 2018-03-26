@@ -5,13 +5,12 @@ import javax.swing.JOptionPane;
 
 import io.github.kennytk.button.ButtonClick;
 import io.github.kennytk.button.ButtonToggle;
-import io.github.kennytk.creature.Creature;
 import io.github.kennytk.creature.CreatureManager;
 import io.github.kennytk.graph.PopulationGraph;
 import io.github.kennytk.numbers.Globals;
+import io.github.kennytk.numbers.Globals.MenuMode;
 import io.github.kennytk.numbers.Maths;
 import io.github.kennytk.numbers.Statistics;
-import io.github.kennytk.numbers.Globals.MenuMode;
 import io.github.kennytk.tile.Map;
 import io.github.kennytk.tile.TileManager;
 import processing.core.PApplet;
@@ -29,13 +28,12 @@ public class Run extends PApplet
 	public Map map;
 	public TileManager tileManager;
 	public CreatureManager creatureManager;
-	private PopulationGraph populationGraph;
+	public PopulationGraph populationGraph;
+	public Menu menu;
 
 	int rawTime;
 	double time;
 	double timeInterval;
-
-	Creature selectedCreature;
 
 	ButtonToggle start;
 	ButtonClick killAll, spawn, kill, spawnTwenty;
@@ -46,10 +44,6 @@ public class Run extends PApplet
 	int translateX, translateY;
 
 	int delta;
-
-	int b4x, b4y;
-
-	int deltaX, deltaY;
 
 	private static String[] mapOptions = { "map1", "map2", "Large_Island", "Three_Islands", "All_Land", "All_Water" };
 
@@ -101,14 +95,7 @@ public class Run extends PApplet
 
 		creatureManager.setup();
 
-		// world = new World(this, Statistics.startNumCreatures, mapData, MUTATE_FACTOR);
-
-		// world.startTiles();
-
-		// world.startCreatures();
-
-		// selectedTile = null;
-		// selectedCreature = null;
+		menu = new Menu(this);
 
 		start = new ButtonToggle(this, Maths.scaleX(45), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "PLAY", "PAUSE"); // +150 for next over
 		kill = new ButtonClick(this, Maths.scaleX(175), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "KILL");
@@ -122,10 +109,6 @@ public class Run extends PApplet
 		timeSeconds = 0;
 		translateX = 0;
 		translateY = 0;
-		b4x = 0;
-		b4y = 0;
-		deltaX = 0;
-		deltaY = 0;
 		time = 0;
 
 		populationGraph = new PopulationGraph(this);
@@ -133,12 +116,6 @@ public class Run extends PApplet
 
 	public void draw()
 	{
-		if(mousePressed)
-		{
-			b4x = mouseX;
-			b4y = mouseY;
-		}
-
 		if(start.getState())
 		{
 			rawTime++;
@@ -224,6 +201,10 @@ public class Run extends PApplet
 
 				drawButtons();
 
+				menu.setTime(time);
+				menu.setFPS(frameRate);
+				menu.draw();
+
 				populationGraph.draw();
 
 				popMenu();
@@ -234,6 +215,8 @@ public class Run extends PApplet
 			case CREATURE:
 			{
 				pushMenu();
+				
+				creatureManager.menu();
 
 				popMenu();
 
@@ -337,17 +320,21 @@ public class Run extends PApplet
 	{
 		int mX = mouseX;
 		int mY = mouseY;
-		boolean check = false;
+		boolean isOutsideMenu = false;
 
 		if(mX <= Maths.scaleX(1200))
 		{
-			check = true;
+			isOutsideMenu = true;
 
 			mX -= translateX;
 			mY -= translateY;
 
 			// mX /= scaleFactor;
 			// mY /= scaleFactor;
+		}
+		else
+		{
+			isOutsideMenu = false;
 		}
 
 		// test for button click
@@ -379,7 +366,7 @@ public class Run extends PApplet
 			return;
 		}
 
-		if(check)
+		if(isOutsideMenu)
 		{
 			// this is to spawn creatures via the spawnmode button, TODO: bake into button functionality
 
@@ -404,7 +391,7 @@ public class Run extends PApplet
 			if(creatureManager.click(mX, mY))
 				return;
 
-			// click tyle
+			// click tile
 			// this will not work
 			if(tileManager.click(mX, mY))
 				return;

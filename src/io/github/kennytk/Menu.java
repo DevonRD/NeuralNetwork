@@ -1,18 +1,22 @@
 package io.github.kennytk;
 
+import io.github.kennytk.numbers.Globals.MenuMode;
 import io.github.kennytk.numbers.Maths;
 import io.github.kennytk.numbers.Statistics;
-import io.github.kennytk.numbers.Globals.MenuMode;
 import processing.core.PApplet;
 
 public class Menu implements IDrawable
 {
 	private PApplet p;
 	private static MenuMode menuMode;
+	
+	private double time, fps;
 
 	public Menu(PApplet p)
 	{
 		this.p = p;
+		time = 0;
+		fps = 0;
 	}
 
 	@Override
@@ -38,9 +42,9 @@ public class Menu implements IDrawable
 		p.text("Number of Deaths: " + Statistics.creatureDeaths, Maths.scaleX(45), Maths.scaleY(270));
 		p.text("Total Existed Creatures: " + Statistics.creatureCount, Maths.scaleX(45), Maths.scaleY(300));
 
-		p.text("World Time: " + 000, Maths.scaleX(45), Maths.scaleY(330)); // df.format(time)
+		p.text("World Time: " + Maths.decimalFormat(time), Maths.scaleX(45), Maths.scaleY(330)); // df.format(time)
 
-		p.text("FPS: " + 000, Maths.scaleX(45), Maths.scaleY(360));// frameRate
+		p.text("FPS: " + Maths.decimalFormat(fps), Maths.scaleX(45), Maths.scaleY(360));// frameRate
 
 		p.text("Successful Births: " + Statistics.creatureBirths, Maths.scaleX(45), Maths.scaleY(390));
 
@@ -57,5 +61,15 @@ public class Menu implements IDrawable
 	public MenuMode getMenuMode()
 	{
 		return menuMode;
+	}
+	
+	public void setTime(double time)
+	{
+		this.time = time;
+	}
+	
+	public void setFPS(double fps)
+	{
+		this.fps = fps;
 	}
 }
