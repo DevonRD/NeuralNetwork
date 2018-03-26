@@ -215,7 +215,7 @@ public class Run extends PApplet
 			case CREATURE:
 			{
 				pushMenu();
-				
+
 				creatureManager.menu();
 
 				popMenu();
@@ -233,6 +233,8 @@ public class Run extends PApplet
 			case TILE:
 			{
 				pushMenu();
+
+				tileManager.menu();
 
 				popMenu();
 				break;
@@ -312,6 +314,7 @@ public class Run extends PApplet
 
 	public void mouseDragged(MouseEvent e)
 	{
+		//Maths.scaleX(mouseX) - Maths.scaleX(pmouseX);
 		translateX += mouseX - pmouseX;
 		translateY += mouseY - pmouseY;
 	}
@@ -320,6 +323,7 @@ public class Run extends PApplet
 	{
 		int mX = mouseX;
 		int mY = mouseY;
+
 		boolean isOutsideMenu = false;
 
 		if(mX <= Maths.scaleX(1200))
@@ -328,9 +332,6 @@ public class Run extends PApplet
 
 			mX -= translateX;
 			mY -= translateY;
-
-			// mX /= scaleFactor;
-			// mY /= scaleFactor;
 		}
 		else
 		{
@@ -403,7 +404,6 @@ public class Run extends PApplet
 
 	public void mouseWheel(MouseEvent e)
 	{
-
 		float delta = (float) (-e.getCount() > 0 ? 1.05 : -e.getCount() < 0 ? 1.0 / 1.05 : 1.0);
 
 		Globals.scaleFactor *= delta;

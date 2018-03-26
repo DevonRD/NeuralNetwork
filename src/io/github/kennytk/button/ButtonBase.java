@@ -7,14 +7,14 @@ import processing.core.PApplet;
 public class ButtonBase
 {
 	private PApplet p;
-	
+
 	private int x;
 	private int y;
 	private int width;
 	private int height;
-	
+
 	private boolean isActive;
-	
+
 	public ButtonBase(PApplet p, int x, int y, int width, int height)
 	{
 		this.p = p;
@@ -43,7 +43,7 @@ public class ButtonBase
 	{
 		this.y = y;
 	}
-	
+
 	public int getWidth()
 	{
 		return width;
@@ -63,12 +63,12 @@ public class ButtonBase
 	{
 		this.height = height;
 	}
-	
+
 	public void activate()
 	{
 		isActive = true;
 	}
-	
+
 	public void deactivate()
 	{
 		isActive = false;
@@ -78,11 +78,14 @@ public class ButtonBase
 	{
 		return isActive;
 	}
-	
+
 	public boolean isClicked(int mX, int mY)
 	{
-		//remember we translate
-		
+		// remember we translate
+
+		// ScaleX is only applied to the basePoint because the scaling is applied before construction for x and y
+		// A bug is being caused at the root of the click() methods in Run because of similar but flawed code
+
 		if(Maths.scaleX(Globals.menuBasePointX) + x < mX && mX <= Maths.scaleX(Globals.menuBasePointX) + x + width) // start button
 		{
 			if(y < mY && mY <= y + height)

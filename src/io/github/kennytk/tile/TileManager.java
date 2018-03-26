@@ -46,17 +46,25 @@ public class TileManager implements IDrawable
 			}
 		}
 
-		System.out.println("tileManager setup complete " + Statistics.tileNum);
+		System.out.println("tileManager setup complete - tileNum: " + Statistics.tileNum);
 	}
 
 	// TODO: fix the nullPointer in selectTile which crashes it all
 	public boolean click(int mX, int mY)
 	{
-		Globals.menuMode = MenuMode.TILE;
 		selectTile(mX, mY);
 
-		// make a test case for whether to decide if a tile was found or not
-		return true;
+		if(selectedTile.getXIndex() == -1)
+		{
+			selectedTile = null;
+			Globals.menuMode = MenuMode.MAIN;
+			return false;
+		}
+		else
+		{
+			Globals.menuMode = MenuMode.TILE;
+			return true;
+		}
 	}
 
 	public int tileIndexToPixelsX(int x)
@@ -74,7 +82,7 @@ public class TileManager implements IDrawable
 		p.pushStyle();
 		p.colorMode(PConstants.HSB);
 		p.strokeWeight(3);
-		
+
 		for(int x = 0; x < horizontalNum; x++)
 		{
 			for(int y = 0; y < verticalNum; y++)
@@ -84,15 +92,13 @@ public class TileManager implements IDrawable
 				p.rect(tiles[x][y].getX(), tiles[x][y].getY(), tileSize, tileSize);
 			}
 		}
-		
+
 		p.fill(0, 0, 0);
 		p.popStyle();
 	}
 
 	public void menu()
 	{
-		p.pushStyle();
-
 		p.colorMode(PConstants.HSB);
 
 		p.fill(selectedTile.getH(), selectedTile.getS(), selectedTile.getV());
@@ -103,30 +109,28 @@ public class TileManager implements IDrawable
 
 		p.fill(255, 255, 255);
 
-		p.textSize(Maths.scaleX(40));
+		p.textSize(Maths.scaleX(Globals.menuTextSize));
 
-		p.text("Selected Tile Data", Maths.scaleX(1620), Maths.scaleY(190));
+		p.text("Selected Tile Data", Maths.scaleX(45), Maths.scaleY(190));
 
 		p.textSize(Maths.scaleX(30));
 
-		p.text(" # " + selectedTile.getID(), Maths.scaleX(1620), Maths.scaleY(250));
+		p.text(" # " + selectedTile.getID(), Maths.scaleX(45), Maths.scaleY(100));
 
-		p.text(" Food: " + Maths.decimalFormat((selectedTile.getFood())), Maths.scaleX(1620), Maths.scaleY(400));
+		p.text(" Food: " + Maths.decimalFormat((selectedTile.getFood())), Maths.scaleX(45), Maths.scaleY(500));
 
-		p.text("Row and Column: (" + (selectedTile.getXIndex() + 1) + ", " + (selectedTile.getYIndex() + 1) + ")", Maths.scaleX(1830),
+		p.text("Row and Column: (" + (selectedTile.getXIndex() + 1) + ", " + (selectedTile.getYIndex() + 1) + ")", Maths.scaleX(45),
 				Maths.scaleY(250));
 
-		p.text("Regeneration Value: " + Math.round((selectedTile.getRegenValue() * 1000)) / 1000.0, Maths.scaleX(1830), Maths.scaleY(290));
+		p.text("Regeneration Value: " + Math.round((selectedTile.getRegenValue() * 1000)) / 1000.0, Maths.scaleX(45), Maths.scaleY(600));
 
-		p.text("HSV: " + selectedTile.getH() + ", " + selectedTile.getS() + ", " + selectedTile.getV(), Maths.scaleX(1830),
+		p.text("HSV: " + selectedTile.getH() + ", " + selectedTile.getS() + ", " + selectedTile.getV(), Maths.scaleX(45),
 				Maths.scaleY(330));
 
-		p.text("x Range: " + selectedTile.getX() + " to " + (selectedTile.getX() + selectedTile.getTileSize()), Maths.scaleX(1830),
+		p.text("x Range: " + selectedTile.getX() + " to " + (selectedTile.getX() + selectedTile.getTileSize()), Maths.scaleX(45),
 				Maths.scaleY(370));
-		p.text("y Range: " + selectedTile.getY() + " to " + (selectedTile.getY() + selectedTile.getTileSize()), Maths.scaleX(1830),
+		p.text("y Range: " + selectedTile.getY() + " to " + (selectedTile.getY() + selectedTile.getTileSize()), Maths.scaleX(45),
 				Maths.scaleY(410));
-
-		p.popStyle();
 	}
 
 	public void update(double timeInterval)
@@ -167,7 +171,7 @@ public class TileManager implements IDrawable
 			}
 		}
 
-		//System.out.println("ERROR - getTileFromPixels failed - xP: " + xP + " yP: " + yP);
+		// System.out.println("ERROR - getTileFromPixels failed - xP: " + xP + " yP: " + yP);
 
 		// Index -1 as to not conflict with board
 		Tile nullTile = new Tile(p, tileSize);
@@ -183,7 +187,7 @@ public class TileManager implements IDrawable
 		}
 		else
 		{
-			//System.out.println("request eat: " + xI + " y " + yI);
+			// System.out.println("request eat: " + xI + " y " + yI);
 			if(tiles[xI][yI].getFood() < amount)
 				return 0;
 
