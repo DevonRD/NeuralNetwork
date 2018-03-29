@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import io.github.kennytk.button.ButtonClick;
+import io.github.kennytk.button.ButtonRightTriangle;
 import io.github.kennytk.button.ButtonToggle;
 import io.github.kennytk.creature.CreatureManager;
 import io.github.kennytk.graph.PopulationGraph;
@@ -18,7 +19,15 @@ import processing.event.MouseEvent;
 
 public class Run extends PApplet
 {
-	// add pi chart
+	// create play buttons along bottom
+	// remove crappy buttons
+	// make creature interaction menu
+	// add all cases to top of thing to switch between
+	// create data scroll bar
+	// make mouse following for tile and for creature
+	// make gant or whatever its called chart
+	// make pi chart
+
 	// add fps / time chart\
 	// add chart selector
 	// add family trees fullscreen
@@ -35,8 +44,9 @@ public class Run extends PApplet
 	double time;
 	double timeInterval;
 
-	ButtonToggle start;
-	ButtonClick killAll, spawn, kill, spawnTwenty;
+	ButtonToggle startToggle, spawnToggle;
+	ButtonClick killAll, kill, spawnX;
+	ButtonRightTriangle menuRight;
 
 	boolean spawnClicking;
 	int timeSeconds;
@@ -75,6 +85,10 @@ public class Run extends PApplet
 
 		size(Globals.realWidth, Globals.realHeight);
 
+		Globals.menuTextSize = Maths.scaleY(30);
+		Globals.buttonTextSize = Maths.scaleY(30);
+		Globals.menuTitleSize = Maths.scaleY(40);
+
 		Globals.menuMode = MenuMode.MAIN;
 
 		// startNumCreatures = 100;
@@ -87,7 +101,7 @@ public class Run extends PApplet
 
 		map = new Map(selectedMap, fileExt);
 
-		tileManager = new TileManager(this, map.getWidth(), map.getHeight());
+		tileManager = new TileManager(this, map.getWidthIndex(), map.getHeightIndex());
 
 		tileManager.setup();
 
@@ -97,13 +111,16 @@ public class Run extends PApplet
 
 		menu = new Menu(this);
 
-		start = new ButtonToggle(this, Maths.scaleX(45), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "PLAY", "PAUSE"); // +150 for next over
-		kill = new ButtonClick(this, Maths.scaleX(175), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "KILL");
-		killAll = new ButtonClick(this, Maths.scaleX(305), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "KILL ALL");
-		spawn = new ButtonClick(this, Maths.scaleX(435), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "SPAWN");
-		spawnTwenty = new ButtonClick(this, Maths.scaleX(565), Maths.scaleY(20), Maths.scaleX(120), Maths.scaleY(60), "SPAWN 20");
+		startToggle = new ButtonToggle(this, Maths.scaleX(20), Maths.scaleY(60), Maths.scaleX(120), Maths.scaleY(60), "Pause", "Play");
 
-		start.activate();
+		spawnToggle = new ButtonToggle(this, Maths.scaleX(150), Maths.scaleY(60), Maths.scaleX(120), Maths.scaleY(60), "Spawn", "Spawn");
+
+		kill = new ButtonClick(this, Maths.scaleX(150), Maths.scaleY(60), Maths.scaleX(120), Maths.scaleY(60), 30, "Kill"); // should be moved to creature
+
+		killAll = new ButtonClick(this, Maths.scaleX(180), Maths.scaleY(60), Maths.scaleX(160), Maths.scaleY(60), 30, "Kill All");
+		spawnX = new ButtonClick(this, Maths.scaleX(180), Maths.scaleY(140), Maths.scaleX(160), Maths.scaleY(60), 30, "Spawn:");
+
+		menuRight = new ButtonRightTriangle(this, 20, 20, 100, 100, 100);
 
 		spawnClicking = false;
 		timeSeconds = 0;
@@ -116,7 +133,7 @@ public class Run extends PApplet
 
 	public void draw()
 	{
-		if(start.getState())
+		if(startToggle.getState())
 		{
 			rawTime++;
 
@@ -205,8 +222,6 @@ public class Run extends PApplet
 				menu.setFPS(frameRate);
 				menu.draw();
 
-				populationGraph.draw();
-
 				popMenu();
 
 				break;
@@ -225,6 +240,8 @@ public class Run extends PApplet
 			case DATA:
 			{
 				pushMenu();
+
+				populationGraph.draw();
 
 				popMenu();
 
@@ -251,15 +268,21 @@ public class Run extends PApplet
 		stroke(0);
 		strokeWeight(3);
 
-		// x1, y1, x2, y2
-		rect(Maths.scaleX(Globals.menuBasePointX), 0, Maths.scaleX(1080), Maths.scaleY(1920));
+		// x1, y1, width, height
+		rect(Maths.scaleX(Globals.menuBasePointX), 0, Maths.scaleX(720), Maths.scaleY(1080));
 
 		popStyle();
 
 		pushMatrix();
 		pushStyle();
 
-		translate(Maths.scaleX(1200), 0);
+		translate(Maths.scaleX(Globals.menuBasePointX), 0);
+
+		// TODO: create menu switcher
+		textSize(Globals.menuTitleSize);
+		text("Main Menu", Maths.scaleX(20), Maths.scaleY(40));
+
+		menuRight.draw();
 	}
 
 	public void popMenu()
@@ -274,11 +297,11 @@ public class Run extends PApplet
 		 * @see ButtonToggle for beautification
 		 */
 
-		start.draw();
+		// startToggle.draw();
 		killAll.draw();
-		kill.draw();
-		spawn.draw();
-		spawnTwenty.draw();
+		// kill.draw();
+		// spawnToggle.draw();
+		spawnX.draw();
 	}
 
 	public void iterate(double timeInterval)
@@ -295,12 +318,12 @@ public class Run extends PApplet
 		{
 			translateX = 0;
 			translateY = 0;
-			Globals.scaleFactor = .25f;
+			Globals.scaleFactor = 1f;
 			return;
 		}
 		else if(key == ' ')
 		{
-			start.toggle();
+			startToggle.toggle();
 		}
 		else if(key == 's')
 		{
@@ -314,7 +337,6 @@ public class Run extends PApplet
 
 	public void mouseDragged(MouseEvent e)
 	{
-		//Maths.scaleX(mouseX) - Maths.scaleX(pmouseX);
 		translateX += mouseX - pmouseX;
 		translateY += mouseY - pmouseY;
 	}
@@ -324,6 +346,8 @@ public class Run extends PApplet
 		int mX = mouseX;
 		int mY = mouseY;
 
+		// System.out.println(mX + " : " + mY);
+
 		boolean isOutsideMenu = false;
 
 		if(mX <= Maths.scaleX(1200))
@@ -332,6 +356,9 @@ public class Run extends PApplet
 
 			mX -= translateX;
 			mY -= translateY;
+
+			mX /= Globals.scaleFactor;
+			mY /= Globals.scaleFactor;
 		}
 		else
 		{
@@ -339,27 +366,28 @@ public class Run extends PApplet
 		}
 
 		// test for button click
-		if(start.isClicked(mX, mY))
+		if(startToggle.isClicked(mX, mY))
 		{
-			start.toggle();
+			startToggle.toggle();
 			return;
 		}
 
 		if(killAll.isClicked(mX, mY))
 		{
+			killAll.start();
 			creatureManager.killAll();
 			return;
 		}
 
-		if(spawn.isClicked(mX, mY))
+		if(spawnToggle.isClicked(mX, mY))
 		{
-			// toggle spawn mode
+			spawnToggle.toggle();
 			return;
-
 		}
 
-		if(spawnTwenty.isClicked(mX, mY))
+		if(spawnX.isClicked(mX, mY))
 		{
+			spawnX.start();
 			for(int i = 0; i < 20; i++)
 			{
 				creatureManager.addCreature();
@@ -412,8 +440,10 @@ public class Run extends PApplet
 		{
 			translateX -= mouseX;
 			translateY -= mouseY;
+
 			translateX *= delta;
 			translateY *= delta;
+
 			translateX += mouseX;
 			translateY += mouseY;
 

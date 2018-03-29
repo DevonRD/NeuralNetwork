@@ -64,12 +64,12 @@ public class Map
 		return mapData;
 	}
 	
-	public int getWidth()
+	public int getWidthIndex()
 	{
 		return width;
 	}
 	
-	public int getHeight()
+	public int getHeightIndex()
 	{
 		return height;
 	}

@@ -5,14 +5,16 @@ public class Globals
 	public static int realWidth;
 	public static int realHeight;
 	
-	public static float innerWidth = 1920;
-	public static float innerHeight = 1080;
+	public static final float innerWidth = 1920;
+	public static final float innerHeight = 1080;
 	
-	public static int menuBasePointX = 1200;
+	public static int menuBasePointX = 1440;
 	public static double mutationFactor = .05;
 
 	public static double dragRatio = 1;
-	public static float scaleFactor = .25f;
+	public static float scaleFactor = 1f;
+	
+	public static int buttonFillet = 6;
 
 	public static enum TileType
 	{
@@ -20,7 +22,9 @@ public class Globals
 	}
 
 	public static MenuMode menuMode;
-	public static double menuTextSize = 30;
+	public static float menuTextSize;
+	public static float buttonTextSize;
+	public static float menuTitleSize;
 
 	public static enum MenuMode
 	{

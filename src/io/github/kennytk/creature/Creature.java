@@ -221,6 +221,7 @@ public class Creature implements IDrawable
 			// System.out.println(i + " request birth");
 			if(size < 300)
 			{
+				
 				// size = 10; // this kills them if they try to birth but don't have enough mass
 				// System.out.println("birth failed at " + timeCopy);
 			}
@@ -364,39 +365,40 @@ public class Creature implements IDrawable
 	public void drawCreatureBrain() // top left = 1620, 800 //change values ugh
 	{
 		int verticalSpacing = Maths.scaleY(70);
+		
 		p.textSize(Maths.scaleY(50));
-		p.text("Input", Maths.scaleX(1620), Maths.scaleY(900));
-		p.text("Layer 1", Maths.scaleX(1900), Maths.scaleY(900));
-		p.text("Layer 2", Maths.scaleX(2120), Maths.scaleY(900));
-		p.text("Output", Maths.scaleX(2420), Maths.scaleY(900));
+		p.text("Input", Maths.scaleX(45), Maths.scaleY(900));
+		p.text("Layer 1", Maths.scaleX(145), Maths.scaleY(900));
+		p.text("Layer 2", Maths.scaleX(245), Maths.scaleY(900));
+		p.text("Output", Maths.scaleX(345), Maths.scaleY(900));
 		p.colorMode(PConstants.RGB);
 		for(int i = 0; i < inputNeurons.length; i++)
 		{
 			p.fill(255);
 			p.textSize(Maths.scaleY(30));
 			// rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
-			p.text(Maths.decimalFormat(inputNeurons[i]) + "", Maths.scaleX(1620), Maths.scaleY(950) + verticalSpacing * i);
+			p.text(Maths.decimalFormat(inputNeurons[i]) + "", Maths.scaleX(45), Maths.scaleY(950) + verticalSpacing * i);
 		}
 		for(int i = 0; i < hidLayer1.length; i++)
 		{
 			p.fill(255);
 			p.textSize(Maths.scaleY(30));
 			// rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
-			p.text(Maths.decimalFormat(hidLayer1[i]) + "", Maths.scaleX(1900), Maths.scaleY(950) + Maths.scaleY(40) * i);
+			p.text(Maths.decimalFormat(hidLayer1[i]) + "", Maths.scaleX(45), Maths.scaleY(600) + Maths.scaleY(40) * i);
 		}
 		for(int i = 0; i < hidLayer2.length; i++)
 		{
 			p.fill(255);
 			p.textSize(Maths.scaleY(30));
 			// rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
-			p.text(Maths.decimalFormat(hidLayer2[i]) + "", Maths.scaleX(2120), Maths.scaleY(950) + Maths.scaleY(40) * i);
+			p.text(Maths.decimalFormat(hidLayer2[i]) + "", Maths.scaleX(500), Maths.scaleY(600) + Maths.scaleY(40) * i);
 		}
 		for(int i = 0; i < outputNeurons.length; i++)
 		{
 			p.fill(255);
 			p.textSize(Maths.scaleY(30));
 			// rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
-			p.text(Maths.decimalFormat(outputNeurons[i]) + "", Maths.scaleX(2420), Maths.scaleY(950) + verticalSpacing * i);
+			p.text(Maths.decimalFormat(outputNeurons[i]) + "", Maths.scaleX(300), Maths.scaleY(950) + verticalSpacing * i);
 		}
 
 		for(int i = 0; i < inputNeurons.length; i++)

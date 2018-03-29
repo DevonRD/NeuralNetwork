@@ -6,6 +6,7 @@ import processing.core.PApplet;
 
 public class ButtonBase
 {
+	@SuppressWarnings("unused")
 	private PApplet p;
 
 	private int x;
@@ -82,10 +83,6 @@ public class ButtonBase
 	public boolean isClicked(int mX, int mY)
 	{
 		// remember we translate
-
-		// ScaleX is only applied to the basePoint because the scaling is applied before construction for x and y
-		// A bug is being caused at the root of the click() methods in Run because of similar but flawed code
-
 		if(Maths.scaleX(Globals.menuBasePointX) + x < mX && mX <= Maths.scaleX(Globals.menuBasePointX) + x + width) // start button
 		{
 			if(y < mY && mY <= y + height)

@@ -8,6 +8,7 @@ import io.github.kennytk.numbers.Globals;
 import io.github.kennytk.numbers.Globals.MenuMode;
 import io.github.kennytk.numbers.Maths;
 import io.github.kennytk.numbers.Statistics;
+import io.github.kennytk.tile.TileManager;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -29,8 +30,7 @@ public class CreatureManager implements IDrawable
 		for(int i = 0; i < Statistics.startNumCreatures; i++)
 		{
 			Statistics.creatureCount++; // TODO: VVV 500 is temp to get them out of the corner
-			creatures.add(new Creature(p, 500 + (int) (Math.random() * Maths.scaleX(1200)),
-					500 + (int) (Math.random() * Maths.scaleY(1080)), Statistics.creatureCount, 0));
+			creatures.add(new Creature(p, p.random(0, TileManager.getBoardWidthPixels()), p.random(0, TileManager.getBoardHeightPixels()), Statistics.creatureCount, 0));
 		}
 
 		System.out.println("creatureManager setup complete");
@@ -57,7 +57,7 @@ public class CreatureManager implements IDrawable
 
 		p.text("Selected Creature Data", Maths.scaleX(45), Maths.scaleY(190));
 
-		p.textSize(Maths.scaleX(Globals.menuTextSize));
+		p.textSize(Globals.menuTextSize);
 		p.text("ID: " + selectedCreature.getID(), Maths.scaleX(45), Maths.scaleY(500));
 
 		p.text("Current Size: " + (int) selectedCreature.getSize(), Maths.scaleX(45), Maths.scaleY(530));
@@ -123,7 +123,7 @@ public class CreatureManager implements IDrawable
 	public void addCreature()
 	{
 		Statistics.creatureCount++;
-		creatures.add(new Creature(p, p.random(0, Globals.innerWidth), p.random(0, Globals.innerHeight), Statistics.creatureCount, 0));
+		creatures.add(new Creature(p, p.random(0, TileManager.getBoardWidthPixels()), p.random(0, TileManager.getBoardHeightPixels()), Statistics.creatureCount, 0));
 	}
 
 	public void addCreature(int x, int y)

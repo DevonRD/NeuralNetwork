@@ -1,6 +1,7 @@
 package io.github.kennytk.graph;
 
 import io.github.kennytk.IDrawable;
+import io.github.kennytk.numbers.Globals;
 import io.github.kennytk.numbers.Maths;
 import io.github.kennytk.numbers.Statistics;
 import processing.core.PApplet;
@@ -18,7 +19,7 @@ public class PopulationGraph implements IDrawable
 
 	public void draw()
 	{
-		p.textSize(Maths.scaleX(25));
+		p.textSize(Globals.menuTextSize);
 
 		p.stroke(0);
 

@@ -1,5 +1,6 @@
 package io.github.kennytk;
 
+import io.github.kennytk.numbers.Globals;
 import io.github.kennytk.numbers.Globals.MenuMode;
 import io.github.kennytk.numbers.Maths;
 import io.github.kennytk.numbers.Statistics;
@@ -18,17 +19,20 @@ public class Menu implements IDrawable
 		time = 0;
 		fps = 0;
 	}
+	
+	private int leftAlign = 90;
 
 	@Override
 	public void draw()
 	{
 		p.fill(255, 255, 255);
 		p.stroke(255, 255, 255);
-		p.textSize(Maths.scaleX(20));
+		
+		p.textSize(Globals.menuTextSize);
 
-		p.text("Starting Creatures: " + Statistics.startNumCreatures, Maths.scaleX(45), Maths.scaleY(180)); // increments of 30 are good for menu text
+		p.text("Starting Creatures: " + Statistics.startNumCreatures, Maths.scaleX(leftAlign), Maths.scaleY(180)); // increments of 30 are good for menu text
 
-		p.text("Living Creatures: " + (Statistics.creatureCount), Maths.scaleX(45), Maths.scaleY(210));
+		p.text("Living Creatures: " + (Statistics.creatureCount), Maths.scaleX(leftAlign), Maths.scaleY(210));
 
 		String sign;
 
@@ -37,16 +41,16 @@ public class Menu implements IDrawable
 		else
 			sign = "+";
 
-		p.text("Total Change: " + sign + Math.abs(Statistics.creatureCount - Statistics.startNumCreatures), Maths.scaleX(45),
+		p.text("Total Change: " + sign + Math.abs(Statistics.creatureCount - Statistics.startNumCreatures), Maths.scaleX(leftAlign),
 				Maths.scaleY(240));
-		p.text("Number of Deaths: " + Statistics.creatureDeaths, Maths.scaleX(45), Maths.scaleY(270));
-		p.text("Total Existed Creatures: " + Statistics.creatureCount, Maths.scaleX(45), Maths.scaleY(300));
+		p.text("Number of Deaths: " + Statistics.creatureDeaths, Maths.scaleX(leftAlign), Maths.scaleY(270));
+		p.text("Total Existed Creatures: " + Statistics.creatureCount, Maths.scaleX(leftAlign), Maths.scaleY(300));
 
-		p.text("World Time: " + Maths.decimalFormat(time), Maths.scaleX(45), Maths.scaleY(330)); // df.format(time)
+		p.text("World Time: " + Maths.decimalFormat(time), Maths.scaleX(leftAlign), Maths.scaleY(330)); // df.format(time)
 
-		p.text("FPS: " + Maths.decimalFormat(fps), Maths.scaleX(45), Maths.scaleY(360));// frameRate
+		p.text("FPS: " + Maths.decimalFormat(fps), Maths.scaleX(leftAlign), Maths.scaleY(360));// frameRate
 
-		p.text("Successful Births: " + Statistics.creatureBirths, Maths.scaleX(45), Maths.scaleY(390));
+		p.text("Successful Births: " + Statistics.creatureBirths, Maths.scaleX(leftAlign), Maths.scaleY(390));
 
 		// text("Code Iterations: " + rawTime, p2pl(650), p2pw(35));
 		// text("Framerate: " + (int)frameRate, p2pl(50), p2pw(35));

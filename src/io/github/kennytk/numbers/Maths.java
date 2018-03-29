@@ -20,14 +20,14 @@ public class Maths
 	public static int scaleX(double frac)
 	{
 		double returnPixels = 0;
-		returnPixels = frac / 1920.0 * Globals.realWidth;
+		returnPixels = frac / Globals.innerWidth * Globals.realWidth;
 		return (int) returnPixels;
 	}
 
 	public static int scaleY(double frac)
 	{
 		double returnPixels = 0;
-		returnPixels = frac / 1080.0 * Globals.realHeight;
+		returnPixels = frac / Globals.innerHeight * Globals.realHeight;
 		return (int) returnPixels;
 	}
 	

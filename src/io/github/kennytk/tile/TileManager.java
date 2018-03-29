@@ -2,9 +2,9 @@ package io.github.kennytk.tile;
 
 import io.github.kennytk.IDrawable;
 import io.github.kennytk.numbers.Globals;
+import io.github.kennytk.numbers.Globals.MenuMode;
 import io.github.kennytk.numbers.Maths;
 import io.github.kennytk.numbers.Statistics;
-import io.github.kennytk.numbers.Globals.MenuMode;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -31,8 +31,9 @@ public class TileManager implements IDrawable
 
 		tiles = new Tile[horizontalNum][verticalNum];
 
-		tileSize = 4 * Maths.scaleX(1080) / horizontalNum; // TODO: change
-		System.out.println(tileSize);
+		// Maths.scaleX(1920) / horizontalNum
+		tileSize = 40; // TODO: change
+		// System.out.println(tileSize);
 	}
 
 	public void setup()
@@ -46,10 +47,9 @@ public class TileManager implements IDrawable
 			}
 		}
 
-		System.out.println("tileManager setup complete - tileNum: " + Statistics.tileNum);
+		// System.out.println("tileManager setup complete - tileNum: " + Statistics.tileNum);
 	}
 
-	// TODO: fix the nullPointer in selectTile which crashes it all
 	public boolean click(int mX, int mY)
 	{
 		selectTile(mX, mY);
@@ -109,11 +109,9 @@ public class TileManager implements IDrawable
 
 		p.fill(255, 255, 255);
 
-		p.textSize(Maths.scaleX(Globals.menuTextSize));
+		p.textSize(Globals.menuTextSize);
 
 		p.text("Selected Tile Data", Maths.scaleX(45), Maths.scaleY(190));
-
-		p.textSize(Maths.scaleX(30));
 
 		p.text(" # " + selectedTile.getID(), Maths.scaleX(45), Maths.scaleY(100));
 
@@ -147,6 +145,9 @@ public class TileManager implements IDrawable
 	public void selectTile(int xP, int yP)
 	{
 		selectedTile = getTileFromPixels(xP, yP);
+
+		System.out
+				.println(selectedTile.getX() + " " + selectedTile.getY() + " " + selectedTile.getXIndex() + " " + selectedTile.getYIndex());
 	}
 
 	public static Tile getTileFromIndex(double xI, double yI)
@@ -155,6 +156,7 @@ public class TileManager implements IDrawable
 	}
 
 	// takes in a xP and yP in pixels and checks it against tile locations to return a tile
+	// TODO: change method to calculate which tile it is over rather than iterate through every tile until it finds it
 	public static Tile getTileFromPixels(double xP, double yP)
 	{
 		for(int x = 0; x < horizontalNum; x++)
@@ -169,7 +171,17 @@ public class TileManager implements IDrawable
 					}
 				}
 			}
+
 		}
+
+//		int x = (int) ((xP / tileSize) - (xP % tileSize));
+//		int y = (int) ((yP / tileSize) - (yP % tileSize));
+//		System.out.println("x " + x + " y " + y);
+//
+//		if(x >= 0 && y >= 0 && x <= horizontalNum && y <= verticalNum)
+//		{
+//			return tiles[x][y];
+//		}
 
 		// System.out.println("ERROR - getTileFromPixels failed - xP: " + xP + " yP: " + yP);
 
@@ -214,5 +226,15 @@ public class TileManager implements IDrawable
 	public static int getTileSize()
 	{
 		return tileSize;
+	}
+
+	public static int getBoardWidthPixels()
+	{
+		return horizontalNum * tileSize;
+	}
+
+	public static int getBoardHeightPixels()
+	{
+		return verticalNum * tileSize;
 	}
 }
