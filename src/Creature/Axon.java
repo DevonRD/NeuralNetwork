@@ -1,8 +1,8 @@
-package Essentials;
+package Creature;
 
 public class Axon
 {
-	double weight;
+	public double weight;
 	
 	public Axon()
 	{
