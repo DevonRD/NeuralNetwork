@@ -9,54 +9,28 @@ import World.TileManager;
 public class Manager
 {
 	PApplet p;
-	int appWidth, appHeight;
-	
-	double timeCopy = 0;
-	
-	CreatureManager creatureManager;
-	TileManager tileManager;
-	
-	
-	public Manager(PApplet p, int startNumCreatures, int width, int height, boolean[][] water, double mutateChance)
+	int appWidth = Run.appWidth;
+	int appHeight = Run.appHeight;
+			
+	public Manager(PApplet p)
 	{
 		Variables.df.setRoundingMode(RoundingMode.DOWN);
-		this.p = p;
-		appWidth = width;
-		appHeight = height;
 		
-		tileManager = new TileManager(p, water, width, height);
-		creatureManager = new CreatureManager(p, startNumCreatures, mutateChance, width, height);
-		
+		TileManager.startTiles();
+		CreatureManager.startCreatures();
+	}
+	
+	public void drawWorld(PApplet p)
+	{
+		TileManager.drawTiles(p);
+		CreatureManager.drawCreatures(p);
 	}
 	
 	public void iterate(double timeInterval)
-	{
-		timeCopy += timeInterval;
-		
+	{		
 		CreatureManager.iterate(timeInterval);
 		TileManager.iterate(timeInterval);
+		
+		if(Run.maintain) CreatureManager.maintain();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

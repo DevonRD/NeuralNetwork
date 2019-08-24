@@ -1,36 +1,27 @@
 package World;
 
+import Essentials.Run;
 import Utilities.Menu;
 import Utilities.Variables;
 import processing.core.PApplet;
+import processing.core.PConstants;
 
 public class TileManager
 {
-	int appWidth, appHeight;
+	int appWidth = Run.appWidth;
+	static int appHeight = Run.appHeight;
 	
-	public static Tile[][] tiles;
-	boolean[][] water;
-	public static int tileResL;
-	public static int tileResW;
-	public static int tileSize;
+	public static int tileResL = Variables.MAP_DIMENSIONS;
+	public static int tileResW = Variables.MAP_DIMENSIONS;
 	
+	public static Tile[][] tiles = new Tile[tileResW][tileResL];
 	
-	
-	
+	static boolean[][] water = Run.waterTiles;
+	public static int tileSize = 4 * p2pw(1500) / tileResW;
 	
 	public TileManager(PApplet p, boolean[][] water, int width, int height)
 	{
-		tileResL = Variables.MAP_DIMENSIONS;
-		tileResW = Variables.MAP_DIMENSIONS;
-		
-		appWidth = width;
-		appHeight = height;
-		
-		tiles = new Tile[tileResW][tileResL];
-		tileSize = 4 * p2pw(1500) / tileResW;
-		
-		this.water = water;
-		
+						
 		startTiles();
 	}
 	
@@ -45,7 +36,7 @@ public class TileManager
 		}
 	}
 	
-	public void startTiles()
+	public static void startTiles()
 	{
 		int count = 0;
 		for(int x = 0; x < tileResL; x++)
@@ -56,6 +47,23 @@ public class TileManager
 				tiles[y][x] = new Tile(x * tileSize, y * tileSize, tileSize, count, x, y, water[x][y]);
 			}
 		}
+	}
+	
+	public static void drawTiles(PApplet p)
+	{
+		for(int x = 0; x < TileManager.tiles.length; x++)
+		{
+			for(int y = 0; y < TileManager.tiles.length; y++)
+			{
+				p.colorMode(PConstants.HSB, 360, 100, 100);
+				p.stroke(TileManager.tiles[y][x].colorH, TileManager.tiles[y][x].colorS, TileManager.tiles[y][x].colorV - 10);
+				p.fill(TileManager.tiles[y][x].colorH, TileManager.tiles[y][x].colorS, TileManager.tiles[y][x].colorV);
+				p.rect(TileManager.tiles[y][x].x, TileManager.tiles[y][x].y, TileManager.tileSize, TileManager.tileSize);
+				p.fill(0, 0, 0);
+				p.stroke(0);
+			}
+		}
+		p.colorMode(PConstants.RGB, 255, 255, 255);
 	}
 	
 	public static int[] findTileAt(double xCoord, double yCoord)
@@ -122,7 +130,7 @@ public class TileManager
 		return TileManager.tiles[0][0].y + (int)(Math.random() * (TileManager.tiles[TileManager.tileResL-1][TileManager.tileResW-1].y - TileManager.tiles[0][0].y));
 	}
 	
-	public int p2pw(double frac)
+	public static int p2pw(double frac)
 	{
 		double returnPixels = 0;
 		returnPixels = frac / 1600.0 * appHeight;

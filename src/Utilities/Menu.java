@@ -17,7 +17,7 @@ public class Menu
 	ArrayList<Double> UNIV_POP_HISTORY;
 	List<List<Integer>> popPropHistory;
 	ArrayList<List<Integer>> UNIV_POP_PROP_HISTORY;
-	public static Button menuButton;
+	public static Button menuButton, creatureInfo;
 	public static Button start, killAll, spawn, spawn20, kill, maintainAt, maintainPopNum, findCreatureByID;
 	public enum MenuPath
 	{
@@ -45,6 +45,7 @@ public class Menu
 		findCreatureByID = new Button(p2pl(650), 0, p2pl(200), p2pw(120), p);
 		maintainAt = new Button(p2pl(850), 0, p2pl(280), p2pw(120), p);
 		maintainPopNum = new Button(p2pl(1100), 0, p2pl(140), p2pw(120), p);
+		creatureInfo = new Button(p2pl(1650), p2pw(250), p2pl(280), p2pw(120), p);
 	}
 	
 	public void drawMenu(PApplet p)
@@ -55,7 +56,7 @@ public class Menu
 			{
 				p.colorMode(PConstants.RGB);
 				
-				generalMenu(Run.displayTime, Run.creatureDeaths, Run.forcedSpawns, Run.superMutations, p);
+				generalMenu(Run.displayTime, CreatureManager.creatureDeaths, Run.forcedSpawns, Run.superMutations, p);
 				
 				drawButtons(p);
 				cutGraphs();
@@ -77,47 +78,68 @@ public class Menu
 				p.textSize(p2pl(65));
 				p.text("Creature Data", p2pl(1800), p2pw(100));
 				p.textSize(p2pl(30));
-				int shift = 45;
+				int spacing = 45;
+				int shift = 420;
+				int shift2 = 340;
+				
 				p.text("ID: " + Run.selectedCreature.ID, p2pl(1800), p2pw(160));
 				p.text("Age: " + Variables.df.format(Run.selectedCreature.fitness), p2pl(1800), p2pw(210));
 				p.text("Generation: " + Run.selectedCreature.generation, p2pl(2100), p2pw(160));
 				p.text("Parent: " + Run.selectedCreature.parentID, p2pl(2100), p2pw(210));
-				p.text("Total Eaten: " + Variables.df2.format(Run.selectedCreature.totalEaten), p2pl(1620), p2pw(320 + 0 * shift));
-				p.text("Total Decayed: " + Variables.df2.format(Run.selectedCreature.totalDecayed), p2pl(1620), p2pw(320 + 1 * shift));
-				p.text("Location: ( " + Variables.df2.format(Run.selectedCreature.locationX) + ", " + Variables.df2.format(Run.selectedCreature.locationY) + " )", p2pl(1620), p2pw(320 + 2 * shift));
-				p.text("Left XY: ( " + Variables.df2.format(Run.selectedCreature.leftSensorX) + ", " + Variables.df2.format(Run.selectedCreature.leftSensorY) + " )", p2pl(1620), p2pw(320 + 3 * shift));
-				p.text("Mid XP: ( " + Variables.df2.format(Run.selectedCreature.midSensorX) + ", " + Variables.df2.format(Run.selectedCreature.midSensorY) + " )", p2pl(1620), p2pw(320 + 4 * shift));
-				p.text("Right XY: ( " + Variables.df2.format(Run.selectedCreature.rightSensorX) + ", " + Variables.df2.format(Run.selectedCreature.rightSensorY) + " )", p2pl(1620), p2pw(320 + 5 * shift));
-				p.text("Mouth XY: ( " + Variables.df2.format(Run.selectedCreature.mouthSensorX) + ", " + Variables.df2.format(Run.selectedCreature.mouthSensorY) + " )", p2pl(1620), p2pw(320 + 6 * shift));
-				p.text("Heading: " + Variables.df2.format((Run.selectedCreature.rotation * 180 / Math.PI)), p2pl(1620), p2pw(320 + 7 * shift));
-				p.text("Nearest Creature ID: " + Run.selectedCreature.nearestCreature.ID, p2pl(1620), p2pw(320 + 8 * shift));
-				p.text("Nearest ID Distance: " + Variables.df.format(Run.selectedCreature.distToNearest), p2pl(1620), p2pw(320 + 9 * shift));
-				p.text("Nearest ID Color Diff: " + Run.selectedCreature.colorDifferenceToNearest, p2pl(1620), p2pw(320 + 10 * shift));
-				p.text("Creatures within 10 Tiles: " + Run.selectedCreature.numCreaturesWithin10, p2pl(1620), p2pw(320 + 11 * shift));
-				p.text("Size Decay", p2pl(2200), p2pw(320 + 0 * shift));
-				p.text("Age Decay", p2pl(2200), p2pw(320 + 1 * shift));
-				p.text("Eat Decay", p2pl(2200), p2pw(320 + 2 * shift));
-				p.text("Turn Decay", p2pl(2200), p2pw(320 + 3 * shift));
-				p.text("Fwd Decay", p2pl(2200), p2pw(320 + 4 * shift));
-				p.text("Att Decay", p2pl(2200), p2pw(320 + 5 * shift));
-				p.text("Eat Rate", p2pl(2200), p2pw(320 + 6 * shift));
+				
+				p.text("Total Eaten: " + Variables.df2.format(Run.selectedCreature.totalEaten), p2pl(1620), p2pw(shift + 0 * spacing));
+				p.text("Total Decayed: " + Variables.df2.format(Run.selectedCreature.totalDecayed), p2pl(1620), p2pw(shift + 1 * spacing));
+				p.text("Location: ( " + Variables.df2.format(Run.selectedCreature.locationX) + ", " + Variables.df2.format(Run.selectedCreature.locationY) + " )", p2pl(1620), p2pw(shift + 2 * spacing));
+				p.text("Left XY: ( " + Variables.df2.format(Run.selectedCreature.leftSensorX) + ", " + Variables.df2.format(Run.selectedCreature.leftSensorY) + " )", p2pl(1620), p2pw(shift + 3 * spacing));
+				p.text("Mid XP: ( " + Variables.df2.format(Run.selectedCreature.midSensorX) + ", " + Variables.df2.format(Run.selectedCreature.midSensorY) + " )", p2pl(1620), p2pw(shift + 4 * spacing));
+				p.text("Right XY: ( " + Variables.df2.format(Run.selectedCreature.rightSensorX) + ", " + Variables.df2.format(Run.selectedCreature.rightSensorY) + " )", p2pl(1620), p2pw(shift + 5 * spacing));
+				p.text("Mouth XY: ( " + Variables.df2.format(Run.selectedCreature.mouthSensorX) + ", " + Variables.df2.format(Run.selectedCreature.mouthSensorY) + " )", p2pl(1620), p2pw(shift + 6 * spacing));
+				p.text("Heading: " + Variables.df2.format((Run.selectedCreature.rotation * 180 / Math.PI)), p2pl(1620), p2pw(shift + 7 * spacing));
+				
+				p.text("Size Decay", p2pl(2200), p2pw(shift2 + 0 * spacing));
+				p.text("Age Decay", p2pl(2200), p2pw(shift2 + 1 * spacing));
+				p.text("Eat Decay", p2pl(2200), p2pw(shift2 + 2 * spacing));
+				p.text("Turn Decay", p2pl(2200), p2pw(shift2 + 3 * spacing));
+				p.text("Fwd Decay", p2pl(2200), p2pw(shift2 + 4 * spacing));
+				p.text("Att Decay", p2pl(2200), p2pw(shift2 + 5 * spacing));
+				p.text("Eat Rate", p2pl(2200), p2pw(shift2 + 6 * spacing));
 				p.fill(95, 260, 220);
-				p.text("Current Size: " + (int)Run.selectedCreature.size, p2pl(2200), p2pw(320 + 10 * shift));
+				p.text("Current Size: " + (int)Run.selectedCreature.size, p2pl(2200), p2pw(shift2 + 10 * spacing));
 				p.fill(0);
 				p.fill(255, 0, 0);
-				p.text(Variables.df.format(Run.selectedCreature.sizeDecay), p2pl(2400), p2pw(320 + 0 * shift));
-				p.text(Variables.df.format(Run.selectedCreature.fitnessDecay), p2pl(2400), p2pw(320 + 1 * shift));
-				p.text(Variables.df.format(Run.selectedCreature.eatRateDecay), p2pl(2400), p2pw(320 + 2 * shift));
-				p.text(Variables.df.format(Run.selectedCreature.rotationDecay), p2pl(2400), p2pw(320 + 3 * shift));
-				p.text(Variables.df.format(Run.selectedCreature.forwardDecay), p2pl(2400), p2pw(320 + 4 * shift));
-				p.text(Variables.df.format(Run.selectedCreature.attackDecay), p2pl(2400), p2pw(320 + 5 * shift));
+				p.text(Variables.df.format(Run.selectedCreature.sizeDecay), p2pl(2400), p2pw(shift2 + 0 * spacing));
+				p.text(Variables.df.format(Run.selectedCreature.fitnessDecay), p2pl(2400), p2pw(shift2 + 1 * spacing));
+				p.text(Variables.df.format(Run.selectedCreature.eatRateDecay), p2pl(2400), p2pw(shift2 + 2 * spacing));
+				p.text(Variables.df.format(Run.selectedCreature.rotationDecay), p2pl(2400), p2pw(shift2 + 3 * spacing));
+				p.text(Variables.df.format(Run.selectedCreature.forwardDecay), p2pl(2400), p2pw(shift2 + 4 * spacing));
+				p.text(Variables.df.format(Run.selectedCreature.attackDecay), p2pl(2400), p2pw(shift2 + 5 * spacing));
 				p.fill(0, 255, 0);
-				p.text(Variables.df.format(Run.selectedCreature.eatRate), p2pl(2400), p2pw(320 + 6 * shift));
+				p.text(Variables.df.format(Run.selectedCreature.eatRate), p2pl(2400), p2pw(shift2 + 6 * spacing));
 				if(Run.selectedCreature.energyChange < 0) p.fill(255, 0, 0);
 				else p.fill(0, 255, 0);
-				p.text("Energy Change: " + Variables.df.format(Run.selectedCreature.energyChange), p2pl(2200), p2pw(320 + 8 * shift));
+				p.text("Energy Change: " + Variables.df.format(Run.selectedCreature.energyChange), p2pl(2200), p2pw(shift2 + 8 * spacing));
 				p.fill(255);
-				drawCreatureBrain(Run.selectedCreature, p);
+				
+				if(Run.showCreatureInfo)
+				{
+					if(Run.selectedCreature != null && Run.selectedCreature.nearestCreature != null)
+					{
+						p.text("Nearest Creature ID: " + Run.selectedCreature.nearestCreature.ID, p2pl(1620), p2pw(shift + 8 * spacing));
+						p.text("Nearest ID Distance: " + Variables.df.format(Run.selectedCreature.distToNearest), p2pl(1620), p2pw(shift + 9 * spacing));
+						p.text("Nearest ID Color Diff: " + Run.selectedCreature.colorDifferenceToNearest, p2pl(1620), p2pw(shift + 10 * spacing));
+						p.text("Angle change to nearest: " + Run.selectedCreature.angleToNearest, p2pl(1620), p2pw(shift + 11 * spacing));
+						p.text("Creatures within 10 Tiles: " + Run.selectedCreature.numCreaturesWithin10, p2pl(1620), p2pw(shift + 12 * spacing));
+					}
+					else
+					{
+						p.text("Nearest Creature ID: null", p2pl(1620), p2pw(shift + 8 * spacing));
+						p.text("Nearest ID Distance: null", p2pl(1620), p2pw(shift + 9 * spacing));
+						p.text("Nearest ID Color Diff: null", p2pl(1620), p2pw(shift + 10 * spacing));
+						p.text("Angle change to nearest: null", p2pl(1620), p2pw(shift + 11 * spacing));
+						p.text("Creatures within 10 Tiles: 0", p2pl(1620), p2pw(shift + 12 * spacing));
+					}
+				}
+				else drawCreatureBrain(Run.selectedCreature, p);
 				
 				break;
 			}
@@ -254,6 +276,16 @@ public class Menu
 			p.text(Run.maintainNum, maintainPopNum.getTextX(), maintainPopNum.getTextY());
 			p.text("Find ID", findCreatureByID.getTextX(), findCreatureByID.getTextY());
 		}
+		if(path == MenuPath.CREATURE)
+		{
+			creatureInfo.draw();
+			p.fill(255);
+			if(!Run.showCreatureInfo)
+			{
+				p.text("Brain Info", creatureInfo.getTextX(), creatureInfo.getTextY());
+			}
+			else p.text("Debug Info", creatureInfo.getTextX(), creatureInfo.getTextY());
+		}
 	}
 	
 	public void drawPopGraph(PApplet p)
@@ -272,14 +304,14 @@ public class Menu
 //		}
 		if(Run.maintain) p.stroke(0, 255, 0);
 		else p.stroke(255, 0, 0);
-		p.line(p2pl(1650), p2pw(1350 + (200 - (int)(1.0 * Run.maintainNum / Run.maxObservedCreatures * 200))), 
-				p2pl(1650 + 900), p2pw(1350 + (200 - (int)(1.0 * Run.maintainNum / Run.maxObservedCreatures * 200))));
+		p.line(p2pl(1650), p2pw(1350 + (200 - (int)(1.0 * Run.maintainNum / CreatureManager.maxObservedCreatures * 200))), 
+				p2pl(1650 + 900), p2pw(1350 + (200 - (int)(1.0 * Run.maintainNum / CreatureManager.maxObservedCreatures * 200))));
 		p.stroke(0);
 		
 		for(int i = 0; i < popHistory.size()-1; i++)
 		{
-			double ratio = (popHistory.get(i) / Run.maxObservedCreatures * 200);
-			double toRatio = (popHistory.get(i+1) / Run.maxObservedCreatures * 200);
+			double ratio = (popHistory.get(i) / CreatureManager.maxObservedCreatures * 200);
+			double toRatio = (popHistory.get(i+1) / CreatureManager.maxObservedCreatures * 200);
 			//ellipse(p2pl(1650 + (i)*width), p2pw(1350 + (200 - (int)ratio)), p2pw(5), p2pw(5));
 			p.line(p2pl(1650 + (i)*width), p2pw(1350 + (200 - (int)ratio)), p2pl(1650 + (i+1)*width), p2pw(1350 + (200 - (int)toRatio)));
 		}
@@ -372,9 +404,9 @@ public class Menu
 		p.text("Size", p2pl(1610), p2pw(950) + verticalSpacing * 4);
 		p.text("Cr Dist", p2pl(1610), p2pw(950) + verticalSpacing * 5);
 		p.text("Co Diff", p2pl(1610), p2pw(950) + verticalSpacing * 6);
-		p.text("# in 10", p2pl(1610), p2pw(950) + verticalSpacing * 7);
-		p.text("-----", p2pl(1610), p2pw(950) + verticalSpacing * 8);
-		p.text("-----", p2pl(1610), p2pw(950) + verticalSpacing * 9);
+		p.text("Cr Angl", p2pl(1610), p2pw(950) + verticalSpacing * 7);
+		p.text("Cr Bir?", p2pl(1610), p2pw(950) + verticalSpacing * 8);
+		p.text("# in 10", p2pl(1610), p2pw(950) + verticalSpacing * 9);
 		p.text("-----", p2pl(1610), p2pw(950) + verticalSpacing * 10);
 		p.text("-----", p2pl(1610), p2pw(950) + verticalSpacing * 11);
 		// Forward velocity, rotational velocity, eat, attack, give birth, attack length,
@@ -394,7 +426,7 @@ public class Menu
 			p.fill(255);
 			p.textSize(p2pw(30));
 			//rect(p2pl(1620), p2pw(800 + verticalSpacing * i), p2pl(100), p2pw(50));
-			p.text(Variables.df.format(c.sensorInput[i]) + "", p2pl(1700), p2pw(950) + verticalSpacing * i);
+			p.text(Variables.df.format(c.sensorInput[i]) + "", p2pl(1710), p2pw(950) + verticalSpacing * i);
 		}
 		for(int i = 0; i < c.hidLayer1.length; i++)
 		{

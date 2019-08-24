@@ -10,33 +10,23 @@ import Utilities.Menu;
 import Utilities.Variables;
 import World.TileManager;
 import processing.core.PApplet;
+import processing.core.PConstants;
 
 public class CreatureManager
 {
-	PApplet p;
-	static int appWidth;
-	static int appHeight;
+	static int appWidth = Run.appWidth;
+	static int appHeight = Run.appHeight;
 	
-	public static ArrayList<Creature> creatures;
+	public static ArrayList<Creature> creatures = new ArrayList<Creature>();
 	
 	public static int creatureCount;
-	public static int startNumCreatures;
-	public static double mutateChance;
+	public static int startNumCreatures = Run.startNumCreatures;
+	public static double mutateChance = Variables.MUTATE_CHANCE;
 	public static int births = 0;
+	public static int creatureDeaths = 0;
+	public static int maxObservedCreatures = startNumCreatures;
 	
-	public CreatureManager(PApplet p, int startNumCreatures, double mutateChance, int width, int height)
-	{
-		this.p = p;
-		CreatureManager.mutateChance = mutateChance;
-		
-		appWidth = width;
-		appHeight = height;
-		
-		creatures = new ArrayList<Creature>();
-		CreatureManager.startNumCreatures = startNumCreatures;
-		
-		startCreatures();
-	}
+	/** STATIC CLASS **/
 	
 	public static void iterate(double timeInterval)
 	{
@@ -66,9 +56,11 @@ public class CreatureManager
 				}
 			}
 		}
+		checkForDeaths();
+		if(creatures.size() > maxObservedCreatures) maxObservedCreatures = CreatureManager.creatures.size();
 	}
 	
-	public void startCreatures()
+	public static void startCreatures()
 	{
 		for(int i = 0; i < startNumCreatures; i++)
 		{
@@ -113,8 +105,25 @@ public class CreatureManager
 		return amount;
 	}
 	
-	
-	
+	public static void checkForDeaths()
+	{
+		for(int i = 0; i < CreatureManager.creatures.size(); i++)
+		{
+			if(CreatureManager.creatures.get(i).size < 30)
+			{
+				if(CreatureManager.creatures.get(i) == Run.selectedCreature) Menu.path = Menu.MenuPath.GENERAL;
+				CreatureManager.creatures.remove(i);
+				creatureDeaths++;
+				return;
+			}
+			if(CreatureManager.creatures.get(i).size < 100)
+			{
+				if(CreatureManager.creatures.get(i) == Run.selectedCreature) Menu.path = Menu.MenuPath.GENERAL;
+				CreatureManager.creatures.remove(i);
+				creatureDeaths++;
+			}
+		}
+	}
 	
 	public static boolean isCreatureAt(double xCoor, double yCoor)
 	{
@@ -129,11 +138,6 @@ public class CreatureManager
 			}
 		}
 		return isCreature;
-	}
-	
-	public void creatureMenu()
-	{
-		
 	}
 	
 	public static Creature checkCreatureClick(int x, int y)
@@ -192,13 +196,58 @@ public class CreatureManager
 		return data;
 	}
 	
+	public static void maintain()
+	{
+		while(creatures.size() < Run.maintainNum)
+		{
+			Run.forcedSpawns++;
+			addCreature();
+		}
+	}
+	
+	public static void drawCreatures(PApplet p)
+	{
+		p.colorMode(PConstants.RGB);
+		p.fill(255);
+		for(int i = 0; i < CreatureManager.creatures.size(); i++)
+		{
+			Creature c = CreatureManager.creatures.get(i);
+			p.stroke(50);
+			p.line((int)c.locationX, (int)c.locationY, (int)c.leftSensorX, (int)c.leftSensorY);
+			if(c.outputNeurons[3] > 0.0) p.stroke(180, 0, 0);
+			p.line((int)c.locationX, (int)c.locationY, (int)c.midSensorX, (int)c.midSensorY);
+			p.stroke(50);
+			p.line((int)c.locationX, (int)c.locationY, (int)c.rightSensorX, (int)c.rightSensorY);
+			p.stroke(0);
+			p.fill(c.color.hashCode());
+			if(Run.selectedCreature != null && CreatureManager.creatures.get(i).ID == Run.selectedCreature.ID)
+			{
+				p.stroke(240, 0, 255);
+				p.strokeWeight(7);
+			}
+			p.ellipse((int)c.locationX, (int)c.locationY, p2pw(c.diameter), p2pw(c.diameter));
+			p.fill(255);
+			p.stroke(0);
+			p.strokeWeight(1);
+			p.colorMode(PConstants.HSB, 360, 100, 100);
+			p.fill(c.leftSensorColor, 80, 45);
+			p.ellipse((int)c.leftSensorX, (int)c.leftSensorY, p2pw(15), p2pw(15));
+			p.fill(c.rightSensorColor, 80, 45);
+			p.ellipse((int)c.rightSensorX, (int)c.rightSensorY, p2pw(15), p2pw(15));
+			p.fill(c.mouthSensorColor, 80, 45);
+			//ellipse((int)c.mouthSensorX, (int)c.mouthSensorY, p2pw(15), p2pw(15));
+			p.colorMode(PConstants.RGB, 255, 255, 255);
+			p.fill(0);
+		}
+	}
+	
 	public int p2pl(double frac)
 	{
 		double returnPixels = 0;
 		returnPixels = frac / 2600.0 * appWidth;
 		return (int) returnPixels;
 	}
-	public int p2pw(double frac)
+	public static int p2pw(double frac)
 	{
 		double returnPixels = 0;
 		returnPixels = frac / 1600.0 * appHeight;

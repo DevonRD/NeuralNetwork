@@ -4,6 +4,10 @@ import java.text.DecimalFormat;
 
 public class Variables
 {
+	/** useful notes **/
+	// asdf
+	
+	
 	/** computer-based **/
 	// pixel distance from left & right side of application to edge of monitor
 	public final static int APP_WIDTH_SUBTRACTION_FACTOR = 68;

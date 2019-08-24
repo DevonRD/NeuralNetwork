@@ -2,6 +2,7 @@ package Utilities;
 
 import Essentials.Run;
 import processing.core.PApplet;
+import processing.core.PConstants;
 
 public class Button
 {
@@ -26,6 +27,9 @@ public class Button
 	}
 	public void draw()
 	{
+		p.colorMode(PConstants.RGB);
+		p.fill(170, 170, 170);
+		p.textSize(p2pl(35));
 		p.rect(this.getX(), this.getY(), this.width, this.height);
 	}
 	public int p2pl(double frac)

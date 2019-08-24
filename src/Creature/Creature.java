@@ -72,6 +72,7 @@ public class Creature
 	public double distToNearest = 4.0;
 	public int colorDifferenceToNearest = 200;
 	public int numCreaturesWithin10 = 0;
+	public double angleToNearest = 0;
 	
 	// 30 degrees both ways   pi/6
 	
@@ -91,7 +92,7 @@ public class Creature
 		totalDecayed = 0;
 		fitness = 0;
 		rotation = 0;
-		sensorLength = p2pw((40 + diameter));
+		sensorLength = p2pw((60 + diameter));
 		killerLength = p2pw((30 + diameter));
 		this.generation = generation;
 		this.mutateChance = mutateChance;
@@ -102,14 +103,13 @@ public class Creature
 		brainInit();
 	}
 	
-	/** Constructor for a creature birthed from a parent with mutation **/
+	/** Constructor for a creature birthed from a single parent, with mutation **/
 	public Creature(int realWidth, int realHeight, int startX, int startY, int ID, int size, int generation, double mutateChance, ArrayList<Axon[][]> brain, Color c, String parentID) // specified size
 	{
 		this.parentID = parentID;
 		this.realWidth = realWidth;
 		this.realHeight = realHeight;
 		color = c;
-		//color = new Color(c.getRed() + (int)(Math.random() * 4 - 2), c.getGreen() + (int)(Math.random() * 4 - 2), c.getBlue() + (int)(Math.random() * 4 - 2));
 		this.size = size;
 		locationX = startX;
 		locationY = startY;
@@ -119,7 +119,7 @@ public class Creature
 		totalDecayed = 0;
 		fitness = 0;
 		rotation = 0;
-		sensorLength = p2pw((40 + diameter));
+		sensorLength = p2pw((60 + diameter));
 		killerLength = p2pw((30 + diameter));
 		this.generation = generation;
 		this.brain = brain;
@@ -134,7 +134,7 @@ public class Creature
 	{
 		updateSensorInput(timeInterval);
 		diameter = size / 10.0;
-		sensorLength = p2pw((30 + diameter));
+		sensorLength = p2pw((60 + diameter));
 		for(int i = 0; i < sensorInput.length; i++)
 		{
 			sensorInput[i] = Math.copySign(Variables.sigmoid(sensorInput[i]), sensorInput[i]);
@@ -345,10 +345,21 @@ public class Creature
 		rightSensorColor = TileManager.tiles[rightTile[0]][rightTile[1]].colorH;
 		mouthSensorColor = TileManager.tiles[mouthTile[0]][mouthTile[1]].colorH;
 		
-		//if(CreatureBridge.isCreatureAt(leftSensorX, leftSensorY)) sensorInput[1] = 1.0;
-		// Left food, center food, mouth food, right food, size,
-		// distance to closest, rotation to closest, color difference from closest,
-		// # creatures within 10, 
+		/**
+		 * ------Sensor Inputs------
+		 * 0: Left sensor food value
+		 * 1: Attack sensor food value
+		 * 2: Mouth sensor food value
+		 * 3: Right sensor food value
+		 * 4: Own size
+		 * 5: Distance to nearest creature
+		 * 6: Color difference of nearest creature
+		 * 7: Change in angle to nearest creature (-180 to +180)
+		 * 8: Willingness of nearest creature to birth
+		 * 9: Number of creatures within 10 tile radius
+		 * 
+		 */
+
 		sensorInput[0] = TileManager.tiles[leftTile[0]][leftTile[1]].food / 10.0 - 5.0;
 		sensorInput[1] = TileManager.tiles[midTile[0]][midTile[1]].food / 10.0 - 5.0;
 		sensorInput[2] = TileManager.tiles[mouthTile[0]][mouthTile[1]].food / 10.0 - 5.0;
@@ -360,6 +371,7 @@ public class Creature
 		numCreaturesWithin10 = (int) nearestCreatureData[1];
 		if(nearestCreature != null)
 		{
+			double tempAngle;
 			distToNearest = Variables.distBtCoords(locationX, locationY, nearestCreature.locationX, nearestCreature.locationY);
 			distToNearest /= TileManager.tileSize;
 			sensorInput[5] = distToNearest - 4.0;
@@ -369,13 +381,22 @@ public class Creature
 			colorDifferenceToNearest += Math.abs(color.getGreen() - nearestCreature.color.getGreen());
 			colorDifferenceToNearest += Math.abs(color.getBlue() - nearestCreature.color.getBlue());
 			sensorInput[6] = (colorDifferenceToNearest / 50.0) - 4;
+			
+			tempAngle = findAngleChange(locationX, locationY, nearestCreature.locationX, nearestCreature.locationY);
+			if(tempAngle < 0) tempAngle += 360;
+			tempAngle = tempAngle - (rotation / Math.PI * 180.0);
+			if(tempAngle > 180) tempAngle -= 360;
+			if(tempAngle < -180) tempAngle += 360;
+			sensorInput[7] = angleToNearest = tempAngle;
 		}
 		else
 		{
-			sensorInput[5] = 4.0;
-			sensorInput[6] = 200;
+			sensorInput[5] = 100.0;
+			sensorInput[6] = 0.0;
+			sensorInput[7] = 0.0;
+			sensorInput[8] = 0.0;
 		}
-		sensorInput[7] = numCreaturesWithin10 - 4;
+		sensorInput[9] = numCreaturesWithin10 - 4;
 		
 	}
 	
@@ -447,6 +468,39 @@ public class Creature
 		giveBrain.add(layer2ToOutputAxons);
 		return giveBrain;
 	}
+	
+	private double findStartAngle(double x1, double y1, double x2, double y2) {
+        double xDiff = x2 - x1;
+        double yDiff = y2 - y1;
+        return Math.atan2(-yDiff, xDiff) * 180.0 / Math.PI;
+    }
+	
+    // Returns the angle of this point by adding the angle change to the prevAngle.
+    private double findAngleChange(double x1, double y1, double x2, double y2)
+    {
+        double target = findStartAngle(x1, y1, x2, y2);
+
+        double a = target;
+        double b = target + 360;
+        double y = target - 360;
+
+        double dir = a;
+
+        if (Math.abs(a)>Math.abs(b))
+        {
+            dir = b;
+            if (Math.abs(b) > Math.abs(y))
+            {
+                dir = y;
+            }
+        }
+        if(Math.abs(a)>Math.abs(y))
+        {
+            dir = y;
+        }
+
+        return (dir);
+    }
 	
 	public int p2pl(double frac)
 	{

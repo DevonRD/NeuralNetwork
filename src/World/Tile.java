@@ -51,7 +51,11 @@ public class Tile
 		if(deadCooldown < cooldownThreshold) return;
 		else deadCooldown = cooldownThreshold;
 		
-		if(food >= maxFood) return;
+		if(food >= maxFood)
+		{
+			food = maxFood;
+			return;
+		}
 		food += regenValue;
 		
 	}

@@ -28,15 +28,10 @@ public class Run extends PApplet
 	public static Creature selectedCreature;
 	boolean spawnClicking;
 	
-	public static boolean play;
-	public static boolean showMenu;
-	public static boolean maintain;
-	public static boolean drawGenePoolGraph;
+	public static boolean play, showMenu, maintain, drawGenePoolGraph, showCreatureInfo;
 	public static int maintainNum = Variables.START_MAINTAIN_NUM;
 	
-	static int startNumCreatures;
-	public static int creatureDeaths;
-	public static int maxObservedCreatures;
+	public static int startNumCreatures;
 	public static boolean spawnMode;
 	double scaleFactor;
 	int translateX, translateY;
@@ -86,17 +81,14 @@ public class Run extends PApplet
 		}
 		startNumCreatures = Variables.START_NUM_CREATURES;
 		timeInterval = Variables.GAME_SPEED;
-		manager = new Manager(this, startNumCreatures, width, height, waterTiles, MUTATE_CHANCE);
+		manager = new Manager(this);
 		menu = new Menu();
 		menu.menuInit(this);
 		
 		selectedTile = null;
 		selectedCreature = null;
-		
-		creatureDeaths = 0;
-		maxObservedCreatures = startNumCreatures;
-		
-		spawnClicking = spawnMode = showMenu = false;
+				
+		spawnClicking = spawnMode = showMenu = showCreatureInfo = false;
 		play = drawGenePoolGraph = true;
 		maintain = Variables.MAINTAIN_DEFAULT;
 		
@@ -109,6 +101,7 @@ public class Run extends PApplet
 	public void draw()
 	{
 		if(Menu.path != Menu.MenuPath.CREATURE) selectedCreature = null;
+		
 		if(mousePressed)
 		{
 			b4x = mouseX;
@@ -119,21 +112,12 @@ public class Run extends PApplet
 			rawTime++;
 			displayTime += timeInterval;
 			manager.iterate(timeInterval); // tiles then creatures
-			checkForDeaths();
 			
-			if(CreatureManager.creatures.size() > maxObservedCreatures) maxObservedCreatures = CreatureManager.creatures.size();
 			if(rawTime % 30 == 0)
 			{
 				menu.updateHistoryArrays();
 			}			
-			if(maintain)
-			{
-				while(CreatureManager.creatures.size() < maintainNum)
-				{
-					forcedSpawns++;
-					CreatureManager.addCreature();
-				}
-			}
+			
 			superMutations = 0;
 			for(int i = 0; i < CreatureManager.creatures.size(); i++)
 			{
@@ -155,8 +139,7 @@ public class Run extends PApplet
 		rect(p2pl(8), 0, p2pl(6), p2pw(10));
 		fill(255, 255, 255);
 		textSize(p2pl(30));
-		drawTiles();
-		drawCreatures();
+		manager.drawWorld(this);
 		popMatrix();
 		
 		menu.drawMenu(this);
@@ -174,83 +157,10 @@ public class Run extends PApplet
 		returnPixels = frac / 1600.0 * height;
 		return (int) returnPixels;
 	}
-
-	public void drawTiles()
-	{
-		for(int x = 0; x < TileManager.tiles.length; x++)
-		{
-			for(int y = 0; y < TileManager.tiles.length; y++)
-			{
-				colorMode(HSB, 360, 100, 100);
-				stroke(TileManager.tiles[y][x].colorH, TileManager.tiles[y][x].colorS, TileManager.tiles[y][x].colorV - 10);
-				fill(TileManager.tiles[y][x].colorH, TileManager.tiles[y][x].colorS, TileManager.tiles[y][x].colorV);
-				rect(TileManager.tiles[y][x].x, TileManager.tiles[y][x].y, TileManager.tileSize, TileManager.tileSize);
-				fill(0, 0, 0);
-				stroke(0);
-			}
-		}
-		colorMode(RGB, 255, 255, 255);
-	}
-	
-	public void drawCreatures()
-	{
-		colorMode(RGB);
-		fill(255);
-		for(int i = 0; i < CreatureManager.creatures.size(); i++)
-		{
-			Creature c = CreatureManager.creatures.get(i);
-			stroke(50);
-			line((int)c.locationX, (int)c.locationY, (int)c.leftSensorX, (int)c.leftSensorY);
-			if(c.outputNeurons[3] > 0.0) stroke(180, 0, 0);
-			line((int)c.locationX, (int)c.locationY, (int)c.midSensorX, (int)c.midSensorY);
-			stroke(50);
-			line((int)c.locationX, (int)c.locationY, (int)c.rightSensorX, (int)c.rightSensorY);
-			stroke(0);
-			fill(c.color.hashCode());
-			if(selectedCreature != null && CreatureManager.creatures.get(i).ID == selectedCreature.ID)
-			{
-				stroke(240, 0, 255);
-				strokeWeight(7);
-			}
-			ellipse((int)c.locationX, (int)c.locationY, p2pw(c.diameter), p2pw(c.diameter));
-			fill(255);
-			stroke(0);
-			strokeWeight(1);
-			colorMode(HSB, 360, 100, 100);
-			fill(c.leftSensorColor, 80, 45);
-			ellipse((int)c.leftSensorX, (int)c.leftSensorY, p2pw(15), p2pw(15));
-			fill(c.rightSensorColor, 80, 45);
-			ellipse((int)c.rightSensorX, (int)c.rightSensorY, p2pw(15), p2pw(15));
-			fill(c.mouthSensorColor, 80, 45);
-			//ellipse((int)c.mouthSensorX, (int)c.mouthSensorY, p2pw(15), p2pw(15));
-			colorMode(RGB, 255, 255, 255);
-			fill(0);
-		}
-	}
 	
 	public void tileSelected(int yIndex, int xIndex)
 	{
 		selectedTile = TileManager.tiles[yIndex][xIndex];
-	}
-	
-	public void checkForDeaths()
-	{
-		for(int i = 0; i < CreatureManager.creatures.size(); i++)
-		{
-			if(CreatureManager.creatures.get(i).size < 30)
-			{
-				if(CreatureManager.creatures.get(i) == selectedCreature) Menu.path = Menu.MenuPath.GENERAL;
-				CreatureManager.creatures.remove(i);
-				creatureDeaths++;
-				return;
-			}
-			if(CreatureManager.creatures.get(i).size < 100)
-			{
-				if(CreatureManager.creatures.get(i) == selectedCreature) Menu.path = Menu.MenuPath.GENERAL;
-				CreatureManager.creatures.remove(i);
-				creatureDeaths++;
-			}
-		}
 	}
 	
 	public void killAll()
@@ -292,14 +202,16 @@ public class Run extends PApplet
 	{
 		int mX = mouseX;
 		int mY = mouseY;
-		boolean check = false;
+		
+		// clicked on world, not a menu, test for creature, tile, etc click
+		boolean checkWorldClick = false;
 		
 		if(showMenu)
 		{
 			if(mX <= p2pl(1600) && mY >= p2pw(360))
 			{
 				System.out.println("check menu");
-				check = true;
+				checkWorldClick = true;
 				mX -= translateX;
 				mY -= translateY;
 				mX /= scaleFactor;
@@ -311,7 +223,7 @@ public class Run extends PApplet
 			if(mX <= p2pl(1600))
 			{
 				System.out.println("check no menu");
-				check = true;
+				checkWorldClick = true;
 				mX -= translateX;
 				mY -= translateY;
 				mX /= scaleFactor;
@@ -329,11 +241,18 @@ public class Run extends PApplet
 			play = !play;
 			return;
 		}
+		if(selectedCreature != null && Menu.creatureInfo.clicked(mX, mY))
+		{
+			showCreatureInfo = !showCreatureInfo;
+			return;
+		}
 		if(showMenu)
 		{
 			//test for button clicks
 			if(Menu.killAll.clicked(mX, mY)) // kill all button
 			{
+				selectedCreature = null;
+				Menu.path = Menu.MenuPath.GENERAL;
 				killAll();
 				return;
 			}
@@ -368,7 +287,7 @@ public class Run extends PApplet
 			}
 		}
 		
-		if(check)
+		if(checkWorldClick)
 		{
 			System.out.println("into check if");
 			if(spawnMode)
@@ -402,6 +321,7 @@ public class Run extends PApplet
 		}
 		Menu.path = Menu.MenuPath.GENERAL;
 	}
+	
 	public void mouseWheel(MouseEvent e)
     {
         float delta = (float) (-e.getCount() > 0 ? 1.05 : -e.getCount() < 0 ? 1.0 / 1.05 : 1.0);
@@ -418,11 +338,13 @@ public class Run extends PApplet
         if (scaleFactor > 3.0) scaleFactor = 3.0f;
         if (scaleFactor < .2) scaleFactor = .2f;
     }
+	
 	public void findCreatureID()
 	{
 		Creature creatureSearch = CreatureManager.findCreatureID(frame);
 		if(creatureSearch != null) selectedCreature = creatureSearch;
 	}
+	
 	public boolean[][] setupWaterMap() throws IOException
 	{
 		boolean[][] results = new boolean[100][100];
