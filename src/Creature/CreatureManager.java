@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 
 import Essentials.Run;
 import Utilities.Menu;
-import Utilities.Variables;
+import Utilities.Preferences;
 import World.TileManager;
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -21,7 +21,7 @@ public class CreatureManager
 	
 	public static int creatureCount;
 	public static int startNumCreatures = Run.startNumCreatures;
-	public static double mutateChance = Variables.MUTATE_CHANCE;
+	public static double mutateChance = Preferences.MUTATE_CHANCE;
 	public static int births = 0;
 	public static int creatureDeaths = 0;
 	public static int maxObservedCreatures = startNumCreatures;
@@ -45,7 +45,7 @@ public class CreatureManager
 			{
 				if(creatures.get(i).size < 400)
 				{
-					if(Variables.KILL_FOR_BIRTH_WITHOUT_MASS) creatures.get(i).size = 10;
+					if(Preferences.KILL_FOR_BIRTH_WITHOUT_MASS) creatures.get(i).size = 10;
 				}
 				else
 				{
@@ -178,7 +178,7 @@ public class CreatureManager
 		
 		for(int i = 0; i < creatures.size(); i++)
 		{
-			double dist = Variables.distBtCoords(from.locationX, from.locationY, 
+			double dist = Preferences.distBtCoords(from.locationX, from.locationY, 
 					creatures.get(i).locationX, creatures.get(i).locationY);
 			if(dist < closestDist && dist > 0.01)
 			{
@@ -225,32 +225,19 @@ public class CreatureManager
 				p.stroke(240, 0, 255);
 				p.strokeWeight(7);
 			}
-			p.ellipse((int)c.locationX, (int)c.locationY, p2pw(c.diameter), p2pw(c.diameter));
+			p.ellipse((int)c.locationX, (int)c.locationY, Preferences.p2pw(c.diameter), Preferences.p2pw(c.diameter));
 			p.fill(255);
 			p.stroke(0);
 			p.strokeWeight(1);
 			p.colorMode(PConstants.HSB, 360, 100, 100);
 			p.fill(c.leftSensorColor, 80, 45);
-			p.ellipse((int)c.leftSensorX, (int)c.leftSensorY, p2pw(15), p2pw(15));
+			p.ellipse((int)c.leftSensorX, (int)c.leftSensorY, Preferences.p2pw(15), Preferences.p2pw(15));
 			p.fill(c.rightSensorColor, 80, 45);
-			p.ellipse((int)c.rightSensorX, (int)c.rightSensorY, p2pw(15), p2pw(15));
+			p.ellipse((int)c.rightSensorX, (int)c.rightSensorY, Preferences.p2pw(15), Preferences.p2pw(15));
 			p.fill(c.mouthSensorColor, 80, 45);
 			//ellipse((int)c.mouthSensorX, (int)c.mouthSensorY, p2pw(15), p2pw(15));
 			p.colorMode(PConstants.RGB, 255, 255, 255);
 			p.fill(0);
 		}
-	}
-	
-	public int p2pl(double frac)
-	{
-		double returnPixels = 0;
-		returnPixels = frac / 2600.0 * appWidth;
-		return (int) returnPixels;
-	}
-	public static int p2pw(double frac)
-	{
-		double returnPixels = 0;
-		returnPixels = frac / 1600.0 * appHeight;
-		return (int) returnPixels;
 	}
 }

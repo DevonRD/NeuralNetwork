@@ -3,18 +3,17 @@ package Essentials;
 import processing.core.PApplet;
 import java.math.RoundingMode;
 import Creature.CreatureManager;
-import Utilities.Variables;
+import Utilities.Preferences;
 import World.TileManager;
 
 public class Manager
 {
-	PApplet p;
 	int appWidth = Run.appWidth;
 	int appHeight = Run.appHeight;
 			
-	public Manager(PApplet p)
+	public Manager()
 	{
-		Variables.df.setRoundingMode(RoundingMode.DOWN);
+		Preferences.formatDecimal.setRoundingMode(RoundingMode.DOWN);
 		
 		TileManager.startTiles();
 		CreatureManager.startCreatures();

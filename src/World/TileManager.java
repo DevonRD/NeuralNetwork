@@ -2,7 +2,7 @@ package World;
 
 import Essentials.Run;
 import Utilities.Menu;
-import Utilities.Variables;
+import Utilities.Preferences;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -11,13 +11,13 @@ public class TileManager
 	int appWidth = Run.appWidth;
 	static int appHeight = Run.appHeight;
 	
-	public static int tileResL = Variables.MAP_DIMENSIONS;
-	public static int tileResW = Variables.MAP_DIMENSIONS;
+	public static int tileResL = Preferences.MAP_DIMENSIONS;
+	public static int tileResW = Preferences.MAP_DIMENSIONS;
 	
 	public static Tile[][] tiles = new Tile[tileResW][tileResL];
 	
 	static boolean[][] water = Run.waterTiles;
-	public static int tileSize = 4 * p2pw(1500) / tileResW;
+	public static int tileSize = 4 * Preferences.p2pw(1500) / tileResW;
 	
 	public TileManager(PApplet p, boolean[][] water, int width, int height)
 	{
@@ -128,13 +128,6 @@ public class TileManager
 	public static int randYInMap()
 	{
 		return TileManager.tiles[0][0].y + (int)(Math.random() * (TileManager.tiles[TileManager.tileResL-1][TileManager.tileResW-1].y - TileManager.tiles[0][0].y));
-	}
-	
-	public static int p2pw(double frac)
-	{
-		double returnPixels = 0;
-		returnPixels = frac / 1600.0 * appHeight;
-		return (int) returnPixels;
 	}
 	
 }

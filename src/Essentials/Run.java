@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 
 import Creature.Creature;
 import Creature.CreatureManager;
-import Utilities.Variables;
+import Utilities.Preferences;
 import Utilities.Menu;
 import World.Tile;
 import World.TileManager;
@@ -29,7 +29,7 @@ public class Run extends PApplet
 	boolean spawnClicking;
 	
 	public static boolean play, showMenu, maintain, drawGenePoolGraph, showCreatureInfo;
-	public static int maintainNum = Variables.START_MAINTAIN_NUM;
+	public static int maintainNum = Preferences.START_MAINTAIN_NUM;
 	
 	public static int startNumCreatures;
 	public static boolean spawnMode;
@@ -41,11 +41,11 @@ public class Run extends PApplet
 	
 	BufferedImage map;
 	public static boolean[][] waterTiles;
-	static String[] mapOptions = Variables.MAPS;
+	static String[] mapOptions = Preferences.MAPS;
 	static String fileExt = ".jpg";
 	static String selectedMap;
 	
-	final double MUTATE_CHANCE = Variables.MUTATE_CHANCE;
+	final double MUTATE_CHANCE = Preferences.MUTATE_CHANCE;
 	public static int forcedSpawns = 0;
 	public static int superMutations = 0;
 	
@@ -59,15 +59,15 @@ public class Run extends PApplet
 	{
 		// appWidth and appHeight are to be pulled from p2p functions
 		// in other classes, use height and width otherwise 
-		appWidth = displayWidth - 2 * Variables.APP_WIDTH_SUBTRACTION_FACTOR;
-		appHeight = displayHeight - 2 * Variables.APP_HEIGHT_SUBTRACTION_FACTOR;
+		appWidth = displayWidth - 2 * Preferences.APP_WIDTH_SUBTRACTION_FACTOR;
+		appHeight = displayHeight - 2 * Preferences.APP_HEIGHT_SUBTRACTION_FACTOR;
 		size(appWidth, appHeight);
 	}
 	public void setup()
 	{
-		frameRate(Variables.FRAMERATE);
-		textSize(Variables.DEFAULT_TEXTSIZE);
-		scaleFactor = Variables.DEFAULT_SCALE_FACTOR;
+		frameRate(Preferences.FRAMERATE);
+		textSize(Preferences.DEFAULT_TEXTSIZE);
+		scaleFactor = Preferences.DEFAULT_SCALE_FACTOR;
 		
 		waterTiles = new boolean[100][100];
 		try
@@ -79,18 +79,19 @@ public class Run extends PApplet
 			System.out.println("catch error in setupMap");
 			e.printStackTrace();
 		}
-		startNumCreatures = Variables.START_NUM_CREATURES;
-		timeInterval = Variables.GAME_SPEED;
-		manager = new Manager(this);
+		startNumCreatures = Preferences.START_NUM_CREATURES;
+		timeInterval = Preferences.GAME_SPEED;
+		
+		manager = new Manager();
 		menu = new Menu();
 		menu.menuInit(this);
 		
 		selectedTile = null;
 		selectedCreature = null;
-				
+		
 		spawnClicking = spawnMode = showMenu = showCreatureInfo = false;
 		play = drawGenePoolGraph = true;
-		maintain = Variables.MAINTAIN_DEFAULT;
+		maintain = Preferences.MAINTAIN_DEFAULT;
 		
 		translateX = translateY = 20;
 		b4x = b4y = 0;
@@ -173,16 +174,18 @@ public class Run extends PApplet
 	
 	public void keyPressed()
 	{
+		// reset zoom and camera location
 		if(key == 'r')
 		{
 			translateX = translateY = 20;
-			scaleFactor = Variables.DEFAULT_SCALE_FACTOR;
+			scaleFactor = Preferences.DEFAULT_SCALE_FACTOR;
 			return;
 		}
+		// pause/unpause
 		else if(key == ' ')
 		{
 			play = !play;
-		}
+		}// toggle creature spawning on click
 		else if(key == 's')
 		{
 			spawnMode = !spawnMode;
@@ -341,8 +344,7 @@ public class Run extends PApplet
 	
 	public void findCreatureID()
 	{
-		Creature creatureSearch = CreatureManager.findCreatureID(frame);
-		if(creatureSearch != null) selectedCreature = creatureSearch;
+		selectedCreature = CreatureManager.findCreatureID(frame);
 	}
 	
 	public boolean[][] setupWaterMap() throws IOException

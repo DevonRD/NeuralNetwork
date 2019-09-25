@@ -2,7 +2,9 @@ package Utilities;
 
 import java.text.DecimalFormat;
 
-public class Variables
+import Essentials.Run;
+
+public class Preferences
 {
 	/** useful notes **/
 	// asdf
@@ -54,6 +56,13 @@ public class Variables
 	// how many code iterations until a dead tile can regen? default = 100
 	public final static int TILE_COOLDOWN_THRESH = 100;
 	
+	// should the current gene pool be displayed as a bar above the gene pool history graph?
+	// disabled by default because it's kind of pointless
+	public final static boolean SHOW_CURRENT_POOL = false;
+	
+	// how big should the menu graphs get before throwing out older data?
+	public final static int DISPLAY_GRAPH_SIZE = 150;
+	
 	
 	/** functions, don't edit **/
 	// general sigmoid function for neural network
@@ -62,17 +71,35 @@ public class Variables
 		return (2.0 / (1 + Math.pow(Math.E, -(x / 1.0)))) - 1.0;
 	}
 	
+	// slightly modified sigmoid function for reproduction color transformation (Menu)
+	public static double colorSigmoid(double x)
+	{
+		return (2.0 / (1 + Math.pow(Math.E, -(x / 1.5)))) - 1.0;
+	}
+	
 	// distance formula
 	public static double distBtCoords(double x1, double y1, double x2, double y2)
 	{
 		return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
 	}
 	
+	// conversion from pixels to proportion of the sceren lengthwise
+	public static int p2pl(double frac)
+	{
+		return (int) (frac / 2600.0 * Run.appWidth);
+	}
+	
+	// conversion from pixels to proportion of the sceren widthwise (height)
+	public static int p2pw(double frac)
+	{
+		return (int) (frac / 1600.0 * Run.appHeight);
+	}
+	
 	
 	/** universal **/
 	// UI number rounding
-	public static DecimalFormat df = new DecimalFormat("##.##");
-	public static DecimalFormat df2 = new DecimalFormat("##");
+	public static DecimalFormat formatDecimal = new DecimalFormat("##.##");
+	public static DecimalFormat formatInteger = new DecimalFormat("##");
 	
 	// ordered list of the available maps
 	public final static String[] MAPS = 

@@ -1,6 +1,6 @@
 package World;
 
-import Utilities.Variables;
+import Utilities.Preferences;
 
 public class Tile
 {
@@ -37,7 +37,7 @@ public class Tile
 		if(water) regenValue = 0;
 		else regenValue = 0.025;
 		tileNumber = number;
-		cooldownThreshold = Variables.TILE_COOLDOWN_THRESH;
+		cooldownThreshold = Preferences.TILE_COOLDOWN_THRESH;
 	}
 	
 	public void regenerateTileFood()

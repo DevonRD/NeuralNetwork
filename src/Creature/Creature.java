@@ -3,7 +3,7 @@ package Creature;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import Utilities.Variables;
+import Utilities.Preferences;
 import World.TileManager;
 
 public class Creature
@@ -33,7 +33,7 @@ public class Creature
 	public int generation;
 	double mutateChance;
 	double mutateFactor = 0.1;
-	double superMutateChance = Variables.SUPER_MUTATE_CHANCE;
+	double superMutateChance = Preferences.SUPER_MUTATE_CHANCE;
 	public boolean superMutate = false;
 	int births = 0;
 	int realWidth, realHeight;
@@ -92,8 +92,8 @@ public class Creature
 		totalDecayed = 0;
 		fitness = 0;
 		rotation = 0;
-		sensorLength = p2pw((60 + diameter));
-		killerLength = p2pw((30 + diameter));
+		sensorLength = Preferences.p2pw((60 + diameter));
+		killerLength = Preferences.p2pw((30 + diameter));
 		this.generation = generation;
 		this.mutateChance = mutateChance;
 		this.brain = null;
@@ -119,8 +119,8 @@ public class Creature
 		totalDecayed = 0;
 		fitness = 0;
 		rotation = 0;
-		sensorLength = p2pw((60 + diameter));
-		killerLength = p2pw((30 + diameter));
+		sensorLength = Preferences.p2pw((60 + diameter));
+		killerLength = Preferences.p2pw((30 + diameter));
 		this.generation = generation;
 		this.brain = brain;
 		this.mutateChance = mutateChance;
@@ -134,10 +134,10 @@ public class Creature
 	{
 		updateSensorInput(timeInterval);
 		diameter = size / 10.0;
-		sensorLength = p2pw((60 + diameter));
+		sensorLength = Preferences.p2pw((60 + diameter));
 		for(int i = 0; i < sensorInput.length; i++)
 		{
-			sensorInput[i] = Math.copySign(Variables.sigmoid(sensorInput[i]), sensorInput[i]);
+			sensorInput[i] = Math.copySign(Preferences.sigmoid(sensorInput[i]), sensorInput[i]);
 		}
 		updateBrain();
 		applyOutputs(timeInterval);
@@ -311,7 +311,7 @@ public class Creature
 			{
 				hidLayer1[i] += inputNeurons[j] * inputToLayer1Axons[j][i].weight; 
 			}
-			hidLayer1[i] = Variables.sigmoid(hidLayer1[i]);
+			hidLayer1[i] = Preferences.sigmoid(hidLayer1[i]);
 		}
 		for(int i = 0; i < hidLayer2.length; i++)
 		{
@@ -319,7 +319,7 @@ public class Creature
 			{
 				hidLayer2[i] += hidLayer1[j] * layer1ToLayer2Axons[j][i].weight; 
 			}
-			hidLayer2[i] = Variables.sigmoid(hidLayer2[i]);
+			hidLayer2[i] = Preferences.sigmoid(hidLayer2[i]);
 		}
 		for(int i = 0; i < outputNeurons.length; i++)
 		{
@@ -327,7 +327,7 @@ public class Creature
 			{
 				outputNeurons[i] += hidLayer2[j] * layer2ToOutputAxons[j][i].weight; 
 			}
-			outputNeurons[i] = Variables.sigmoid(outputNeurons[i]);
+			outputNeurons[i] = Preferences.sigmoid(outputNeurons[i]);
 		}
 	}
 	
@@ -372,7 +372,7 @@ public class Creature
 		if(nearestCreature != null)
 		{
 			double tempAngle;
-			distToNearest = Variables.distBtCoords(locationX, locationY, nearestCreature.locationX, nearestCreature.locationY);
+			distToNearest = Preferences.distBtCoords(locationX, locationY, nearestCreature.locationX, nearestCreature.locationY);
 			distToNearest /= TileManager.tileSize;
 			sensorInput[5] = distToNearest - 4.0;
 			
@@ -501,24 +501,4 @@ public class Creature
 
         return (dir);
     }
-	
-	public int p2pl(double frac)
-	{
-		double returnPixels = 0;
-		returnPixels = frac / 2600.0 * realWidth;
-		return (int) returnPixels;
-	}
-	public int p2pw(double frac)
-	{
-		double returnPixels = 0;
-		returnPixels = frac / 1600.0 * realHeight;
-		return (int) returnPixels;
-	}
-	
-	
-	
-	
-	
-	
-	
 }

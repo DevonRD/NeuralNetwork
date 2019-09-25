@@ -1,6 +1,5 @@
 package Utilities;
 
-import Essentials.Run;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -22,28 +21,17 @@ public class Button
 		this.width = width - 2 * buffer;
 		this.height = height - 2 * buffer;
 		this.p = p;
-		setTextX(buffer + this.getX() + p2pl(20));
+		setTextX(buffer + this.getX() + Preferences.p2pl(20));
 		setTextY((int)(buffer + this.getY() + this.height / 2.0));
 	}
 	public void draw()
 	{
 		p.colorMode(PConstants.RGB);
 		p.fill(170, 170, 170);
-		p.textSize(p2pl(35));
+		p.textSize(Preferences.p2pl(35));
 		p.rect(this.getX(), this.getY(), this.width, this.height);
 	}
-	public int p2pl(double frac)
-	{
-		double returnPixels = 0;
-		returnPixels = frac / 2600.0 * Run.appWidth;
-		return (int) returnPixels;
-	}
-	public int p2pw(double frac)
-	{
-		double returnPixels = 0;
-		returnPixels = frac / 1600.0 * Run.appHeight;
-		return (int) returnPixels;
-	}
+
 	public boolean clicked(int x, int y)
 	{
 		if(this.getX() < x && x <= this.getX() + this.width)
