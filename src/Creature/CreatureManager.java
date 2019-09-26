@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 
 import Essentials.Run;
 import Utilities.Menu;
-import Utilities.Preferences;
+import Utilities.Prefs;
 import World.TileManager;
 import processing.core.PApplet;
 import processing.core.PConstants;
@@ -21,7 +21,7 @@ public class CreatureManager
 	
 	public static int creatureCount;
 	public static int startNumCreatures = Run.startNumCreatures;
-	public static double mutateChance = Preferences.MUTATE_CHANCE;
+	public static double mutateChance = Prefs.MUTATE_CHANCE;
 	public static int births = 0;
 	public static int creatureDeaths = 0;
 	public static int maxObservedCreatures = startNumCreatures;
@@ -45,14 +45,15 @@ public class CreatureManager
 			{
 				if(creatures.get(i).size < 400)
 				{
-					if(Preferences.KILL_FOR_BIRTH_WITHOUT_MASS) creatures.get(i).size = 10;
+					if(Prefs.KILL_FOR_BIRTH_WITHOUT_MASS) creatures.get(i).size = 10;
 				}
 				else
 				{
 					births++;
 					creatureCount++;
 					ArrayList<Axon[][]> creatureBrain = creatures.get(i).giveBirth();
-					creatures.add(new Creature(appWidth, appHeight, (int)creatures.get(i).locationX, (int)creatures.get(i).locationY, creatureCount, 250, ( creatures.get(i).generation+1 ), mutateChance, creatureBrain, creatures.get(i).color, creatures.get(i).ID + ""));
+					creatures.add(new Creature(appWidth, appHeight, (int)creatures.get(i).locationX, (int)creatures.get(i).locationY,
+							creatureCount, ( creatures.get(i).generation+1 ), creatureBrain, creatures.get(i).color, creatures.get(i).ID));
 				}
 			}
 		}
@@ -70,7 +71,7 @@ public class CreatureManager
 			if(!Run.waterTiles[tileTest[1]][tileTest[0]])
 			{
 				creatureCount++;
-				creatures.add(new Creature(appWidth, appHeight, testX, testY, creatureCount, 0, mutateChance));
+				creatures.add(new Creature(appWidth, appHeight, testX, testY, creatureCount, 0));
 			}
 			else i--;
 		}
@@ -87,7 +88,7 @@ public class CreatureManager
 			if(!Run.waterTiles[tileTest[1]][tileTest[0]])
 			{
 				creatureCount++;
-				creatures.add(new Creature(appWidth, appHeight, testX, testY, creatureCount, 0, mutateChance));
+				creatures.add(new Creature(appWidth, appHeight, testX, testY, creatureCount, 0));
 				done = true;
 			}
 		}
@@ -95,7 +96,15 @@ public class CreatureManager
 	public static void addCreature(int x, int y)
 	{
 		creatureCount++;
-		creatures.add(new Creature(appWidth, appHeight, x, y, creatureCount, 0, mutateChance));
+		creatures.add(new Creature(appWidth, appHeight, x, y, creatureCount, 0));
+	}
+	
+	public static void spawnNumCreatures(int number)
+	{
+		for(int i = 0; i < number; i++)
+		{
+			addCreature();
+		}
 	}
 	
 	public static double requestEat(int yIndex, int xIndex, double amount)
@@ -178,7 +187,7 @@ public class CreatureManager
 		
 		for(int i = 0; i < creatures.size(); i++)
 		{
-			double dist = Preferences.distBtCoords(from.locationX, from.locationY, 
+			double dist = Prefs.distBtCoords(from.locationX, from.locationY, 
 					creatures.get(i).locationX, creatures.get(i).locationY);
 			if(dist < closestDist && dist > 0.01)
 			{
@@ -225,19 +234,27 @@ public class CreatureManager
 				p.stroke(240, 0, 255);
 				p.strokeWeight(7);
 			}
-			p.ellipse((int)c.locationX, (int)c.locationY, Preferences.p2pw(c.diameter), Preferences.p2pw(c.diameter));
+			p.ellipse((int)c.locationX, (int)c.locationY, Prefs.p2pw(c.diameter), Prefs.p2pw(c.diameter));
 			p.fill(255);
 			p.stroke(0);
 			p.strokeWeight(1);
 			p.colorMode(PConstants.HSB, 360, 100, 100);
 			p.fill(c.leftSensorColor, 80, 45);
-			p.ellipse((int)c.leftSensorX, (int)c.leftSensorY, Preferences.p2pw(15), Preferences.p2pw(15));
+			p.ellipse((int)c.leftSensorX, (int)c.leftSensorY, Prefs.p2pw(15), Prefs.p2pw(15));
 			p.fill(c.rightSensorColor, 80, 45);
-			p.ellipse((int)c.rightSensorX, (int)c.rightSensorY, Preferences.p2pw(15), Preferences.p2pw(15));
+			p.ellipse((int)c.rightSensorX, (int)c.rightSensorY, Prefs.p2pw(15), Prefs.p2pw(15));
 			p.fill(c.mouthSensorColor, 80, 45);
 			//ellipse((int)c.mouthSensorX, (int)c.mouthSensorY, p2pw(15), p2pw(15));
 			p.colorMode(PConstants.RGB, 255, 255, 255);
 			p.fill(0);
+		}
+	}
+	
+	public static void killAll()
+	{
+		while(!creatures.isEmpty())
+		{
+			creatures.remove(0);
 		}
 	}
 }

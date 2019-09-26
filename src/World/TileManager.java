@@ -2,7 +2,7 @@ package World;
 
 import Essentials.Run;
 import Utilities.Menu;
-import Utilities.Preferences;
+import Utilities.Prefs;
 import processing.core.PApplet;
 import processing.core.PConstants;
 
@@ -11,19 +11,15 @@ public class TileManager
 	int appWidth = Run.appWidth;
 	static int appHeight = Run.appHeight;
 	
-	public static int tileResL = Preferences.MAP_DIMENSIONS;
-	public static int tileResW = Preferences.MAP_DIMENSIONS;
+	public static int tileResL = Prefs.MAP_DIMENSIONS;
+	public static int tileResW = Prefs.MAP_DIMENSIONS;
 	
 	public static Tile[][] tiles = new Tile[tileResW][tileResL];
 	
 	static boolean[][] water = Run.waterTiles;
-	public static int tileSize = 4 * Preferences.p2pw(1500) / tileResW;
+	public static int tileSize = 4 * Prefs.p2pw(1500) / tileResW;
 	
-	public TileManager(PApplet p, boolean[][] water, int width, int height)
-	{
-						
-		startTiles();
-	}
+	/** STATIC CLASS **/
 	
 	public static void iterate(double timeInterval)
 	{

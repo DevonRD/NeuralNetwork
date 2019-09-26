@@ -3,83 +3,50 @@ package Creature;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import Utilities.Preferences;
+import Utilities.Prefs;
 import World.TileManager;
 
 public class Creature
 {
-	public double locationX;
-	public double locationY;
-	public double size;
-	public double diameter;
-	public int ID;
-	public double totalEaten;
-	public double totalDecayed;
-	public double fitness;
-	double birthDate;
-	double age;
-	double forwardVel;
-	public double rotation;
-	double rotationVel;
-	int sensorLength;
-	int killerLength;
-	double[] defaultSensorValues;
-	public final int brainLength = 12;
-	final double ANGLE_CONSTANT = Math.PI/6.0;
-	public double eatRate;
-	double decayRate;
-	public double energyChange;
-	boolean attack;
-	public int generation;
-	double mutateChance;
-	double mutateFactor = 0.1;
-	double superMutateChance = Preferences.SUPER_MUTATE_CHANCE;
-	public boolean superMutate = false;
-	int births = 0;
-	int realWidth, realHeight;
-	public Color color; // genes
-	public int leftSensorColor;
-	public int rightSensorColor;
-	public int mouthSensorColor;
-	ArrayList<Axon[][]> brain = new ArrayList<Axon[][]>();
-	public double attackDecay;
-	public double sizeDecay;
-	public double fitnessDecay;
-	public double eatRateDecay;
-	public double forwardDecay;
-	public double rotationDecay = 0;
-	public double[] sensorInput;
+	// Creature-specific variables 
+		public double locationX, locationY, size, diameter, birthDate, age,
+			totalEaten, totalDecayed, fitness, forwardVel, rotation, rotationVel,
+			leftSensorX, leftSensorY, midSensorX, midSensorY, rightSensorX, rightSensorY, mouthSensorX, mouthSensorY,
+			attackDecay, sizeDecay, fitnessDecay, eatRateDecay, forwardDecay, rotationDecay,
+			eatRate, decayRate, energyChange;
 	
-	public double leftSensorX;
-	public double leftSensorY;
-	public double midSensorX;
-	public double midSensorY;
-	public double rightSensorX;
-	public double rightSensorY;
-	public double mouthSensorX;
-	public double mouthSensorY;
+		public int ID, parentID, generation, births, sensorLength, weaponLength,
+			leftSensorColor, rightSensorColor, mouthSensorColor,
+			realWidth, realHeight;
 	
-	public double[] inputNeurons;
-	public double[] hidLayer1;
-	public double[] hidLayer2;
-	public double[] outputNeurons;
-	public Axon[][] inputToLayer1Axons;
-	public Axon[][] layer1ToLayer2Axons;
-	public Axon[][] layer2ToOutputAxons;
-	public String parentID;
+		boolean attack;
+		public Color color;
 	
-	public Creature nearestCreature = null;
-	public double distToNearest = 4.0;
-	public int colorDifferenceToNearest = 200;
-	public int numCreaturesWithin10 = 0;
-	public double angleToNearest = 0;
+	// Neural network variables 
+		public double[] defaultSensorValues, sensorInput, inputNeurons, hidLayer1, hidLayer2, outputNeurons;
+		double mutateFactor = 0.1;
+		double mutateChance = Prefs.MUTATE_CHANCE;
+		double superMutateChance = Prefs.SUPER_MUTATE_CHANCE;
+		public boolean superMutate = false;
+		ArrayList<Axon[][]> brain = new ArrayList<Axon[][]>();
+		public Axon[][] inputToLayer1Axons, layer1ToLayer2Axons, layer2ToOutputAxons;
 	
-	// 30 degrees both ways   pi/6
+	// Constants 
+		public final int brainLength = 12;
+		// 30 degrees both ways -> pi/6
+		double sensorAngle = Math.PI/6.0;
+		int startingBirthSize = 250;
+	
+	// Nearby creature information 
+		public Creature nearestCreature = null;
+		public double distToNearest, angleToNearest;
+		public int colorDifferenceToNearest, numCreaturesWithin10;
+	
 	
 	/** Constructor for a random creature with no parent and default brain **/
-	public Creature(int realWidth, int realHeight, int startX, int startY, int ID, int generation, double mutateChance) // no specified size
+	public Creature(int realWidth, int realHeight, int startX, int startY, int ID, int generation)
 	{
-		parentID = " -- ";
+		parentID = 0;
 		this.realWidth = realWidth;
 		this.realHeight = realHeight;
 		color = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
@@ -88,14 +55,14 @@ public class Creature
 		locationY = startY;
 		diameter = size/10.0;
 		this.ID = ID;
-		totalEaten = 0;
-		totalDecayed = 0;
-		fitness = 0;
-		rotation = 0;
-		sensorLength = Preferences.p2pw((60 + diameter));
-		killerLength = Preferences.p2pw((30 + diameter));
+		
+		distToNearest = 4.0;
+		colorDifferenceToNearest = 200;
+		angleToNearest = totalEaten = totalDecayed = fitness = rotation = rotationDecay = births = numCreaturesWithin10 = 0;
+
+		sensorLength = Prefs.p2pw((60 + diameter));
+		weaponLength = Prefs.p2pw((30 + diameter));
 		this.generation = generation;
-		this.mutateChance = mutateChance;
 		this.brain = null;
 		rotation = Math.random() * 2 * Math.PI;
 		sensorInput = new double[brainLength];
@@ -104,26 +71,27 @@ public class Creature
 	}
 	
 	/** Constructor for a creature birthed from a single parent, with mutation **/
-	public Creature(int realWidth, int realHeight, int startX, int startY, int ID, int size, int generation, double mutateChance, ArrayList<Axon[][]> brain, Color c, String parentID) // specified size
+	public Creature(int realWidth, int realHeight, int startX, int startY, int ID, int generation,
+			ArrayList<Axon[][]> brain, Color c, int parentID)
 	{
 		this.parentID = parentID;
 		this.realWidth = realWidth;
 		this.realHeight = realHeight;
 		color = c;
-		this.size = size;
+		size = startingBirthSize;
 		locationX = startX;
 		locationY = startY;
 		diameter = size/10.0;
 		this.ID = ID;
-		totalEaten = 0;
-		totalDecayed = 0;
-		fitness = 0;
-		rotation = 0;
-		sensorLength = Preferences.p2pw((60 + diameter));
-		killerLength = Preferences.p2pw((30 + diameter));
+		
+		distToNearest = 4.0;
+		colorDifferenceToNearest = 200;
+		angleToNearest = totalEaten = totalDecayed = fitness = rotation = rotationDecay = births = numCreaturesWithin10 = 0;
+		
+		sensorLength = Prefs.p2pw((60 + diameter));
+		weaponLength = Prefs.p2pw((30 + diameter));
 		this.generation = generation;
 		this.brain = brain;
-		this.mutateChance = mutateChance;
 		rotation = Math.random() * 2 * Math.PI;
 		sensorInput = new double[brainLength];
 		updateSensorCoords();
@@ -134,10 +102,10 @@ public class Creature
 	{
 		updateSensorInput(timeInterval);
 		diameter = size / 10.0;
-		sensorLength = Preferences.p2pw((60 + diameter));
+		sensorLength = Prefs.p2pw((60 + diameter));
 		for(int i = 0; i < sensorInput.length; i++)
 		{
-			sensorInput[i] = Math.copySign(Preferences.sigmoid(sensorInput[i]), sensorInput[i]);
+			sensorInput[i] = Math.copySign(Prefs.sigmoid(sensorInput[i]), sensorInput[i]);
 		}
 		updateBrain();
 		applyOutputs(timeInterval);
@@ -148,8 +116,8 @@ public class Creature
 	{
 		rotation %= (2 * Math.PI);
 		while (rotation < 0) rotation += (2 * Math.PI);
-		double rightSensorRotation = rotation + ANGLE_CONSTANT;
-		double leftSensorRotation = rotation - ANGLE_CONSTANT;
+		double rightSensorRotation = rotation + sensorAngle;
+		double leftSensorRotation = rotation - sensorAngle;
 		while (rightSensorRotation < 0) rightSensorRotation += 2*Math.PI;
 		while (leftSensorRotation < 0) leftSensorRotation += 2*Math.PI;
 		rightSensorRotation %= (2 * Math.PI);
@@ -162,8 +130,8 @@ public class Creature
 		//left sensor, mid sensor, right sensor, mouth
 		leftSensorX = locationX + (sensorLength * Math.cos(leftSensorTempAngle));
 		leftSensorY = locationY + (sensorLength * Math.sin(leftSensorTempAngle));
-		midSensorX = locationX + (killerLength * Math.cos(midSensorTempAngle));
-		midSensorY = locationY + (killerLength * Math.sin(midSensorTempAngle));
+		midSensorX = locationX + (weaponLength * Math.cos(midSensorTempAngle));
+		midSensorY = locationY + (weaponLength * Math.sin(midSensorTempAngle));
 		rightSensorX = locationX + (sensorLength * Math.cos(rightSensorTempAngle));
 		rightSensorY = locationY + (sensorLength * Math.sin(rightSensorTempAngle));
 		mouthSensorX = locationX + (diameter/2.0 * Math.cos(midSensorTempAngle));
@@ -311,7 +279,7 @@ public class Creature
 			{
 				hidLayer1[i] += inputNeurons[j] * inputToLayer1Axons[j][i].weight; 
 			}
-			hidLayer1[i] = Preferences.sigmoid(hidLayer1[i]);
+			hidLayer1[i] = Prefs.sigmoid(hidLayer1[i]);
 		}
 		for(int i = 0; i < hidLayer2.length; i++)
 		{
@@ -319,7 +287,7 @@ public class Creature
 			{
 				hidLayer2[i] += hidLayer1[j] * layer1ToLayer2Axons[j][i].weight; 
 			}
-			hidLayer2[i] = Preferences.sigmoid(hidLayer2[i]);
+			hidLayer2[i] = Prefs.sigmoid(hidLayer2[i]);
 		}
 		for(int i = 0; i < outputNeurons.length; i++)
 		{
@@ -327,7 +295,7 @@ public class Creature
 			{
 				outputNeurons[i] += hidLayer2[j] * layer2ToOutputAxons[j][i].weight; 
 			}
-			outputNeurons[i] = Preferences.sigmoid(outputNeurons[i]);
+			outputNeurons[i] = Prefs.sigmoid(outputNeurons[i]);
 		}
 	}
 	
@@ -372,7 +340,7 @@ public class Creature
 		if(nearestCreature != null)
 		{
 			double tempAngle;
-			distToNearest = Preferences.distBtCoords(locationX, locationY, nearestCreature.locationX, nearestCreature.locationY);
+			distToNearest = Prefs.distBtCoords(locationX, locationY, nearestCreature.locationX, nearestCreature.locationY);
 			distToNearest /= TileManager.tileSize;
 			sensorInput[5] = distToNearest - 4.0;
 			
@@ -416,7 +384,7 @@ public class Creature
 		eatRate = 25 * Math.abs(outputNeurons[2]) / (1 + 2*Math.abs(forwardVel));
 		if(outputNeurons[3] > 0) attack = true;
 		else attack = false;
-		killerLength = (int) ((outputNeurons[5] / 2 + 0.5) * 50 + (diameter));
+		weaponLength = (int) ((outputNeurons[5] / 2 + 0.5) * 50 + (diameter));
 		
 		rotation += rotationVel * timeInterval / 2;
 		

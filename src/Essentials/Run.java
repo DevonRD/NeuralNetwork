@@ -9,7 +9,7 @@ import javax.swing.JOptionPane;
 
 import Creature.Creature;
 import Creature.CreatureManager;
-import Utilities.Preferences;
+import Utilities.Prefs;
 import Utilities.Menu;
 import World.Tile;
 import World.TileManager;
@@ -20,67 +20,65 @@ public class Run extends PApplet
 {
 	Manager manager;
 	Menu menu;
-	int rawTime;
-	public static double displayTime;
-	public static int appWidth, appHeight;
-	double timeInterval;
-	public static Tile selectedTile;
-	public static Creature selectedCreature;
-	boolean spawnClicking;
 	
-	public static boolean play, showMenu, maintain, drawGenePoolGraph, showCreatureInfo;
-	public static int maintainNum = Preferences.START_MAINTAIN_NUM;
+	// Time variables
+		int rawTime;
+		double timeInterval;
+		public static double displayTime;
 	
-	public static int startNumCreatures;
-	public static boolean spawnMode;
-	double scaleFactor;
-	int translateX, translateY;
-	int delta;
-	int b4x, b4y;
-	int deltaX, deltaY;
+	// General variables
+		double scaleFactor;
+		int translateX, translateY, delta, b4x, b4y, deltaX, deltaY;
+		public static int appWidth, appHeight, maintainNum, startNumCreatures, forcedSpawns, superMutations;
+		public static boolean play, showMenu, maintainPop, drawGenePoolGraph, showCreatureInfo, spawnMode, spawnClicking;
 	
-	BufferedImage map;
-	public static boolean[][] waterTiles;
-	static String[] mapOptions = Preferences.MAPS;
-	static String fileExt = ".jpg";
-	static String selectedMap;
+	// Currently selected
+		public static Tile selectedTile;
+		public static Creature selectedCreature;
 	
-	final double MUTATE_CHANCE = Preferences.MUTATE_CHANCE;
-	public static int forcedSpawns = 0;
-	public static int superMutations = 0;
+	// Map variables
+		BufferedImage map;
+		public static boolean[][] waterTiles;
+		static String[] mapOptions;
+		static String fileExt = ".jpg";
+		static String selectedMap;
 	
 	public static void main(String[] args)
 	{
+		mapOptions = Prefs.MAPS;
 		JFrame frame = new JFrame("Input Dialog");
 		selectedMap = (String) JOptionPane.showInputDialog(frame, "Select a map to use.", "Map Selector", JOptionPane.QUESTION_MESSAGE, null, mapOptions, mapOptions[0]);
 		PApplet.main("Essentials.Run");
 	}
 	public void settings()
 	{
-		// appWidth and appHeight are to be pulled from p2p functions
+		// appWidth and appHeight are used in p2p functions (see Utilities.Prefs)
 		// in other classes, use height and width otherwise 
-		appWidth = displayWidth - 2 * Preferences.APP_WIDTH_SUBTRACTION_FACTOR;
-		appHeight = displayHeight - 2 * Preferences.APP_HEIGHT_SUBTRACTION_FACTOR;
+		appWidth = displayWidth - 2 * Prefs.APP_WIDTH_SUBTRACTION_FACTOR;
+		appHeight = displayHeight - 2 * Prefs.APP_HEIGHT_SUBTRACTION_FACTOR;
 		size(appWidth, appHeight);
 	}
 	public void setup()
 	{
-		frameRate(Preferences.FRAMERATE);
-		textSize(Preferences.DEFAULT_TEXTSIZE);
-		scaleFactor = Preferences.DEFAULT_SCALE_FACTOR;
+		frameRate(Prefs.FRAMERATE);
+		textSize(Prefs.DEFAULT_TEXTSIZE);
 		
-		waterTiles = new boolean[100][100];
+		timeInterval = Prefs.GAME_SPEED;
+		maintainPop = Prefs.MAINTAIN_DEFAULT;
+		maintainNum = Prefs.START_MAINTAIN_NUM;
+		scaleFactor = Prefs.DEFAULT_SCALE_FACTOR;
+		startNumCreatures = Prefs.START_NUM_CREATURES;
+		
 		try
 		{
+			waterTiles = new boolean[100][100];
 			waterTiles = setupWaterMap();
 		}
 		catch(IOException e)
 		{
-			System.out.println("catch error in setupMap");
+			System.out.println("ERROR: Failed to setup map: see setupWaterMap");
 			e.printStackTrace();
 		}
-		startNumCreatures = Preferences.START_NUM_CREATURES;
-		timeInterval = Preferences.GAME_SPEED;
 		
 		manager = new Manager();
 		menu = new Menu();
@@ -91,12 +89,10 @@ public class Run extends PApplet
 		
 		spawnClicking = spawnMode = showMenu = showCreatureInfo = false;
 		play = drawGenePoolGraph = true;
-		maintain = Preferences.MAINTAIN_DEFAULT;
 		
+		forcedSpawns = superMutations = 0;
 		translateX = translateY = 20;
-		b4x = b4y = 0;
-		deltaX = deltaY = 0;
-		displayTime = 0;
+		displayTime = b4x = b4y = deltaX = deltaY = 0;
 	}
 	
 	public void draw()
@@ -112,7 +108,7 @@ public class Run extends PApplet
 		{	
 			rawTime++;
 			displayTime += timeInterval;
-			manager.iterate(timeInterval); // tiles then creatures
+			manager.iterate(timeInterval);
 			
 			if(rawTime % 30 == 0)
 			{
@@ -129,47 +125,21 @@ public class Run extends PApplet
 		if(selectedCreature != null)
 		{
 			scaleFactor = 2.0f;
-			translateX = (int) (-scaleFactor * selectedCreature.locationX + p2pw(850));
-			translateY = (int) (-scaleFactor * selectedCreature.locationY + p2pw(850));
+			translateX = (int) (-scaleFactor * selectedCreature.locationX + Prefs.p2pw(850));
+			translateY = (int) (-scaleFactor * selectedCreature.locationY + Prefs.p2pw(850));
 		}
 		translate(translateX, translateY);
 		scale((float) scaleFactor);
 		colorMode(RGB);
 		background(100);
 		fill(60);
-		rect(p2pl(8), 0, p2pl(6), p2pw(10));
+		rect(Prefs.p2pl(8), 0, Prefs.p2pl(6), Prefs.p2pw(10));
 		fill(255, 255, 255);
-		textSize(p2pl(30));
+		textSize(Prefs.p2pl(30));
 		manager.drawWorld(this);
 		popMatrix();
 		
 		menu.drawMenu(this);
-	}
-	
-	public int p2pl(double frac)
-	{
-		double returnPixels = 0;
-		returnPixels = frac / 2600.0 * width;
-		return (int) returnPixels;
-	}
-	public int p2pw(double frac)
-	{
-		double returnPixels = 0;
-		returnPixels = frac / 1600.0 * height;
-		return (int) returnPixels;
-	}
-	
-	public void tileSelected(int yIndex, int xIndex)
-	{
-		selectedTile = TileManager.tiles[yIndex][xIndex];
-	}
-	
-	public void killAll()
-	{
-		while(!CreatureManager.creatures.isEmpty())
-		{
-			CreatureManager.creatures.remove(0);
-		}
 	}
 	
 	public void keyPressed()
@@ -178,23 +148,26 @@ public class Run extends PApplet
 		if(key == 'r')
 		{
 			translateX = translateY = 20;
-			scaleFactor = Preferences.DEFAULT_SCALE_FACTOR;
+			scaleFactor = Prefs.DEFAULT_SCALE_FACTOR;
 			return;
 		}
-		// pause/unpause
+		// pause and unpause
 		else if(key == ' ')
 		{
 			play = !play;
-		}// toggle creature spawning on click
+		}
+		// toggle creature spawning on click
 		else if(key == 's')
 		{
 			spawnMode = !spawnMode;
 		}
+		// kill all creatures
 		else if(key == 'k')
 		{
-			killAll();
+			CreatureManager.killAll();
 		}
 	}
+	
 	public void mouseDragged(MouseEvent e)
     {
         translateX += mouseX - pmouseX;
@@ -211,9 +184,9 @@ public class Run extends PApplet
 		
 		if(showMenu)
 		{
-			if(mX <= p2pl(1600) && mY >= p2pw(360))
+			if(mX <= Prefs.p2pl(1600) && mY >= Prefs.p2pw(360))
 			{
-				System.out.println("check menu");
+				if(Prefs.DEBUG_PRINTS) System.out.println("check menu");
 				checkWorldClick = true;
 				mX -= translateX;
 				mY -= translateY;
@@ -223,9 +196,9 @@ public class Run extends PApplet
 		}
 		else
 		{
-			if(mX <= p2pl(1600))
+			if(mX <= Prefs.p2pl(1600))
 			{
-				System.out.println("check no menu");
+				if(Prefs.DEBUG_PRINTS) System.out.println("check no menu");
 				checkWorldClick = true;
 				mX -= translateX;
 				mY -= translateY;
@@ -256,7 +229,7 @@ public class Run extends PApplet
 			{
 				selectedCreature = null;
 				Menu.path = Menu.MenuPath.GENERAL;
-				killAll();
+				CreatureManager.killAll();
 				return;
 			}
 			if(Menu.spawn.clicked(mX, mY)) // spawn button
@@ -266,14 +239,11 @@ public class Run extends PApplet
 			}
 			if(Menu.spawn20.clicked(mX, mY)) // spawn 20 button
 			{
-				for(int i = 0; i < 20; i++)
-				{
-					CreatureManager.addCreature();
-				}
+				CreatureManager.spawnNumCreatures(20);
 			}
 			if(Menu.maintainAt.clicked(mX, mY)) // maintain at button
 			{
-				maintain = !maintain;
+				maintainPop = !maintainPop;
 				return;
 			}
 			if(Menu.maintainPopNum.clicked(mX, mY)) // maintain number button
@@ -292,7 +262,7 @@ public class Run extends PApplet
 		
 		if(checkWorldClick)
 		{
-			System.out.println("into check if");
+			if(Prefs.DEBUG_PRINTS) System.out.println("checkWorldClick, spawnMode?");
 			if(spawnMode)
 			{
 				if(Menu.spawn.clicked(mX, mY)) spawnMode = !spawnMode;
@@ -302,12 +272,12 @@ public class Run extends PApplet
 				return;
 			}
 			
-			System.out.println("not spawn mode");
+			if(Prefs.DEBUG_PRINTS) System.out.println("not spawnMode");
 			// test for creature click
 			Creature clickedCreature = CreatureManager.checkCreatureClick(mX, mY);
 			if(clickedCreature != null)
 			{
-				System.out.println("creature click detected");
+				if(Prefs.DEBUG_PRINTS) System.out.println("creature click");
 				selectedCreature = clickedCreature;
 				return;
 			}
@@ -316,7 +286,7 @@ public class Run extends PApplet
 			Tile clickedTile = TileManager.checkTileClick(mX, mY);
 			if(clickedTile != null)
 			{
-				System.out.println("tile click detected");
+				if(Prefs.DEBUG_PRINTS) System.out.println("tile click");
 				selectedTile = clickedTile;
 				return;
 			}
@@ -344,7 +314,8 @@ public class Run extends PApplet
 	
 	public void findCreatureID()
 	{
-		selectedCreature = CreatureManager.findCreatureID(frame);
+		Creature tempSelectedCreature = CreatureManager.findCreatureID(frame);
+		if(tempSelectedCreature != null) selectedCreature = tempSelectedCreature;
 	}
 	
 	public boolean[][] setupWaterMap() throws IOException

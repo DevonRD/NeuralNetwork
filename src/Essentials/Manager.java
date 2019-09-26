@@ -3,7 +3,7 @@ package Essentials;
 import processing.core.PApplet;
 import java.math.RoundingMode;
 import Creature.CreatureManager;
-import Utilities.Preferences;
+import Utilities.Prefs;
 import World.TileManager;
 
 public class Manager
@@ -13,7 +13,7 @@ public class Manager
 			
 	public Manager()
 	{
-		Preferences.formatDecimal.setRoundingMode(RoundingMode.DOWN);
+		Prefs.formatDecimal.setRoundingMode(RoundingMode.DOWN);
 		
 		TileManager.startTiles();
 		CreatureManager.startCreatures();
@@ -30,6 +30,6 @@ public class Manager
 		CreatureManager.iterate(timeInterval);
 		TileManager.iterate(timeInterval);
 		
-		if(Run.maintain) CreatureManager.maintain();
+		if(Run.maintainPop) CreatureManager.maintain();
 	}
 }

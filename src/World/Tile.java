@@ -1,32 +1,27 @@
 package World;
 
-import Utilities.Preferences;
+import Utilities.Prefs;
 
 public class Tile
 {
-	public int x;
-	public int y;
-	public int xIndex;
-	public int yIndex;
-	int tileSize;
-	int maxFood;
-	public double food;
-	public int colorH;
-	public int colorS;
-	public int colorV;
-	public double regenValue;
-	public int tileNumber;
-	boolean water;
-	public int deadCooldown, cooldownThreshold;
+	public int x, y, xIndex, yIndex, tileSize, maxFood, tileNumber, deadCooldown, cooldownThreshold,
+		colorH, colorS, colorV;
+
+	public double food, regenValue;
 	
-	public Tile(int x, int y, int tileSize, int number, int xIndex, int yIndex, boolean w)
+	boolean water;
+	
+	
+	public Tile(int x, int y, int tileSize, int tileNumber, int xIndex, int yIndex, boolean water)
 	{
-		this.water = w;
+		this.water = water;
 		this.x = x;
 		this.y = y;
 		this.xIndex = xIndex;
 		this.yIndex = yIndex;
+		this.tileNumber = tileNumber;
 		this.tileSize = tileSize;
+		
 		if(water) maxFood = 0;
 		else maxFood = 100;
 		if(!water) food = 60 + (int) (Math.random() * 40);
@@ -34,10 +29,10 @@ public class Tile
 		else colorH = (int)(food * 0.7 + 50);
 		colorS = 80;
 		colorV = 45;
+		
 		if(water) regenValue = 0;
-		else regenValue = 0.025;
-		tileNumber = number;
-		cooldownThreshold = Preferences.TILE_COOLDOWN_THRESH;
+		else regenValue = Prefs.TILE_REGEN_RATE;
+		cooldownThreshold = Prefs.TILE_COOLDOWN_THRESH;
 	}
 	
 	public void regenerateTileFood()
@@ -57,7 +52,6 @@ public class Tile
 			return;
 		}
 		food += regenValue;
-		
 	}
 	
 	public void resetCooldown()
