@@ -54,11 +54,12 @@ public class CreatureManager
 					ArrayList<Axon[][]> creatureBrain = creatures.get(i).giveBirth();
 					creatures.add(new Creature(appWidth, appHeight, (int)creatures.get(i).locationX, (int)creatures.get(i).locationY,
 							creatureCount, ( creatures.get(i).generation+1 ), creatureBrain, creatures.get(i).color, creatures.get(i).ID));
+					if(findCreatureID(creatureCount).superMutate) Run.superMutations++;
 				}
 			}
 		}
 		checkForDeaths();
-		if(creatures.size() > maxObservedCreatures) maxObservedCreatures = CreatureManager.creatures.size();
+		if(creatures.size() > maxObservedCreatures) maxObservedCreatures = creatures.size();
 	}
 	
 	public static void startCreatures()
@@ -77,6 +78,7 @@ public class CreatureManager
 		}
 	}
 	
+	// Add a creature in a random place with a random brain, on land only
 	public static void addCreature()
 	{
 		boolean done = false;
@@ -93,6 +95,8 @@ public class CreatureManager
 			}
 		}
 	}
+	
+	// Add a creature with a random brain at a specific location
 	public static void addCreature(int x, int y)
 	{
 		creatureCount++;
@@ -116,19 +120,17 @@ public class CreatureManager
 	
 	public static void checkForDeaths()
 	{
-		for(int i = 0; i < CreatureManager.creatures.size(); i++)
+		if(creatures.size() == 0) return;
+		for(int i = 0; i < creatures.size(); i++)
 		{
-			if(CreatureManager.creatures.get(i).size < 30)
+			if(creatures.get(i).size < 100)
 			{
-				if(CreatureManager.creatures.get(i) == Run.selectedCreature) Menu.path = Menu.MenuPath.GENERAL;
-				CreatureManager.creatures.remove(i);
-				creatureDeaths++;
-				return;
-			}
-			if(CreatureManager.creatures.get(i).size < 100)
-			{
-				if(CreatureManager.creatures.get(i) == Run.selectedCreature) Menu.path = Menu.MenuPath.GENERAL;
-				CreatureManager.creatures.remove(i);
+				if(Run.selectedCreature != null && creatures.get(i).ID == Run.selectedCreature.ID)
+				{
+					Menu.path = Menu.MenuPath.GENERAL;
+					Run.selectedCreature = null;
+				}
+				creatures.remove(i);
 				creatureDeaths++;
 			}
 		}
@@ -162,6 +164,7 @@ public class CreatureManager
 		return null;
 	}
 	
+	// To search for a creature when you are unsure of its existence
 	public static Creature findCreatureID(Frame frame)
 	{
 		int id = Integer.parseInt(JOptionPane.showInputDialog("Enter creature ID:"));
@@ -175,6 +178,19 @@ public class CreatureManager
 			}
 		}
 		JOptionPane.showMessageDialog(frame, "That creature ID doesn't exist or has died.");
+		return null;
+	}
+	
+	// For use if you know the creature already exists, does not select
+	public static Creature findCreatureID(int ID)
+	{
+		for(int i = 0; i < creatures.size(); i++)
+		{
+			if(ID == creatures.get(i).ID)
+			{
+				return creatures.get(i);
+			}
+		}
 		return null;
 	}
 	
@@ -218,9 +234,9 @@ public class CreatureManager
 	{
 		p.colorMode(PConstants.RGB);
 		p.fill(255);
-		for(int i = 0; i < CreatureManager.creatures.size(); i++)
+		for(int i = 0; i < creatures.size(); i++)
 		{
-			Creature c = CreatureManager.creatures.get(i);
+			Creature c = creatures.get(i);
 			p.stroke(50);
 			p.line((int)c.locationX, (int)c.locationY, (int)c.leftSensorX, (int)c.leftSensorY);
 			if(c.outputNeurons[3] > 0.0) p.stroke(180, 0, 0);
@@ -229,7 +245,7 @@ public class CreatureManager
 			p.line((int)c.locationX, (int)c.locationY, (int)c.rightSensorX, (int)c.rightSensorY);
 			p.stroke(0);
 			p.fill(c.color.hashCode());
-			if(Run.selectedCreature != null && CreatureManager.creatures.get(i).ID == Run.selectedCreature.ID)
+			if(Run.selectedCreature != null && creatures.get(i).ID == Run.selectedCreature.ID)
 			{
 				p.stroke(240, 0, 255);
 				p.strokeWeight(7);

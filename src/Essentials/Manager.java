@@ -32,4 +32,9 @@ public class Manager
 		
 		if(Run.maintainPop) CreatureManager.maintain();
 	}
+	
+	public static void killAll()
+	{
+		CreatureManager.killAll();
+	}
 }

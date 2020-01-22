@@ -40,6 +40,7 @@ public class Run extends PApplet
 		public static Creature selectedCreature;
 	
 	// Map variables
+	// Note: To add more maps, simply add the .jpg file to the "Maps" folder.
 		BufferedImage map;
 		public static boolean[][] waterTiles;
 		static File[] mapOptions;
@@ -107,12 +108,6 @@ public class Run extends PApplet
 			{
 				menu.updateHistoryArrays();
 			}			
-			
-			superMutations = 0;
-			for(int i = 0; i < CreatureManager.creatures.size(); i++)
-			{
-				if(CreatureManager.creatures.get(i).superMutate) superMutations++;
-			}
 		}
 		
 		pushMatrix();
@@ -124,6 +119,7 @@ public class Run extends PApplet
 		}
 		translate(translateX, translateY);
 		scale((float) scaleFactor);
+		
 		colorMode(RGB);
 		background(100);
 		fill(60);
@@ -223,7 +219,7 @@ public class Run extends PApplet
 			{
 				selectedCreature = null;
 				Menu.path = Menu.MenuPath.GENERAL;
-				CreatureManager.killAll();
+				Manager.killAll();
 				return;
 			}
 			if(Menu.spawn.clicked(mX, mY)) // spawn button
