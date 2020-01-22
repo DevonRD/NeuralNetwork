@@ -121,8 +121,4 @@ public class Prefs
 		public static DecimalFormat formatDecimal = new DecimalFormat("##.##");
 		public static DecimalFormat formatInteger = new DecimalFormat("##");
 		
-		// ordered list of the available maps
-		public final static String[] MAPS = 
-			{"map1", "europe", "Large_Island", "Three_Islands", "All_Land", "All_Water"};
-		
 }

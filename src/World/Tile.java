@@ -9,12 +9,12 @@ public class Tile
 
 	public double food, regenValue;
 	
-	boolean water;
+	boolean isWater;
 	
 	
 	public Tile(int x, int y, int tileSize, int tileNumber, int xIndex, int yIndex, boolean water)
 	{
-		this.water = water;
+		this.isWater = water;
 		this.x = x;
 		this.y = y;
 		this.xIndex = xIndex;
@@ -37,8 +37,8 @@ public class Tile
 	
 	public void regenerateTileFood()
 	{
-		if(water) food = 0;
-		if(water) return;
+		if(isWater) food = 0;
+		if(isWater) return;
 		
 		colorH = (int) (food * 0.7 + 50);
 		

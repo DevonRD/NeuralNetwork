@@ -54,7 +54,7 @@ public class Menu
 			{
 				p.colorMode(PConstants.RGB);
 				
-				generalMenu(Run.displayTime, CreatureManager.creatureDeaths, Run.forcedSpawns, Run.superMutations, p);
+				generalMenu(Run.getDisplayTime(), CreatureManager.creatureDeaths, Run.forcedSpawns, Run.superMutations, p);
 				
 				drawButtons(p);
 				cutGraphs();

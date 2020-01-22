@@ -8,7 +8,7 @@ import processing.core.PConstants;
 
 public class TileManager
 {
-	int appWidth = Run.appWidth;
+	static int appWidth = Run.appWidth;
 	static int appHeight = Run.appHeight;
 	
 	public static int tileResL = Prefs.MAP_DIMENSIONS;

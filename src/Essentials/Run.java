@@ -2,10 +2,12 @@ package Essentials;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import org.apache.commons.lang3.time.StopWatch;
 
 import Creature.Creature;
 import Creature.CreatureManager;
@@ -24,7 +26,8 @@ public class Run extends PApplet
 	// Time variables
 		int rawTime;
 		double timeInterval;
-		public static double displayTime;
+		static double displayTime;
+		StopWatch stopwatch;
 	
 	// General variables
 		double scaleFactor;
@@ -39,27 +42,26 @@ public class Run extends PApplet
 	// Map variables
 		BufferedImage map;
 		public static boolean[][] waterTiles;
-		static String[] mapOptions;
-		static String fileExt = ".jpg";
-		static String selectedMap;
+		static File[] mapOptions;
+		static File selectedMap;
 	
 	public static void main(String[] args)
 	{
-		mapOptions = Prefs.MAPS;
-		JFrame frame = new JFrame("Input Dialog");
-		selectedMap = (String) JOptionPane.showInputDialog(frame, "Select a map to use.", "Map Selector", JOptionPane.QUESTION_MESSAGE, null, mapOptions, mapOptions[0]);
 		PApplet.main("Essentials.Run");
 	}
+	
 	public void settings()
 	{
 		// appWidth and appHeight are used in p2p functions (see Utilities.Prefs)
-		// in other classes, use height and width otherwise 
+		// in other classes, use height and width 
 		appWidth = displayWidth - 2 * Prefs.APP_WIDTH_SUBTRACTION_FACTOR;
 		appHeight = displayHeight - 2 * Prefs.APP_HEIGHT_SUBTRACTION_FACTOR;
 		size(appWidth, appHeight);
 	}
+	
 	public void setup()
 	{
+		stopwatch = new StopWatch();
 		frameRate(Prefs.FRAMERATE);
 		textSize(Prefs.DEFAULT_TEXTSIZE);
 		
@@ -69,16 +71,7 @@ public class Run extends PApplet
 		scaleFactor = Prefs.DEFAULT_SCALE_FACTOR;
 		startNumCreatures = Prefs.START_NUM_CREATURES;
 		
-		try
-		{
-			waterTiles = new boolean[100][100];
-			waterTiles = setupWaterMap();
-		}
-		catch(IOException e)
-		{
-			System.out.println("ERROR: Failed to setup map: see setupWaterMap");
-			e.printStackTrace();
-		}
+		loadMap();
 		
 		manager = new Manager();
 		menu = new Menu();
@@ -121,6 +114,7 @@ public class Run extends PApplet
 				if(CreatureManager.creatures.get(i).superMutate) superMutations++;
 			}
 		}
+		
 		pushMatrix();
 		if(selectedCreature != null)
 		{
@@ -318,11 +312,38 @@ public class Run extends PApplet
 		if(tempSelectedCreature != null) selectedCreature = tempSelectedCreature;
 	}
 	
+	public void loadMap()
+	{
+		File mapFolder = new File("Maps");
+		mapOptions = mapFolder.listFiles();
+		System.out.println(mapOptions[0]);
+		JFrame frame = new JFrame("Input Dialog");
+		selectedMap = (File) JOptionPane.showInputDialog(frame, "Select a map to use.", "Map Selector", 
+				JOptionPane.QUESTION_MESSAGE, null, mapOptions, mapOptions[0]);
+		
+		System.out.print("Generating map... ");
+		stopwatch.start();
+		try
+		{
+			waterTiles = new boolean[100][100];
+			waterTiles = setupWaterMap();
+		}
+		catch(IOException e)
+		{
+			System.out.println("ERROR: Failed to generate selected map: see Run -> loadMap()");
+			e.printStackTrace();
+		}
+		stopwatch.stop();
+		System.out.println("Done. (" + stopwatch.getTime() + " ms)");
+		stopwatch.reset();
+	}
+	
 	public boolean[][] setupWaterMap() throws IOException
 	{
 		boolean[][] results = new boolean[100][100];
-		map = ImageIO.read(Run.class.getResource(selectedMap + fileExt));
-		System.out.println("start setupWaterMap for map: " + selectedMap + fileExt);
+		int numLandTiles = 0;
+		map = ImageIO.read(selectedMap);
+		if(Prefs.DEBUG_PRINTS) System.out.println("start setupWaterMap for map: " + selectedMap.getName());
 		for(int row = 0; row < 100; row++)
 		{
 			for(int col = 0; col < 100; col++)
@@ -331,9 +352,19 @@ public class Run extends PApplet
 				if(c.getGreen() > 150) results[col][row] = false;
 				else if(c.getBlue() > 30) results[col][row] = true;
 				else results[col][row] = false;
+				if(results[col][row] == false) numLandTiles++;
 			}
 		}
-		System.out.println("done setting up water map");
+		if(numLandTiles < 1)
+		{
+			JOptionPane.showMessageDialog(frame, "Error: You cannot load a map with no land tiles.");
+			System.exit(1);
+		}
 		return results;
+	}
+	
+	public static double getDisplayTime()
+	{
+		return displayTime;
 	}
 }

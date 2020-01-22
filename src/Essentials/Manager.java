@@ -10,7 +10,7 @@ public class Manager
 {
 	int appWidth = Run.appWidth;
 	int appHeight = Run.appHeight;
-			
+	
 	public Manager()
 	{
 		Prefs.formatDecimal.setRoundingMode(RoundingMode.DOWN);
