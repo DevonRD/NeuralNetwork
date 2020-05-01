@@ -17,7 +17,7 @@ public class Menu
 	List<List<Integer>> sortedGeneHistory;
 	
 	public static Button menuButton, creatureInfo;
-	public static Button start, killAll, spawn, spawn20, kill, maintainAt, maintainPopNum, findCreatureByID;
+	public static Button start, killAll, spawn, spawn20, kill, maintainAt, maintainPopNum, findCreatureByID, saveFPS;
 	public enum MenuPath
 	{
 		GENERAL, CREATURE, DATA, TILE;
@@ -43,6 +43,7 @@ public class Menu
 		maintainAt = new Button(Prefs.p2pl(850), 0, Prefs.p2pl(280), Prefs.p2pw(120), p);
 		maintainPopNum = new Button(Prefs.p2pl(1100), 0, Prefs.p2pl(140), Prefs.p2pw(120), p);
 		creatureInfo = new Button(Prefs.p2pl(1650), Prefs.p2pw(250), Prefs.p2pl(280), Prefs.p2pw(120), p);
+		saveFPS = new Button(Prefs.p2pl(1240), 0, Prefs.p2pl(240), Prefs.p2pw(120), p);
 	}
 	
 	public void drawMenu(PApplet p)
@@ -259,6 +260,7 @@ public class Menu
 			maintainAt.draw();
 			maintainPopNum.draw();
 			findCreatureByID.draw();
+			saveFPS.draw();
 			
 			p.fill(255, 255, 255);
 			p.text("Kill All", killAll.getTextX(), killAll.getTextY());
@@ -269,12 +271,19 @@ public class Menu
 			
 			p.fill(255, 255, 255);
 			p.text("Spawn 20", spawn20.getTextX(), spawn20.getTextY());
+			
 			if(Run.maintainPop) p.fill(119, 255, 51);
 			else p.fill(255, 51, 51);
 			p.text("Maintain At", maintainAt.getTextX(), maintainAt.getTextY());
+						
 			p.fill(255, 255, 255);
 			p.text(Run.maintainNum, maintainPopNum.getTextX(), maintainPopNum.getTextY());
 			p.text("Find ID", findCreatureByID.getTextX(), findCreatureByID.getTextY());
+			
+			if(Run.saveFPS) p.fill(119, 255, 51);
+			else p.fill(255, 51, 51);
+			p.text("FPS Saver", saveFPS.getTextX(), saveFPS.getTextY());
+			p.fill(255, 255, 255);
 		}
 		if(path == MenuPath.CREATURE)
 		{

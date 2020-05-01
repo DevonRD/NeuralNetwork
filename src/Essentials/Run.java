@@ -33,7 +33,7 @@ public class Run extends PApplet
 		double scaleFactor;
 		int translateX, translateY, delta, b4x, b4y, deltaX, deltaY;
 		public static int appWidth, appHeight, maintainNum, startNumCreatures, forcedSpawns, superMutations;
-		public static boolean play, showMenu, maintainPop, drawGenePoolGraph, showCreatureInfo, spawnMode, spawnClicking;
+		public static boolean play, showMenu, maintainPop, drawGenePoolGraph, showCreatureInfo, spawnMode, spawnClicking, saveFPS;
 	
 	// Currently selected
 		public static Tile selectedTile;
@@ -81,7 +81,7 @@ public class Run extends PApplet
 		selectedTile = null;
 		selectedCreature = null;
 		
-		spawnClicking = spawnMode = showMenu = showCreatureInfo = false;
+		spawnClicking = spawnMode = showMenu = showCreatureInfo = saveFPS = false;
 		play = drawGenePoolGraph = true;
 		
 		forcedSpawns = superMutations = 0;
@@ -93,43 +93,60 @@ public class Run extends PApplet
 	{
 		if(Menu.path != Menu.MenuPath.CREATURE) selectedCreature = null;
 		
-		if(mousePressed)
+		if(saveFPS)
 		{
-			b4x = mouseX;
-			b4y = mouseY;
+			if(play)
+			{	
+				progress();			
+			}
+			menu.drawMenu(this);
 		}
-		if(play)
-		{	
-			rawTime++;
-			displayTime += timeInterval;
-			manager.iterate(timeInterval);
-			
-			if(rawTime % 30 == 0)
+		else
+		{
+			if(mousePressed)
 			{
-				menu.updateHistoryArrays();
-			}			
+				b4x = mouseX;
+				b4y = mouseY;
+			}
+			
+			if(play)
+			{	
+				progress();			
+			}
+			
+			pushMatrix();
+			if(selectedCreature != null)
+			{
+				scaleFactor = 2.0f;
+				translateX = (int) (-scaleFactor * selectedCreature.locationX + Prefs.p2pw(850));
+				translateY = (int) (-scaleFactor * selectedCreature.locationY + Prefs.p2pw(850));
+			}
+			translate(translateX, translateY);
+			scale((float) scaleFactor);
+			
+			colorMode(RGB);
+			background(100);
+			fill(60);
+			rect(Prefs.p2pl(8), 0, Prefs.p2pl(6), Prefs.p2pw(10));
+			fill(255, 255, 255);
+			textSize(Prefs.p2pl(30));
+			manager.drawWorld(this);
+			popMatrix();
+			
+			menu.drawMenu(this);
 		}
+	}
+	
+	public void progress()
+	{
+		rawTime++;
+		displayTime += timeInterval;
+		manager.iterate(timeInterval);
 		
-		pushMatrix();
-		if(selectedCreature != null)
+		if(rawTime % 30 == 0)
 		{
-			scaleFactor = 2.0f;
-			translateX = (int) (-scaleFactor * selectedCreature.locationX + Prefs.p2pw(850));
-			translateY = (int) (-scaleFactor * selectedCreature.locationY + Prefs.p2pw(850));
-		}
-		translate(translateX, translateY);
-		scale((float) scaleFactor);
-		
-		colorMode(RGB);
-		background(100);
-		fill(60);
-		rect(Prefs.p2pl(8), 0, Prefs.p2pl(6), Prefs.p2pw(10));
-		fill(255, 255, 255);
-		textSize(Prefs.p2pl(30));
-		manager.drawWorld(this);
-		popMatrix();
-		
-		menu.drawMenu(this);
+			menu.updateHistoryArrays();
+		}	
 	}
 	
 	public void keyPressed()
@@ -246,6 +263,11 @@ public class Run extends PApplet
 			if(Menu.findCreatureByID.clicked(mX, mY)) // find ID button
 			{
 				thread("findCreatureID");
+				return;
+			}
+			if(Menu.saveFPS.clicked(mX, mY)) // FPS saver button
+			{
+				saveFPS = !saveFPS;
 				return;
 			}
 		}
