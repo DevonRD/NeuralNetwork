@@ -62,7 +62,7 @@ public class TileManager
 		p.colorMode(PConstants.RGB, 255, 255, 255);
 	}
 	
-	public static int[] findTileAt(double xCoord, double yCoord)
+	public static int[] findTileCoordsAt(double xCoord, double yCoord)
 	{
 		int[] spot = new int[2];
 		spot[0] = ((int) yCoord) / tileSize;
@@ -75,7 +75,7 @@ public class TileManager
 		return spot;
 	}
 	
-	public Tile findTileAt(double xCoord, double yCoord, boolean whatever)
+	public Tile findTileAt(double xCoord, double yCoord)
 	{
 		int spotY = ((int) yCoord) / tileSize;
 		int spotX = ((int) xCoord) / tileSize;

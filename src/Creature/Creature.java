@@ -304,10 +304,10 @@ public class Creature
 		int[] leftTile, midTile, rightTile, mouthTile;
 		fitness += timeInterval;
 		updateSensorCoords();
-		leftTile = TileManager.findTileAt(leftSensorX, leftSensorY);
-		midTile = TileManager.findTileAt(midSensorX, midSensorY);
-		rightTile = TileManager.findTileAt(rightSensorX, rightSensorY);
-		mouthTile = TileManager.findTileAt(mouthSensorX, mouthSensorY);
+		leftTile = TileManager.findTileCoordsAt(leftSensorX, leftSensorY);
+		midTile = TileManager.findTileCoordsAt(midSensorX, midSensorY);
+		rightTile = TileManager.findTileCoordsAt(rightSensorX, rightSensorY);
+		mouthTile = TileManager.findTileCoordsAt(mouthSensorX, mouthSensorY);
 		
 		leftSensorColor = TileManager.tiles[leftTile[0]][leftTile[1]].colorH;
 		rightSensorColor = TileManager.tiles[rightTile[0]][rightTile[1]].colorH;

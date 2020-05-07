@@ -35,7 +35,7 @@ public class CreatureManager
 			creatures.get(i).iterate(timeInterval);
 			
 			double eatRequest = creatures.get(i).requestEat(timeInterval);
-			int[] foodTile = TileManager.findTileAt(creatures.get(i).mouthSensorX, creatures.get(i).mouthSensorY);
+			int[] foodTile = TileManager.findTileCoordsAt(creatures.get(i).mouthSensorX, creatures.get(i).mouthSensorY);
 			double allowEatAmt = requestEat(foodTile[0], foodTile[1], eatRequest);
 			
 			creatures.get(i).allowEat(allowEatAmt);
@@ -68,7 +68,7 @@ public class CreatureManager
 		{
 			int testX = TileManager.randXInMap();
 			int testY = TileManager.randYInMap();
-			int[] tileTest = TileManager.findTileAt(testX, testY);
+			int[] tileTest = TileManager.findTileCoordsAt(testX, testY);
 			if(!Run.waterTiles[tileTest[1]][tileTest[0]])
 			{
 				creatureCount++;
@@ -86,7 +86,7 @@ public class CreatureManager
 		{
 			int testX = TileManager.randXInMap();
 			int testY = TileManager.randYInMap();
-			int[] tileTest = TileManager.findTileAt(testX, testY);
+			int[] tileTest = TileManager.findTileCoordsAt(testX, testY);
 			if(!Run.waterTiles[tileTest[1]][tileTest[0]])
 			{
 				creatureCount++;
