@@ -143,7 +143,7 @@ public class Run extends PApplet
 		displayTime += timeInterval;
 		manager.iterate(timeInterval);
 		
-		if(rawTime % 30 == 0)
+		if(rawTime % 60 == 0)
 		{
 			menu.updateHistoryArrays();
 		}	

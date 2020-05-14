@@ -157,17 +157,17 @@ public class Menu
 				drawButtons(p);
 				p.fill(255, 255, 255);
 				p.textSize(Prefs.p2pl(70));
-				p.text("Selected Tile Data", Prefs.p2pl(1620), Prefs.p2pw(100));
+				p.text("Selected Tile Data", Prefs.p2pl(1620), Prefs.p2pw(110));
 				p.textSize(Prefs.p2pl(30));
-				p.text("Tile #" + Run.selectedTile.tileNumber, Prefs.p2pl(1630), Prefs.p2pw(190));
-				p.text("Food: " + Prefs.formatDecimal.format(Run.selectedTile.food), Prefs.p2pl(1630), Prefs.p2pw(375));
+				p.text("Tile #" + Run.selectedTile.tileNumber, Prefs.p2pl(1630), Prefs.p2pw(200));
+				p.text("Food: " + Prefs.formatDecimal.format(Run.selectedTile.food), Prefs.p2pl(1630), Prefs.p2pw(460));
 				p.text("Row and Column: (" + (Run.selectedTile.xIndex+1) + ", " + (Run.selectedTile.yIndex+1) + ")", Prefs.p2pl(1850), Prefs.p2pw(200));
-				p.text("Regeneration Value: " + Math.round( (Run.selectedTile.regenValue * 1000) ) / 1000.0, Prefs.p2pl(1850), Prefs.p2pw(240));
-				p.text("HSV: " + Run.selectedTile.colorH + ", " + Run.selectedTile.colorS + ", " + Run.selectedTile.colorV, Prefs.p2pl(1850), Prefs.p2pw(280));
-				p.text("x Range: " + Run.selectedTile.x + " to " + (Run.selectedTile.x + TileManager.tileSize), Prefs.p2pl(1850), Prefs.p2pw(320));
-				p.text("y Range: " + Run.selectedTile.y + " to " + (Run.selectedTile.y + TileManager.tileSize), Prefs.p2pl(1850), Prefs.p2pw(360));
+				p.text("Regeneration Value: " + Math.round( (Run.selectedTile.regenValue * 1000) ) / 1000.0, Prefs.p2pl(1850), Prefs.p2pw(250));
+				p.text("HSV: " + Run.selectedTile.colorH + ", " + Run.selectedTile.colorS + ", " + Run.selectedTile.colorV, Prefs.p2pl(1850), Prefs.p2pw(300));
+				p.text("x Range: " + Run.selectedTile.x + " to " + (Run.selectedTile.x + TileManager.tileSize), Prefs.p2pl(1850), Prefs.p2pw(350));
+				p.text("y Range: " + Run.selectedTile.y + " to " + (Run.selectedTile.y + TileManager.tileSize), Prefs.p2pl(1850), Prefs.p2pw(400));
 				p.textSize(Prefs.p2pl(45));
-				p.text("Tile Cooldown Status:  " + Run.selectedTile.deadCooldown + " / " + Prefs.TILE_COOLDOWN_THRESH, Prefs.p2pl(1620), Prefs.p2pw(500));
+				p.text("Tile Cooldown Status:  " + Run.selectedTile.deadCooldown + " / " + Prefs.TILE_COOLDOWN_THRESH, Prefs.p2pl(1620), Prefs.p2pw(600));
 				
 				break;
 			}
