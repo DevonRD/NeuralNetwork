@@ -191,7 +191,7 @@ public class Run extends PApplet
 		
 		if(showMenu)
 		{
-			if(mX <= Prefs.p2pl(1600) && mY >= Prefs.p2pw(360))
+			if(mX <= Prefs.p2pl(1600) && mY >= Prefs.p2pw(131))
 			{
 				if(Prefs.DEBUG_PRINTS) System.out.println("check menu");
 				checkWorldClick = true;

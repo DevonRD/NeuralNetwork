@@ -193,7 +193,7 @@ public class Menu
 	public void generalMenu(double time, int creatureDeaths, int forcedSpawns, int superMutations, PApplet p)
 	{
 		int startLabels = 120;
-		int generalSpacing = 40;
+		int generalSpacing = 50;
 		
 		p.colorMode(PConstants.RGB);
 		p.fill(60, 120);
@@ -251,7 +251,7 @@ public class Menu
 		if(Run.showMenu)
 		{
 			p.fill(60, 120);
-			p.rect(0, 0, Prefs.p2pl(1600), Prefs.p2pw(360));
+			p.rect(0, 0, Prefs.p2pl(1600), Prefs.p2pw(130));
 			p.fill(170, 170, 170);
 			
 			killAll.draw();
