@@ -1,13 +1,12 @@
-<p align="center">
-	[![Forks][forks-shield]][forks-url]
-	[![Stargazers][stars-shield]][stars-url]
-	[![Issues][issues-shield]][issues-url]
-	[![MIT License][license-shield]][license-url]
-</p>
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
 
 <!-- PROJECT LOGO -->
-<br>
 <p align="center">
+  <a href="[forks-url]"><img src="[forks-shield]">Forks</img>Fjorks</a>
+  <br>
   <a href="https://github.com/DevonRD/NeuralNetwork">
     <img src="images/devon_suit.png" alt="Logo" width="150" height="150" style="border-radius: 50%;">
   </a>
@@ -18,6 +17,7 @@
     <a href="https://github.com/DevonRD/NeuralNetwork/issues">Report Bug</a>
     ·
     <a href="https://devondoyle.com/">My Portfolio</a>
+    
   </p>
   <br>
   [![LinkedIn][linkedin-shield]][linkedin-url]
@@ -74,7 +74,7 @@ boundaries and obstacles. Each tile contains a certain amount of food, a regener
 timer for restarting the food regeneration process after it is completely depleted to discourage stagnant 
 creatures.
 
-[![Product Name Screen Shot][environment-image]]
+[![Product Name Screen Shot][environment-image]]()
 
 Each tile can either be land or water. Water tiles have no food and no regeneration, so it is extremely 
 disadvantageous for a creature to remain in the water for a long period of time. The goal of this is to 
@@ -87,7 +87,7 @@ it identify certain aspects of the environment, like the amount of food around i
 creature nearby. These sensors are the source of input to the creature's neural network and help determine 
 what actions the creature will take.
 
-[![Product Name Screen Shot][creature-image]]
+[![Product Name Screen Shot][creature-image]]()
 
 Creatures that are successful at staying alive and feeding can produce offspring with slightly mutated 
 genes, which imitates random genetic variation in humans.
@@ -99,14 +99,14 @@ and hidden layers represent the neurons, while the connections between them repr
 A network of n countable neuron layers must have n - 1 axon layers. This closely resembles neural interaction 
 in the human nervous system.
 
-[![Product Name Screen Shot][neuron-image]]
+[![Product Name Screen Shot][neuron-image]]()
 
 My simulation uses a feedforward neural nework design. In a feedforward design, input values are multiplied, 
 summed, and run through a sigmoid function into hidden layers of values, which are then multiplied, summed, 
 and run through sigmoid functions between each other as needed and finally into an output layer of values.
 Here is a visualization of my network design.
 
-[![Product Name Screen Shot][neuralnet-image]]
+[![Product Name Screen Shot][neuralnet-image]]()
 
 The neuron values are shown as numbers, with axon lines ranging in shade from black (negative axon) to white 
 (positive axon). Empty values are spaces left for future additions.
@@ -127,7 +127,7 @@ Many creatures, in a map that includes bodies of water, will adapt to avoid wate
 Being in these areas is disadvantageous because, while the creatures constantly decay, they will have no 
 source of food.
 
-[![Product Name Screen Shot][trait-image]]
+[![Product Name Screen Shot][trait-image]]()
 
 Here is an example of a creature with a neural network that learned to change direction or avoid water or 
 foodless tiles completely when it encountered them. Some creatures tend to back away, some choose to speed 
@@ -140,7 +140,7 @@ Creatures will similar neural networks will have similar colors for easy visual 
 suitable creatures grow in population to dominate the environment, resources become scarce and the population 
 decreases, giving rise to new, more suitable populations.
 
-[![Product Name Screen Shot][timeline-image]]
+[![Product Name Screen Shot][timeline-image]]()
 
 In this example, dark green and dark pink/purple creatures dominated for a period of time. Once resources 
 ran out, a period of turbulence followed as other more-suitable populations grew out of the scarcity, leading 
@@ -161,9 +161,9 @@ structure as well!
 <!-- GETTING STARTED -->
 ## Try it Out
 
-If you are interested, feel free to download and run this simulation for yourself. 
-You can find it on this GitHub project repository. Download and run the "NeuralNetLatest.jar" file. 
-I'm sure you will enjoy watching and interacting with the creatures of the simulation!
+If you are interested, feel free to download and run [this][download-jar] file to view the simulation for yourself. 
+You can also find it on this GitHub project repository. I'm sure you will enjoy watching and interacting with 
+the creatures of the simulation!
 
 ### Prerequisites
 
@@ -204,3 +204,4 @@ Project Link: [https://github.com/DevonRD/NeuralNetwork](https://github.com/Devo
 [neuralnet-image]: images/neural_net.PNG
 [trait-image]: images/avoid_water.gif
 [timeline-image]: images/timeline.PNG
+[download-jar]: https://github.com/DevonRD/NeuralNetwork/blob/master/NeuralNetLatest.jar
