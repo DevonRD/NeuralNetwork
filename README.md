@@ -1,10 +1,9 @@
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
-
+<p align="center">
+	[![Forks][forks-shield]][forks-url]
+	[![Stargazers][stars-shield]][stars-url]
+	[![Issues][issues-shield]][issues-url]
+	[![MIT License][license-shield]][license-url]
+</p>
 
 <!-- PROJECT LOGO -->
 <br>
@@ -14,14 +13,14 @@
   </a>
   <h1 align="center">Neural Network Simulator</h1>
   <p align="center">
-    <br>
-    <br>
     <a href="https://github.com/DevonRD/NeuralNetwork">Project Link</a>
     ·
     <a href="https://github.com/DevonRD/NeuralNetwork/issues">Report Bug</a>
     ·
     <a href="https://devondoyle.com/">My Portfolio</a>
   </p>
+  <br>
+  [![LinkedIn][linkedin-shield]][linkedin-url]
 </p>
 
 <!-- TABLE OF CONTENTS -->
@@ -56,13 +55,10 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][header-image]](https://github.com/DevonRD/NeuralNetwork)
-
 As an ongoing independent project from late high school, I decided to program an artificially-evolving 
 neural network simulator using basic creatures in a predefined environment. I took inspiration from 
 several other community programmers who made similar programs. This was my first attempt at using a 
 neural network to facilitate fitness-based evolution.
-
 
 ### Built With
 
@@ -77,7 +73,9 @@ The example shown here is a map that is mostly covered with land, with some mino
 boundaries and obstacles. Each tile contains a certain amount of food, a regeneration rate, and a cooldown 
 timer for restarting the food regeneration process after it is completely depleted to discourage stagnant 
 creatures.
-<br>
+
+[![Product Name Screen Shot][environment-image]]
+
 Each tile can either be land or water. Water tiles have no food and no regeneration, so it is extremely 
 disadvantageous for a creature to remain in the water for a long period of time. The goal of this is to 
 encourage the evolution of water-avoidant traits.
@@ -88,7 +86,9 @@ Shown here is an example of a creature in the simulator. Each creature has sever
 it identify certain aspects of the environment, like the amount of food around it or if there is another 
 creature nearby. These sensors are the source of input to the creature's neural network and help determine 
 what actions the creature will take.
-<br>
+
+[![Product Name Screen Shot][creature-image]]
+
 Creatures that are successful at staying alive and feeding can produce offspring with slightly mutated 
 genes, which imitates random genetic variation in humans.
 
@@ -98,14 +98,18 @@ Each creature’s intelligence is determined by its internal neural network syst
 and hidden layers represent the neurons, while the connections between them represent the axons of the network. 
 A network of n countable neuron layers must have n - 1 axon layers. This closely resembles neural interaction 
 in the human nervous system.
-<br>
+
+[![Product Name Screen Shot][neuron-image]]
+
 My simulation uses a feedforward neural nework design. In a feedforward design, input values are multiplied, 
 summed, and run through a sigmoid function into hidden layers of values, which are then multiplied, summed, 
 and run through sigmoid functions between each other as needed and finally into an output layer of values.
-<br>
-To the right is a visualization of my network design for these creatures. The neuron values are shown as 
-numbers, with axon lines ranging from black (negative axon) to white (positive axon). Empty values are spaces 
-left for future additions.
+Here is a visualization of my network design.
+
+[![Product Name Screen Shot][neuralnet-image]]
+
+The neuron values are shown as numbers, with axon lines ranging in shade from black (negative axon) to white 
+(positive axon). Empty values are spaces left for future additions.
 
 ### Feedback System
 
@@ -122,7 +126,9 @@ One of the most prevalent traits that can be seen in the simulator is the avoida
 Many creatures, in a map that includes bodies of water, will adapt to avoid water and tiles with little food. 
 Being in these areas is disadvantageous because, while the creatures constantly decay, they will have no 
 source of food.
-<br>
+
+[![Product Name Screen Shot][trait-image]]
+
 Here is an example of a creature with a neural network that learned to change direction or avoid water or 
 foodless tiles completely when it encountered them. Some creatures tend to back away, some choose to speed 
 up to get through, and some exhibit a combination of the two.
@@ -133,7 +139,9 @@ As the simulation runs, it keeps track of how many creatures were alive and thei
 Creatures will similar neural networks will have similar colors for easy visual identification. Once certain 
 suitable creatures grow in population to dominate the environment, resources become scarce and the population 
 decreases, giving rise to new, more suitable populations.
-<br>
+
+[![Product Name Screen Shot][timeline-image]]
+
 In this example, dark green and dark pink/purple creatures dominated for a period of time. Once resources 
 ran out, a period of turbulence followed as other more-suitable populations grew out of the scarcity, leading 
 to descendants of the pink/purple populations to grow. Once those descendants grew to capacity and used up the 
@@ -190,4 +198,9 @@ Project Link: [https://github.com/DevonRD/NeuralNetwork](https://github.com/Devo
 [license-url]: https://github.com/DevonRD/NeuralNetwork/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/devon-doyle/
-[header-image]: images/map.PNG
+[environment-image]: images/map.PNG
+[creature-image]: images/creature.PNG
+[neuron-image]: images/neuron-illustration.jpg
+[neuralnet-image]: images/neural_net.PNG
+[trait-image]: images/avoid_water.gif
+[timeline-image]: images/timeline.PNG
