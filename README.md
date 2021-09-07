@@ -2,16 +2,20 @@
 <p align="center">
   <a href="https://devondoyle.com/"><img src="images/devon_suit.png" alt="Logo" width="150" height="150" style="border-radius:50%"></a>
   <h1 align="center">Neural Network Simulator</h1>
-  <a href="https://github.com/DevonRD/NeuralNetwork/network/members"><img src="https://img.shields.io/github/forks/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
-  <a href="https://github.com/DevonRD/NeuralNetwork/stargazers"><img src="https://img.shields.io/github/stars/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
-  <a href="https://github.com/DevonRD/NeuralNetwork/issues"><img src="https://img.shields.io/github/issues/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
-  <a href="https://github.com/DevonRD/NeuralNetwork/blob/master/LICENSE"><img src="https://img.shields.io/github/license/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
-  <br><br>
-  <a href="https://github.com/DevonRD/NeuralNetwork/issues">Report Bug</a>
-  ·
-  <a href="https://devondoyle.com/">My Portfolio</a>
-  <br><br>
-  <a href="https://linkedin.com/in/devon-doyle/"><img src="https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555"></img></a>
+  <p align="center">
+    <a href="https://github.com/DevonRD/NeuralNetwork/network/members"><img src="https://img.shields.io/github/forks/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
+    <a href="https://github.com/DevonRD/NeuralNetwork/stargazers"><img src="https://img.shields.io/github/stars/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
+    <a href="https://github.com/DevonRD/NeuralNetwork/issues"><img src="https://img.shields.io/github/issues/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
+    <a href="https://github.com/DevonRD/NeuralNetwork/blob/master/LICENSE"><img src="https://img.shields.io/github/license/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
+  </p>
+  <br>
+  <p align="center">
+    <a href="https://github.com/DevonRD/NeuralNetwork/issues">Report Bug</a>
+    ·
+    <a href="https://devondoyle.com/">My Portfolio</a>
+	<br>
+    <a href="https://linkedin.com/in/devon-doyle/"><img src="https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555"></img></a>
+  </p>
 </p>
 
 <!-- TABLE OF CONTENTS -->
