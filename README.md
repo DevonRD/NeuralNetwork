@@ -5,7 +5,8 @@
 
 <!-- PROJECT LOGO -->
 <p align="center">
-  <a href="[forks-url]"><img src="[forks-shield]">Forks</img>Fjorks</a>
+  <a href="https://github.com/DevonRD/NeuralNetwork/network/members"><img src="https://img.shields.io/github/forks/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
+  <a href=[forks-url]><img src=[forks-shield]>Forks</img>Fjorks</a>
   <br>
   <a href="https://github.com/DevonRD/NeuralNetwork">
     <img src="images/devon_suit.png" alt="Logo" width="150" height="150" style="border-radius: 50%;">
@@ -17,10 +18,9 @@
     <a href="https://github.com/DevonRD/NeuralNetwork/issues">Report Bug</a>
     ·
     <a href="https://devondoyle.com/">My Portfolio</a>
-    
+	<br>
+    <a href="https://linkedin.com/in/devon-doyle/"><img src="https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555"></img></a>
   </p>
-  <br>
-  [![LinkedIn][linkedin-shield]][linkedin-url]
 </p>
 
 <!-- TABLE OF CONTENTS -->
@@ -188,9 +188,9 @@ Devon Doyle [Portfolio](https://devondoyle.com/) - devonrd@umich.edu
 Project Link: [https://github.com/DevonRD/NeuralNetwork](https://github.com/DevonRD/NeuralNetwork)
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[forks-shield]: https://img.shields.io/github/forks/DevonRD/NeuralNetwork
-[forks-url]: https://github.com/DevonRD/NeuralNetwork/network/members
-[stars-shield]: https://img.shields.io/github/stars/DevonRD/NeuralNetwork
+[forks-shield]: "https://img.shields.io/github/forks/DevonRD/NeuralNetwork"
+[forks-url]: "https://github.com/DevonRD/NeuralNetwork/network/members"
+[stars-shield]: https://img.shields.io/github/stars/DevonRD/NeuralNetwork?style=for-the-badge
 [stars-url]: https://github.com/DevonRD/NeuralNetwork/stargazers
 [issues-shield]: https://img.shields.io/github/issues/DevonRD/NeuralNetwork
 [issues-url]: https://github.com/DevonRD/NeuralNetwork/issues
