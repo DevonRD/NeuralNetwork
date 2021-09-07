@@ -1,30 +1,23 @@
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-
 <!-- PROJECT LOGO -->
 <p align="center">
-  <a href="https://github.com/DevonRD/NeuralNetwork/network/members"><img src="https://img.shields.io/github/forks/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
-  <a href=[forks-url]><img src=[forks-shield]>Forks</img>Fjorks</a>
-  <br>
-  <a href="https://github.com/DevonRD/NeuralNetwork">
-    <img src="images/devon_suit.png" alt="Logo" width="150" height="150" style="border-radius: 50%;">
-  </a>
+  <a href="https://devondoyle.com/"><img src="images/devon_suit.png" alt="Logo" width="150" height="150" style="border-radius:50%"></a>
   <h1 align="center">Neural Network Simulator</h1>
+  <a href="https://github.com/DevonRD/NeuralNetwork/network/members"><img src="https://img.shields.io/github/forks/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
+  <a href="https://github.com/DevonRD/NeuralNetwork/stargazers"><img src="https://img.shields.io/github/stars/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
+  <a href="https://github.com/DevonRD/NeuralNetwork/issues"><img src="https://img.shields.io/github/issues/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
+  <a href="https://github.com/DevonRD/NeuralNetwork/blob/master/LICENSE"><img src="https://img.shields.io/github/license/DevonRD/NeuralNetwork?style=for-the-badge"></img></a>
+  <br><br>
   <p align="center">
-    <a href="https://github.com/DevonRD/NeuralNetwork">Project Link</a>
-    ·
     <a href="https://github.com/DevonRD/NeuralNetwork/issues">Report Bug</a>
     ·
     <a href="https://devondoyle.com/">My Portfolio</a>
-	<br>
+	<br><br>
     <a href="https://linkedin.com/in/devon-doyle/"><img src="https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555"></img></a>
   </p>
 </p>
 
 <!-- TABLE OF CONTENTS -->
-<summary><h2 style="display: inline-block">Table of Contents</h2></summary>
+<h2 style="display: inline-block">Table of Contents</h2>
 <details open="open">
   <ol>
     <li>
@@ -188,8 +181,8 @@ Devon Doyle [Portfolio](https://devondoyle.com/) - devonrd@umich.edu
 Project Link: [https://github.com/DevonRD/NeuralNetwork](https://github.com/DevonRD/NeuralNetwork)
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[forks-shield]: "https://img.shields.io/github/forks/DevonRD/NeuralNetwork"
-[forks-url]: "https://github.com/DevonRD/NeuralNetwork/network/members"
+[forks-shield]: https://img.shields.io/github/forks/DevonRD/NeuralNetwork
+[forks-url]: https://github.com/DevonRD/NeuralNetwork/network/members
 [stars-shield]: https://img.shields.io/github/stars/DevonRD/NeuralNetwork?style=for-the-badge
 [stars-url]: https://github.com/DevonRD/NeuralNetwork/stargazers
 [issues-shield]: https://img.shields.io/github/issues/DevonRD/NeuralNetwork
