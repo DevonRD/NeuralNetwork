@@ -24,27 +24,27 @@ public class Run extends PApplet
 	Menu menu;
 	
 	// Time variables
-		int rawTime;
-		double timeInterval;
-		static double displayTime;
-		StopWatch stopwatch;
+	int rawTime;
+	double timeInterval;
+	static double displayTime;
+	StopWatch stopwatch;
 	
 	// General variables
-		double scaleFactor;
-		int translateX, translateY, delta, b4x, b4y, deltaX, deltaY;
-		public static int appWidth, appHeight, maintainNum, startNumCreatures, forcedSpawns, superMutations;
-		public static boolean play, showMenu, maintainPop, drawGenePoolGraph, showCreatureInfo, spawnMode, spawnClicking, saveFPS;
+	double scaleFactor;
+	int translateX, translateY, delta, b4x, b4y, deltaX, deltaY;
+	public static int appWidth, appHeight, maintainNum, startNumCreatures, forcedSpawns, superMutations;
+	public static boolean play, showMenu, maintainPop, drawGenePoolGraph, showCreatureInfo, spawnMode, spawnClicking, saveFPS;
 	
 	// Currently selected
-		public static Tile selectedTile;
-		public static Creature selectedCreature;
+	public static Tile selectedTile;
+	public static Creature selectedCreature;
 	
 	// Map variables
 	// Note: To add more maps, simply add the .jpg file to the "Maps" folder.
-		BufferedImage map;
-		public static boolean[][] waterTiles;
-		static File[] mapOptions;
-		static File selectedMap;
+	BufferedImage map;
+	public static boolean[][] waterTiles;
+	static File[] mapOptions;
+	static File selectedMap;
 	
 	public static void main(String[] args)
 	{
@@ -55,8 +55,11 @@ public class Run extends PApplet
 	{
 		// appWidth and appHeight are used in p2p functions (see Utilities.Prefs)
 		// in other classes, use height and width 
-		appWidth = displayWidth - 2 * Prefs.APP_WIDTH_SUBTRACTION_FACTOR;
-		appHeight = displayHeight - 2 * Prefs.APP_HEIGHT_SUBTRACTION_FACTOR;
+		appWidth = (int)(displayWidth * Prefs.APP_WIDTH_PROPORTION);
+		appHeight = (int)(displayHeight * Prefs.APP_HEIGHT_PROPORTION);
+		System.out.println("============ APP SETTINGS ============");
+		System.out.println("\tappWidth: " + appWidth + " / " + displayWidth);
+		System.out.println("\tappHeight: " + appHeight + " / " + displayHeight);
 		size(appWidth, appHeight);
 	}
 	
@@ -99,7 +102,7 @@ public class Run extends PApplet
 			{	
 				progress();			
 			}
-			menu.drawMenu(this);
+			
 		}
 		else
 		{
@@ -132,9 +135,9 @@ public class Run extends PApplet
 			textSize(Prefs.p2pl(30));
 			manager.drawWorld(this);
 			popMatrix();
-			
-			menu.drawMenu(this);
 		}
+		menu.drawMenu(this);
+		System.out.println("SCREEN appwidth: " + displayWidth + " appheight: " + displayHeight);
 	}
 	
 	public void progress()

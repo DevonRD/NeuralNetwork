@@ -233,6 +233,7 @@ public class Menu
 		p.textSize(Prefs.p2pl(35));
 		
 		menuButton.draw();
+		System.out.println("Drawing menu button @ " + menuButton.getX() + ", " + menuButton.getY());
 		start.draw();
 		p.fill(255, 255, 255);
 		p.text("Menu", menuButton.getTextX(), menuButton.getTextY());

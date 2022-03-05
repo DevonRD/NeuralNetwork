@@ -13,11 +13,11 @@ public class Prefs
 	/** computer-based **/
 		// pixel distance from left & right side of application to edge of monitor
 		// DEFAULT = 68
-		public final static int APP_WIDTH_SUBTRACTION_FACTOR = 68;
+		public final static double APP_WIDTH_PROPORTION = 0.7;
 		
 		// pixel distance from top & bottom side of application to edge of monitor
 		// DEFAULT = 112
-		public final static int APP_HEIGHT_SUBTRACTION_FACTOR = 112;
+		public final static double APP_HEIGHT_PROPORTION = 0.7;
 		
 		// default text size for application
 		// DEFAULT = 50
