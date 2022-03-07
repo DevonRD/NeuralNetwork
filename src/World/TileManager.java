@@ -17,7 +17,7 @@ public class TileManager
 	public static Tile[][] tiles = new Tile[tileResW][tileResL];
 	
 	static boolean[][] water = Run.waterTiles;
-	public static int tileSize = 4 * Prefs.p2pw(1500) / tileResW;
+	public static int tileSize = 4 * Prefs.hPix(1500) / tileResW;
 	
 	/** STATIC CLASS **/
 	

@@ -21,14 +21,14 @@ public class Button
 		this.width = width - 2 * buffer;
 		this.height = height - 2 * buffer;
 		this.p = p;
-		setTextX(buffer + this.getX() + Prefs.p2pl(20));
+		setTextX(buffer + this.getX() + Prefs.wPix(20));
 		setTextY((int)(buffer + this.getY() + this.height / 2.0));
 	}
 	public void draw()
 	{
 		p.colorMode(PConstants.RGB);
 		p.fill(170, 170, 170);
-		p.textSize(Prefs.p2pl(35));
+		p.textSize(Prefs.wPix(35));
 		p.rect(this.getX(), this.getY(), this.width, this.height);
 	}
 

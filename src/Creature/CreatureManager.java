@@ -250,15 +250,15 @@ public class CreatureManager
 				p.stroke(240, 0, 255);
 				p.strokeWeight(7);
 			}
-			p.ellipse((int)c.locationX, (int)c.locationY, Prefs.p2pw(c.diameter), Prefs.p2pw(c.diameter));
+			p.ellipse((int)c.locationX, (int)c.locationY, Prefs.hPix(c.diameter), Prefs.hPix(c.diameter));
 			p.fill(255);
 			p.stroke(0);
 			p.strokeWeight(1);
 			p.colorMode(PConstants.HSB, 360, 100, 100);
 			p.fill(c.leftSensorColor, 80, 45);
-			p.ellipse((int)c.leftSensorX, (int)c.leftSensorY, Prefs.p2pw(15), Prefs.p2pw(15));
+			p.ellipse((int)c.leftSensorX, (int)c.leftSensorY, Prefs.hPix(15), Prefs.hPix(15));
 			p.fill(c.rightSensorColor, 80, 45);
-			p.ellipse((int)c.rightSensorX, (int)c.rightSensorY, Prefs.p2pw(15), Prefs.p2pw(15));
+			p.ellipse((int)c.rightSensorX, (int)c.rightSensorY, Prefs.hPix(15), Prefs.hPix(15));
 			p.fill(c.mouthSensorColor, 80, 45);
 			//ellipse((int)c.mouthSensorX, (int)c.mouthSensorY, p2pw(15), p2pw(15));
 			p.colorMode(PConstants.RGB, 255, 255, 255);

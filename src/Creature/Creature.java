@@ -60,8 +60,8 @@ public class Creature
 		colorDifferenceToNearest = 200;
 		angleToNearest = totalEaten = totalDecayed = fitness = rotation = rotationDecay = births = numCreaturesWithin10 = 0;
 
-		sensorLength = Prefs.p2pw((60 + diameter));
-		weaponLength = Prefs.p2pw((30 + diameter));
+		sensorLength = Prefs.hPix((60 + diameter));
+		weaponLength = Prefs.hPix((30 + diameter));
 		this.generation = generation;
 		this.brain = null;
 		rotation = Math.random() * 2 * Math.PI;
@@ -88,8 +88,8 @@ public class Creature
 		colorDifferenceToNearest = 200;
 		angleToNearest = totalEaten = totalDecayed = fitness = rotation = rotationDecay = births = numCreaturesWithin10 = 0;
 		
-		sensorLength = Prefs.p2pw((60 + diameter));
-		weaponLength = Prefs.p2pw((30 + diameter));
+		sensorLength = Prefs.hPix((60 + diameter));
+		weaponLength = Prefs.hPix((30 + diameter));
 		this.generation = generation;
 		this.brain = brain;
 		rotation = Math.random() * 2 * Math.PI;
@@ -102,7 +102,7 @@ public class Creature
 	{
 		updateSensorInput(timeInterval);
 		diameter = size / 10.0;
-		sensorLength = Prefs.p2pw((60 + diameter));
+		sensorLength = Prefs.hPix((60 + diameter));
 		for(int i = 0; i < sensorInput.length; i++)
 		{
 			sensorInput[i] = Math.copySign(Prefs.sigmoid(sensorInput[i]), sensorInput[i]);

@@ -30,7 +30,7 @@ public class Manager
 		CreatureManager.iterate(timeInterval);
 		TileManager.iterate(timeInterval);
 		
-		if(Run.maintainPop) CreatureManager.maintain();
+		if(Run.defaultMaintain) CreatureManager.maintain();
 	}
 	
 	public static void killAll()

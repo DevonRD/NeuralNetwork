@@ -104,13 +104,13 @@ public class Prefs
 		}
 		
 		// conversion from pixels to proportion of the sceren lengthwise
-		public static int p2pl(double frac)
+		public static int wPix(double frac)
 		{
 			return (int) (frac / 2600.0 * Run.appWidth);
 		}
 		
 		// conversion from pixels to proportion of the sceren widthwise (height)
-		public static int p2pw(double frac)
+		public static int hPix(double frac)
 		{
 			return (int) (frac / 1600.0 * Run.appHeight);
 		}

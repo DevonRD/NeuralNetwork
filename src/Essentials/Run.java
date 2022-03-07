@@ -25,7 +25,7 @@ public class Run extends PApplet
 	
 	// Time variables
 	int rawTime;
-	double timeInterval;
+	double gameSpeed;
 	static double displayTime;
 	StopWatch stopwatch;
 	
@@ -33,7 +33,7 @@ public class Run extends PApplet
 	double scaleFactor;
 	int translateX, translateY, delta, b4x, b4y, deltaX, deltaY;
 	public static int appWidth, appHeight, maintainNum, startNumCreatures, forcedSpawns, superMutations;
-	public static boolean play, showMenu, maintainPop, drawGenePoolGraph, showCreatureInfo, spawnMode, spawnClicking, saveFPS;
+	public static boolean play, showMenu, defaultMaintain, drawGenePoolGraph, showCreatureInfo, spawnMode, spawnClicking, saveFPS;
 	
 	// Currently selected
 	public static Tile selectedTile;
@@ -69,8 +69,8 @@ public class Run extends PApplet
 		frameRate(Prefs.FRAMERATE);
 		textSize(Prefs.DEFAULT_TEXTSIZE);
 		
-		timeInterval = Prefs.GAME_SPEED;
-		maintainPop = Prefs.MAINTAIN_DEFAULT;
+		gameSpeed = Prefs.GAME_SPEED;
+		defaultMaintain = Prefs.MAINTAIN_DEFAULT;
 		maintainNum = Prefs.START_MAINTAIN_NUM;
 		scaleFactor = Prefs.DEFAULT_SCALE_FACTOR;
 		startNumCreatures = Prefs.START_NUM_CREATURES;
@@ -121,8 +121,8 @@ public class Run extends PApplet
 			if(selectedCreature != null)
 			{
 				scaleFactor = 2.0f;
-				translateX = (int) (-scaleFactor * selectedCreature.locationX + Prefs.p2pw(850));
-				translateY = (int) (-scaleFactor * selectedCreature.locationY + Prefs.p2pw(850));
+				translateX = (int) (-scaleFactor * selectedCreature.locationX + Prefs.hPix(850));
+				translateY = (int) (-scaleFactor * selectedCreature.locationY + Prefs.hPix(850));
 			}
 			translate(translateX, translateY);
 			scale((float) scaleFactor);
@@ -130,21 +130,20 @@ public class Run extends PApplet
 			colorMode(RGB);
 			background(100);
 			fill(60);
-			rect(Prefs.p2pl(8), 0, Prefs.p2pl(6), Prefs.p2pw(10));
+			rect(Prefs.wPix(8), 0, Prefs.wPix(6), Prefs.hPix(10));
 			fill(255, 255, 255);
-			textSize(Prefs.p2pl(30));
+			textSize(Prefs.wPix(30));
 			manager.drawWorld(this);
 			popMatrix();
 		}
 		menu.drawMenu(this);
-		System.out.println("SCREEN appwidth: " + displayWidth + " appheight: " + displayHeight);
 	}
 	
 	public void progress()
 	{
 		rawTime++;
-		displayTime += timeInterval;
-		manager.iterate(timeInterval);
+		displayTime += gameSpeed;
+		manager.iterate(gameSpeed);
 		
 		if(rawTime % 60 == 0)
 		{
@@ -194,7 +193,7 @@ public class Run extends PApplet
 		
 		if(showMenu)
 		{
-			if(mX <= Prefs.p2pl(1600) && mY >= Prefs.p2pw(131))
+			if(mX <= Prefs.wPix(1600) && mY >= Prefs.hPix(131))
 			{
 				if(Prefs.DEBUG_PRINTS) System.out.println("check menu");
 				checkWorldClick = true;
@@ -206,7 +205,7 @@ public class Run extends PApplet
 		}
 		else
 		{
-			if(mX <= Prefs.p2pl(1600))
+			if(mX <= Prefs.wPix(1600))
 			{
 				if(Prefs.DEBUG_PRINTS) System.out.println("check no menu");
 				checkWorldClick = true;
@@ -253,7 +252,7 @@ public class Run extends PApplet
 			}
 			if(Menu.maintainAt.clicked(mX, mY)) // maintain at button
 			{
-				maintainPop = !maintainPop;
+				defaultMaintain = !defaultMaintain;
 				return;
 			}
 			if(Menu.maintainPopNum.clicked(mX, mY)) // maintain number button
@@ -301,6 +300,8 @@ public class Run extends PApplet
 			Tile clickedTile = TileManager.checkTileClick(mX, mY);
 			if(clickedTile != null)
 			{
+				//System.out.println("tile click @ mX: " + mX + ", mY: " + mY + ", tile coords: " + clickedTile.xIndex + ", " + clickedTile.yIndex);
+				//System.out.println("regular search function found: " + TileManager.findTileCoordsAt(mX, mY)[0] + ", " + TileManager.findTileCoordsAt(mX, mY)[1]);
 				if(Prefs.DEBUG_PRINTS) System.out.println("tile click");
 				selectedTile = clickedTile;
 				return;
