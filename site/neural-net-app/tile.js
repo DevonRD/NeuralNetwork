@@ -11,13 +11,11 @@ class Tile {
 
         if (this.isWater) {
             this.food = 0;
-            this.maxFood = 0;
             this.colorH = 220;
         }
         else {
-            this.food = settings.tileMaxFood;
-            this.maxFood = settings.tileMaxFood;
-            this.colorH = int(this.maxH * this.food / this.maxFood);
+            this.food = randomBound(settings.tileMaxFood);
+            this.colorH = Math.floor(70.0 * this.food / settings.tileMaxFood) + 50;
         }
 
         this.colorS = 80;
@@ -26,19 +24,18 @@ class Tile {
     }
 
     progress() {
-        if (!this.isWater) this.maxFood = settings.tileMaxFood;
+        if (this.isWater) return;
         this.regenerateTileFood();
     }
 
     regenerateTileFood() {
-        if (this.isWater || this.food >= this.maxFood) return;
+        if (this.food >= settings.tileMaxFood) return;
         if (this.deadCooldown < settings.cooldownThreshold) {
             this.deadCooldown++;
             return;
         }
-
-        this.food = Math.min(this.food + settings.regenValue, this.maxFood);
-        this.colorH = int(this.maxH * this.food / this.maxFood);
+        this.food += settings.tile_regen_rate;
+        this.colorH = Math.floor(70.0 * this.food / settings.tileMaxFood) + 50;
     }
 
     resetCooldown() {

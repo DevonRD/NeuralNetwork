@@ -3,8 +3,11 @@
  */
 
 var tileIdCount = 0;
-var world;
+var creatureIdCount = 0;
 var water;
+
+var world;
+var creatures = new Array();
 
 function forEachTile(applyFunc) {
     for (var y = 0; y < settings.world_height; y++) {
@@ -15,13 +18,24 @@ function forEachTile(applyFunc) {
     }
 }
 
+function forEachCreature(applyFunc) {
+    for (var creature = 0; creature < creatures.length; creature++) {
+        var output = applyFunc(creature);
+        if (output != null) return output;
+    }
+}
+
+function killAllCreatures() {
+    creatures = new Array();
+}
+
 // ============================
 //   INITIALIZATION FUNCTIONS 
 // ============================
 
 function initWorld() {
     initTiles();
-    // creatures init
+    initCreatures();
 }
 
 function initTiles() {
@@ -40,11 +54,17 @@ function createTile(yIndex, xIndex) {
     return null;
 }
 
+function initCreatures() {
+    for (var i = 0; i < CONSTANTS.startNumCreatures; i++) {
+        creatures.push(new Creature());
+    }
+}
+
 // =========================
 //   PROGRESSION FUNCTIONS 
 // =========================
 
-function progressWorld() {
+function progressWorld(gameSpeed) {
     forEachTile(progressTile);
     // progress creatures
 
@@ -60,12 +80,20 @@ function progressTile(yIndex, xIndex) {
 // =====================
 
 function drawWorld() {
-    // Draw Tiles
+    colorMode(RGB);
+    background(100);
+    fill(60);
+    rect(wPix(8), 0, wPix(6), hPix(10));
+    fill(255, 255, 255);
+    textSize(wPix(30));
+
+    // Draw tiles
     colorMode(HSB, 360, 100, 100);
     forEachTile(drawTile);
     colorMode(RGB, 255, 255, 255);
 
-    // draw creatures
+    // Draw creatures
+    forEachCreature(drawCreature);
 }
 
 function drawTile(yIndex, xIndex) {
@@ -77,6 +105,38 @@ function drawTile(yIndex, xIndex) {
     stroke(0);
     // TODO: SEND FILL AND STROKE BACK TO DRAWWORLD?
     return null;
+}
+
+function drawCreature(creatureIndex) {
+    var c = creatures[creatureIndex];
+    colorMode(RGB);
+    fill(255);
+    stroke(50);
+    line(Math.floor(c.locationX), Math.floor(c.locationY), Math.floor(c.leftSensorX), Math.floor(c.leftSensorY));
+    if (c.attack) stroke(180, 0, 0);
+    line(Math.floor(c.locationX), Math.floor(c.locationY), Math.floor(c.midSensorX), Math.floor(c.midSensorY));
+    stroke(50);
+    line(Math.floor(c.locationX), Math.floor(c.locationY), Math.floor(c.rightSensorX), Math.floor(c.rightSensorY));
+    stroke(0);
+    fill(c.colorR, c.colorG, c.colorB);
+    if (selectedCreature !== null && c.id === selectedCreature.id) {
+        stroke(240, 0, 255);
+        strokeWeight(7);
+    }
+    ellipse(Math.floor(c.locationX), Math.floor(c.locationY), hPix(c.diameter), hPix(c.diameter));
+    fill(255);
+    stroke(0);
+    strokeWeight(1);
+    colorMode(HSB, 360, 100, 100);
+    fill(c.leftSensorColor, 80, 45);
+    ellipse(Math.floor(c.leftSensorX), Math.floor(c.leftSensorY), hPix(15), hPix(15));
+    fill(c.rightSensorColor, 80, 45);
+    ellipse(Math.floor(c.rightSensorX), Math.floor(c.rightSensorY), hPix(15), hPix(15));
+    fill(c.mouthSensorColor, 80, 45);
+    // OLD
+    //ellipse((int)c.mouthSensorX, (int)c.mouthSensorY, p2pw(15), p2pw(15));
+    colorMode(RGB, 255, 255, 255);
+    fill(0);
 }
 
 // =======================
@@ -105,17 +165,4 @@ function checkTileClick(mY, mX) {
     if (xIndex < 0 || settings.world_width <= xIndex) return null;
     // TODO: SET MENU PATH TO TILE MODE
     return world[yIndex][xIndex];
-}
-
-function randomRange(upperBound) {
-    return Math.random() * upperBound;
-}
-
-function test() {
-    if (mouseIsPressed) {
-        fill(0);
-    } else {
-        fill(255);
-    }
-    ellipse(mouseX, mouseY, 80, 80);
 }
