@@ -57,7 +57,7 @@ var b4x = 0, b4y = 0,
 
 var selectedCreature = null;
 
-//p5.disableFriendlyErrors = true;
+p5.disableFriendlyErrors = true;
 
 function setup() {
     createCanvas(settings.width_proportion * windowWidth,
@@ -102,7 +102,7 @@ function draw() {
         scale(float(scaleFactor));
 
         // Draw world tiles and creatures
-        if (stats.rawTime % 50 === 0) drawWorld();
+        drawWorld();
 
         pop();
     }
