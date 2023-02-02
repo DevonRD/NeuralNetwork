@@ -1,6 +1,6 @@
 <!-- PROJECT LOGO -->
 <p align="center">
-  <a href="https://devondoyle.com/"><img src="images/devon_suit.png" alt="Logo" width="150" height="150" style="border-radius:50%"></a>
+  <a href="https://devond.dev/"><img src="https://raw.githubusercontent.com/DevonRD/NeuralNetwork/master/images/devon_suit.png" alt="Logo" width="150" height="150" style="border-radius:50%"></a>
   <h1 align="center">Neural Network Simulator</h1>
   <p align="center">
     <a href="https://github.com/DevonRD/NeuralNetwork/network/members"><img src="https://img.shields.io/github/forks/DevonRD/NeuralNetwork?style=for-the-badge"/></a>
@@ -9,7 +9,7 @@
     <a href="https://github.com/DevonRD/NeuralNetwork/blob/master/LICENSE"><img src="https://img.shields.io/github/license/DevonRD/NeuralNetwork?style=for-the-badge"/></a>
   </p>
   <p align="center">
-    <a href="https://github.com/DevonRD/NeuralNetwork/issues">Report Bug</a> · <a href="https://devondoyle.com/">My Portfolio</a>
+    <a href="https://github.com/DevonRD/NeuralNetwork/issues">Report Bug</a> · <a href="https://devond.dev/">My Portfolio</a>
 	<br><br>
     <a href="https://linkedin.com/in/devon-doyle/"><img src="https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555"/></a>
   </p>
@@ -56,6 +56,7 @@ neural network to facilitate fitness-based evolution.
 
 * [Java](https://www.java.com/en/)
 * [Processing 3](https://processing.org/)
+* [p5.js](https://p5js.org/)
 
 ### The Environment
 
@@ -175,7 +176,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Devon Doyle - [Portfolio](https://devondoyle.com/) - devonrd@umich.edu
+Devon Doyle - [Portfolio](https://devond.dev/) - devondoyle@outlook.com
 
 Project Link: [https://github.com/DevonRD/NeuralNetwork](https://github.com/DevonRD/NeuralNetwork)
 
@@ -190,10 +191,10 @@ Project Link: [https://github.com/DevonRD/NeuralNetwork](https://github.com/Devo
 [license-url]: https://github.com/DevonRD/NeuralNetwork/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/devon-doyle/
-[environment-image]: images/map.PNG
-[creature-image]: images/creature.PNG
-[neuron-image]: images/neuron-illustration.jpg
-[neuralnet-image]: images/neural_net.PNG
-[trait-image]: images/avoid_water.gif
-[timeline-image]: images/timeline.PNG
+[environment-image]: https://raw.githubusercontent.com/DevonRD/NeuralNetwork/master/images/map.PNG
+[creature-image]: https://raw.githubusercontent.com/DevonRD/NeuralNetwork/master/images/creature.PNG
+[neuron-image]: https://raw.githubusercontent.com/DevonRD/NeuralNetwork/master/images/neuron-illustration.jpg
+[neuralnet-image]: https://raw.githubusercontent.com/DevonRD/NeuralNetwork/master/images/neural_net.PNG
+[trait-image]: https://raw.githubusercontent.com/DevonRD/NeuralNetwork/master/images/avoid_water.gif
+[timeline-image]: https://raw.githubusercontent.com/DevonRD/NeuralNetwork/master/images/timeline.PNG
 [download-jar]: https://github.com/DevonRD/NeuralNetwork/blob/master/NeuralNetLatest.jar
